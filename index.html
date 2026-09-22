@@ -78,6 +78,13 @@ tbody tr:hover{background:var(--surface-2)}
 code{font-family:"IBM Plex Mono",monospace;font-size:.85em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
 footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:4px}
 @media (max-width:420px){.row{grid-template-columns:1fr auto}.row .a,.row .b{min-width:74px}}
+.livedot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--up);margin-right:7px;
+  vertical-align:middle;animation:pulse 2.4s ease-in-out infinite}
+.livedot.stale{background:var(--muted-text);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.livedot{animation:none}}
+.flash{animation:flash .7s ease-out}
+@keyframes flash{from{background:var(--accent-soft)}to{background:transparent}}
 </style>
 
 <div class="wrap">
@@ -85,13 +92,14 @@ footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line)
   <header>
     <div class="eyebrow">Practice money &middot; Binance testnet &amp; futures demo</div>
     <h1>Are we making money?</h1>
-    <p class="sub">Updated 22 Sep 2026, 23:23 Dubai. Nothing real is at risk yet.</p>
+    <p class="sub"><span class="livedot" id="dot"></span><span id="livetext">Prices update by themselves every 15 seconds.</span>
+      Trades last checked 22 Sep 2026, 23:32 Dubai. Nothing real is at risk yet.</p>
   </header>
 
   <div class="verdict">
-    <span class="pill u">Up right now</span>
-    <div class="big num up">+$266.34</div>
-    <div class="cap">That is +2.66% on the $10,000 practice balance.</div>
+    <span class="pill u" id="netpill">Up right now</span>
+    <div class="big num up" id="net">+$274.88</div>
+    <div class="cap">That is <span id="netpct">+2.75%</span> on the $10,000 practice balance.</div>
   </div>
 
   <div class="split">
@@ -104,7 +112,7 @@ footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line)
     <div class="tile">
       <span class="pill u">Running</span>
       <div class="k">Trades still open</div>
-      <div class="v num up">+$447.76</div>
+      <div class="v num up" id="opentotal">+$456.30</div>
       <div class="n">13 trades still open. This can still change.</div>
     </div>
   </div>
@@ -120,19 +128,19 @@ footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line)
       <div class="row">
         <div class="nm">Money bot</div>
         <div class="a num ">$0.00<span class="lbl">finished</span></div>
-        <div class="b num up">+$146.43<span class="lbl">open</span></div>
+        <div class="b num up">+$147.62<span class="lbl">open</span></div>
         <div class="ds">8-hour candles, top 8 coins &middot; 4 open, 0 finished</div>
       </div>
       <div class="row">
         <div class="nm">Learning bot</div>
         <div class="a num down">&minus;$83.29<span class="lbl">finished</span></div>
-        <div class="b num up">+$157.55<span class="lbl">open</span></div>
+        <div class="b num up">+$163.45<span class="lbl">open</span></div>
         <div class="ds">1-hour candles, tiny amounts - it tests orders and stops, not profit &middot; 4 open, 7 finished</div>
       </div>
       <div class="row">
         <div class="nm">Quick bot</div>
         <div class="a num down">&minus;$87.31<span class="lbl">finished</span></div>
-        <div class="b num up">+$134.99<span class="lbl">open</span></div>
+        <div class="b num up">+$136.22<span class="lbl">open</span></div>
         <div class="ds">4-hour candles, sells anything still open after 4 days &middot; 3 open, 3 finished</div>
       </div>
       <div class="row">
@@ -144,13 +152,13 @@ footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line)
       <div class="row">
         <div class="nm">Turtle 55</div>
         <div class="a num ">$0.00<span class="lbl">finished</span></div>
-        <div class="b num up">+$4.73<span class="lbl">open</span></div>
+        <div class="b num up">+$4.85<span class="lbl">open</span></div>
         <div class="ds">8-hour candles, slower and pickier &middot; 1 open, 0 finished</div>
       </div>
       <div class="row">
         <div class="nm">Daily leg</div>
         <div class="a num ">$0.00<span class="lbl">finished</span></div>
-        <div class="b num up">+$4.06<span class="lbl">open</span></div>
+        <div class="b num up">+$4.16<span class="lbl">open</span></div>
         <div class="ds">Daily candles &middot; 1 open, 0 finished</div>
       </div>
       <div class="row">
@@ -168,20 +176,20 @@ footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line)
     <div class="scroll">
       <table>
         <thead><tr><th>Coin</th><th>Put in</th><th>Worth now</th><th>Up or down</th><th>Sells itself at</th></tr></thead>
-        <tbody>
-          <tr><td><span class="coin">LTC</span> <span class="who">Learning</span></td><td class="num">$648.69</td><td class="num">$761.37</td><td class="num up">+$112.68&nbsp;&nbsp;+17.4%</td><td class="num">59.0900</td></tr>
-          <tr><td><span class="coin">ADA</span> <span class="who">Quick</span></td><td class="num">$398.58</td><td class="num">$455.88</td><td class="num up">+$57.30&nbsp;&nbsp;+14.4%</td><td class="num">0.20940</td></tr>
-          <tr><td><span class="coin">DOGE</span> <span class="who">Money</span></td><td class="num">$356.06</td><td class="num">$408.22</td><td class="num up">+$52.16&nbsp;&nbsp;+14.7%</td><td class="num">0.08284</td></tr>
-          <tr><td><span class="coin">BTC</span> <span class="who">Quick</span></td><td class="num">$767.80</td><td class="num">$819.58</td><td class="num up">+$51.78&nbsp;&nbsp;+6.7%</td><td class="num">78,722.55</td></tr>
-          <tr><td><span class="coin">ADA</span> <span class="who">Money</span></td><td class="num">$278.27</td><td class="num">$318.27</td><td class="num up">+$40.00&nbsp;&nbsp;+14.4%</td><td class="num">0.20490</td></tr>
-          <tr><td><span class="coin">BTC</span> <span class="who">Money</span></td><td class="num">$529.81</td><td class="num">$565.41</td><td class="num up">+$35.60&nbsp;&nbsp;+6.7%</td><td class="num">77,822.59</td></tr>
-          <tr><td><span class="coin">SOL</span> <span class="who">Quick</span></td><td class="num">$500.08</td><td class="num">$525.99</td><td class="num up">+$25.91&nbsp;&nbsp;+5.2%</td><td class="num">106.87</td></tr>
-          <tr><td><span class="coin">ADA</span> <span class="who">Learning</span></td><td class="num">$145.18</td><td class="num">$165.01</td><td class="num up">+$19.83&nbsp;&nbsp;+13.7%</td><td class="num">0.22010</td></tr>
-          <tr><td><span class="coin">SOL</span> <span class="who">Money</span></td><td class="num">$360.10</td><td class="num">$378.75</td><td class="num up">+$18.66&nbsp;&nbsp;+5.2%</td><td class="num">105.21</td></tr>
-          <tr><td><span class="coin">XRP</span> <span class="who">Learning</span></td><td class="num">$127.06</td><td class="num">$143.48</td><td class="num up">+$16.42&nbsp;&nbsp;+12.9%</td><td class="num">1.3728</td></tr>
-          <tr><td><span class="coin">LINK</span> <span class="who">Learning</span></td><td class="num">$156.05</td><td class="num">$164.67</td><td class="num up">+$8.63&nbsp;&nbsp;+5.5%</td><td class="num">12.1060</td></tr>
-          <tr><td><span class="coin">SOL</span> <span class="who">Turtle 55</span></td><td class="num">$90.19</td><td class="num">$94.92</td><td class="num up">+$4.73&nbsp;&nbsp;+5.2%</td><td class="num">105.21</td></tr>
-          <tr><td><span class="coin">SOL</span> <span class="who">Daily leg</span></td><td class="num">$71.21</td><td class="num">$75.28</td><td class="num up">+$4.06&nbsp;&nbsp;+5.7%</td><td class="num">103.04</td></tr>
+        <tbody id="tbody">
+          <tr><td><span class="coin">LTC</span> <span class="who">Learning</span></td><td class="num">$648.69</td><td class="num">$766.94</td><td class="num up">+$118.25&nbsp;&nbsp;+18.2%</td><td class="num">59.0900</td></tr>
+          <tr><td><span class="coin">ADA</span> <span class="who">Quick</span></td><td class="num">$398.58</td><td class="num">$456.42</td><td class="num up">+$57.84&nbsp;&nbsp;+14.5%</td><td class="num">0.20940</td></tr>
+          <tr><td><span class="coin">DOGE</span> <span class="who">Money</span></td><td class="num">$356.06</td><td class="num">$408.54</td><td class="num up">+$52.49&nbsp;&nbsp;+14.7%</td><td class="num">0.08284</td></tr>
+          <tr><td><span class="coin">BTC</span> <span class="who">Quick</span></td><td class="num">$767.80</td><td class="num">$819.60</td><td class="num up">+$51.80&nbsp;&nbsp;+6.7%</td><td class="num">78,722.55</td></tr>
+          <tr><td><span class="coin">ADA</span> <span class="who">Money</span></td><td class="num">$278.27</td><td class="num">$318.65</td><td class="num up">+$40.38&nbsp;&nbsp;+14.5%</td><td class="num">0.20490</td></tr>
+          <tr><td><span class="coin">BTC</span> <span class="who">Money</span></td><td class="num">$529.81</td><td class="num">$565.42</td><td class="num up">+$35.62&nbsp;&nbsp;+6.7%</td><td class="num">77,822.59</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Quick</span></td><td class="num">$500.08</td><td class="num">$526.66</td><td class="num up">+$26.58&nbsp;&nbsp;+5.3%</td><td class="num">106.87</td></tr>
+          <tr><td><span class="coin">ADA</span> <span class="who">Learning</span></td><td class="num">$145.18</td><td class="num">$165.20</td><td class="num up">+$20.02&nbsp;&nbsp;+13.8%</td><td class="num">0.22010</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Money</span></td><td class="num">$360.10</td><td class="num">$379.23</td><td class="num up">+$19.14&nbsp;&nbsp;+5.3%</td><td class="num">105.21</td></tr>
+          <tr><td><span class="coin">XRP</span> <span class="who">Learning</span></td><td class="num">$127.06</td><td class="num">$143.47</td><td class="num up">+$16.41&nbsp;&nbsp;+12.9%</td><td class="num">1.3728</td></tr>
+          <tr><td><span class="coin">LINK</span> <span class="who">Learning</span></td><td class="num">$156.05</td><td class="num">$164.81</td><td class="num up">+$8.76&nbsp;&nbsp;+5.6%</td><td class="num">12.1060</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Turtle 55</span></td><td class="num">$90.19</td><td class="num">$95.05</td><td class="num up">+$4.85&nbsp;&nbsp;+5.4%</td><td class="num">105.21</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Daily leg</span></td><td class="num">$71.21</td><td class="num">$75.37</td><td class="num up">+$4.16&nbsp;&nbsp;+5.8%</td><td class="num">103.04</td></tr>
         </tbody>
       </table>
     </div>
@@ -229,7 +237,90 @@ footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line)
 
   <footer>
     <div>Practice money only &mdash; Binance spot testnet and futures demo. No real funds, no real orders.</div>
-    <div>Built from the bots&rsquo; own logs and live Binance prices at 22 Sep 2026, 23:23 Dubai.</div>
+    <div>Open trades are priced live in your browser from Binance&rsquo;s public price feed. Finished trades and the
+      bot list come from the bots&rsquo; own logs, last sent up at 22 Sep 2026, 23:32 Dubai.</div>
   </footer>
 
 </div>
+
+<script id="positions" type="application/json">{"closed":-181.42,"positions":[{"coin":"LTC","sym":"LTCUSDT","bot":"Learning","qty":12.116,"cost":648.69,"val":766.94,"stop":59.09},{"coin":"ADA","sym":"ADAUSDT","bot":"Quick","qty":1801.9,"cost":398.58,"val":456.42,"stop":0.2094},{"coin":"DOGE","sym":"DOGEUSDT","bot":"Money","qty":4072.0,"cost":356.06,"val":408.54,"stop":0.08284},{"coin":"BTC","sym":"BTCUSDT","bot":"Quick","qty":0.00948,"cost":767.8,"val":819.6,"stop":78722.55},{"coin":"ADA","sym":"ADAUSDT","bot":"Money","qty":1258.0,"cost":278.27,"val":318.65,"stop":0.2049},{"coin":"BTC","sym":"BTCUSDT","bot":"Money","qty":0.00654,"cost":529.81,"val":565.42,"stop":77822.59},{"coin":"SOL","sym":"SOLUSDT","bot":"Quick","qty":4.444,"cost":500.08,"val":526.66,"stop":106.87},{"coin":"ADA","sym":"ADAUSDT","bot":"Learning","qty":652.2,"cost":145.18,"val":165.2,"stop":0.2201},{"coin":"SOL","sym":"SOLUSDT","bot":"Money","qty":3.2,"cost":360.1,"val":379.23,"stop":105.21},{"coin":"XRP","sym":"XRPUSDT","bot":"Learning","qty":89.9,"cost":127.06,"val":143.47,"stop":1.3728},{"coin":"LINK","sym":"LINKUSDT","bot":"Learning","qty":12.61,"cost":156.05,"val":164.81,"stop":12.106},{"coin":"SOL","sym":"SOLUSDT","bot":"Turtle 55","qty":0.802,"cost":90.19,"val":95.05,"stop":105.21},{"coin":"SOL","sym":"SOLUSDT","bot":"Daily leg","qty":0.636,"cost":71.21,"val":75.37,"stop":103.04}]}</script>
+<script>
+// The page ships with the numbers already filled in, so it reads correctly with no JavaScript and on a dead
+// connection. This only REFRESHES the open trades, using Binance's public price feed straight from the phone.
+// Nothing here is authenticated and nothing can place an order - it is a read of public prices.
+(function () {
+  var POS = [], CLOSED = 0;
+  try { var raw = document.getElementById("positions").textContent;
+        var d = JSON.parse(raw); POS = d.positions || []; CLOSED = d.closed || 0; } catch (e) { return; }
+  if (!POS.length) { var dd = document.getElementById("dot");
+                     if (dd) { dd.className = "livedot stale"; }
+                     var lt = document.getElementById("livetext");
+                     if (lt) { lt.textContent = "No trades open right now."; }
+                     return; }
+
+  var fmt = function (v) {
+    var s = "$" + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return (v < 0 ? "−" : "+") + s;
+  };
+  var stopFmt = function (v) {
+    if (v === null || v === undefined) { return "—"; }
+    var n = Number(v);
+    return n >= 100 ? n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+         : n >= 1   ? n.toFixed(4) : n.toFixed(5);
+  };
+
+  function paint(prices) {
+    var body = document.getElementById("tbody"), open = 0, rows = [];
+    POS.forEach(function (p) {
+      var px = prices[p.sym];
+      var val = px ? p.qty * px : p.val;      // fall back to the baked-in value if a symbol is missing
+      var pnl = val - p.cost;
+      open += pnl;
+      rows.push({p: p, val: val, pnl: pnl, pct: 100 * pnl / p.cost, live: !!px});
+    });
+    rows.sort(function (a, b) { return b.pnl - a.pnl; });
+    body.innerHTML = rows.map(function (r) {
+      var c = r.pnl >= 0 ? "up" : "down";
+      return '<tr><td><span class="coin">' + r.p.coin + '</span> <span class="who">' + r.p.bot + '</span></td>'
+           + '<td class="num">$' + r.p.cost.toFixed(2) + '</td>'
+           + '<td class="num">$' + r.val.toFixed(2) + '</td>'
+           + '<td class="num ' + c + '">' + fmt(r.pnl) + '&nbsp;&nbsp;'
+           + (r.pct >= 0 ? "+" : "−") + Math.abs(r.pct).toFixed(1) + '%</td>'
+           + '<td class="num">' + stopFmt(r.p.stop) + '</td></tr>';
+    }).join("");
+
+    var net = CLOSED + open;
+    var set = function (id, text, cls) {
+      var el = document.getElementById(id);
+      if (!el) { return; }
+      if (el.textContent !== text) { el.textContent = text; el.classList.remove("flash");
+                                     void el.offsetWidth; el.classList.add("flash"); }
+      if (cls) { el.classList.remove("up", "down"); el.classList.add(cls); }
+    };
+    set("opentotal", fmt(open), open >= 0 ? "up" : "down");
+    set("net", fmt(net), net >= 0 ? "up" : "down");
+    set("netpct", (net >= 0 ? "+" : "−") + Math.abs(100 * net / 10000).toFixed(2) + "%");
+    var pill = document.getElementById("netpill");
+    if (pill) { pill.textContent = net >= 0 ? "Up right now" : "Down right now"; }
+  }
+
+  function tick() {
+    fetch("https://data-api.binance.vision/api/v3/ticker/price")
+      .then(function (r) { return r.json(); })
+      .then(function (list) {
+        var prices = {};
+        list.forEach(function (x) { prices[x.symbol] = parseFloat(x.price); });
+        paint(prices);
+        document.getElementById("dot").className = "livedot";
+        document.getElementById("livetext").textContent = "Prices are live, updating every 15 seconds.";
+      })
+      .catch(function () {
+        document.getElementById("dot").className = "livedot stale";
+        document.getElementById("livetext").textContent = "Could not reach Binance just now - showing the last known prices.";
+      });
+  }
+  tick();
+  setInterval(tick, 15000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { tick(); } });
+})();
+</script>
