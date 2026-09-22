@@ -9,6 +9,15 @@
 <meta property="og:title" content="Salman.D.Life">
 <meta property="og:description" content="A private control room for everything I'm building. Trading bots first.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://salmandlife.pages.dev/">
+<meta property="og:image" content="https://salmandlife.pages.dev/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Salman.D.Life">
+<meta name="twitter:description" content="A private control room for everything I'm building. Trading bots first.">
+<meta name="twitter:image" content="https://salmandlife.pages.dev/assets/og.png">
+<link rel="canonical" href="https://salmandlife.pages.dev/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23E3A951'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%230C0B0A'>S</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -128,10 +137,11 @@
     </div>
 
     <div class="strip rise">
-      <div><div class="k">Bots running</div><div class="v">7</div></div>
+      <div><div class="k">Bots running</div><div class="v" id="sBots">7</div></div>
+      <div><div class="k">Trades open</div><div class="v neutral" id="sOpen">&mdash;</div></div>
       <div><div class="k">Real money at risk</div><div class="v up">$0.00</div></div>
-      <div><div class="k">Mode</div><div class="v neutral">Practice</div></div>
-      <div><div class="k">Prices</div><div class="v neutral">Live</div></div>
+      <div><div class="k">Mode</div><div class="v neutral" id="sMode">Practice</div></div>
+      <div><div class="k">Updated</div><div class="v neutral" id="sWhen">&mdash;</div></div>
     </div>
   </header>
 
@@ -206,6 +216,7 @@
 
 </div>
 
+<script src="/assets/status.js"></script>
 <script src="/assets/account.js" defer></script>
 <script>
 // Sections fade up as they come into view, and the cards pick up a soft glow under the cursor.
@@ -232,6 +243,25 @@
       card.style.setProperty("--my", (e.clientY - box.top) + "px");
     });
   });
+
+  // The numbers above come from a file the laptop writes every time the site is published,
+  // so they are the real ones rather than something typed in by hand.
+  var st = window.SITE_STATUS;
+  if (st) {
+    if (st.bots) document.getElementById("sBots").textContent = st.bots;
+    if (st.openTrades !== null && st.openTrades !== undefined) document.getElementById("sOpen").textContent = st.openTrades;
+    if (st.mode) document.getElementById("sMode").textContent = st.mode;
+    if (st.updated) {
+      var mins = Math.max(0, Math.round((Date.now() - Date.parse(st.updated)) / 60000));
+      var when = mins < 1 ? "just now"
+               : mins < 60 ? mins + " min ago"
+               : mins < 1440 ? Math.round(mins / 60) + " hr ago"
+               : Math.round(mins / 1440) + " d ago";
+      var el = document.getElementById("sWhen");
+      el.textContent = when;
+      el.title = new Date(st.updated).toLocaleString();
+    }
+  }
 })();
 </script>
 </body>

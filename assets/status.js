@@ -1,0 +1,2 @@
+/* Written automatically every time the site is published. Do not edit by hand. */
+window.SITE_STATUS = {"bots": 7, "openTrades": 13, "mode": "Practice", "updated": "2026-09-22T21:06:11Z"};
