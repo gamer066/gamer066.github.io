@@ -1,0 +1,235 @@
+<title>Are We Making Money?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F2F5F6; --surface:#FFFFFF; --surface-2:#E9EEEF; --line:#D3DDDF;
+  --ink:#131F26; --ink-2:#3D525C; --muted-text:#5C7080;
+  --accent:#0F766E; --accent-soft:#0F766E18;
+  --up:#136F35; --up-soft:#136F3516; --down:#AB2028; --down-soft:#AB202816;
+  --warn:#8A5A00;
+  --shadow:0 1px 2px rgba(19,31,38,.06),0 8px 24px -12px rgba(19,31,38,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1417; --surface:#151F23; --surface-2:#1C282D; --line:#2A383E;
+  --ink:#E7EFF1; --ink-2:#AFC1C8; --muted-text:#8FA5AE;
+  --accent:#2DD4BF; --accent-soft:#2DD4BF1F;
+  --up:#4ABF6A; --up-soft:#4ABF6A1C; --down:#F06B62; --down-soft:#F06B621C;
+  --warn:#DCA33C;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --bg:#0D1417; --surface:#151F23; --surface-2:#1C282D; --line:#2A383E;
+  --ink:#E7EFF1; --ink-2:#AFC1C8; --muted-text:#8FA5AE;
+  --accent:#2DD4BF; --accent-soft:#2DD4BF1F;
+  --up:#4ABF6A; --up-soft:#4ABF6A1C; --down:#F06B62; --down-soft:#F06B621C;
+  --warn:#DCA33C;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:Archivo,"Segoe UI",system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:26px}
+.num{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.up{color:var(--up)} .down{color:var(--down)}
+h1{font-size:clamp(1.6rem,5vw,2.1rem);font-weight:800;letter-spacing:-.02em;margin:.1em 0 0;text-wrap:balance}
+h2{font-size:1.05rem;font-weight:700;letter-spacing:-.01em;margin:0}
+.eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-text)}
+.sub{color:var(--ink-2);margin:0}
+section{display:flex;flex-direction:column;gap:12px}
+.verdict{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--up)}
+.verdict .big{font-size:clamp(2.6rem,12vw,3.6rem);font-weight:600;line-height:1;letter-spacing:-.03em}
+.verdict .cap{font-size:.95rem;color:var(--ink-2)}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:5px}
+.tile .v{font-size:1.7rem;font-weight:600;line-height:1.1}
+.tile .k{font-size:.8rem;font-weight:600;color:var(--muted-text)}
+.tile .n{font-size:.85rem;color:var(--ink-2)}
+.pill{align-self:flex-start;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+.pill.u{background:var(--up-soft);color:var(--up)} .pill.d{background:var(--down-soft);color:var(--down)}
+.pill.n{background:var(--surface-2);color:var(--muted-text)}
+.callout{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:13px 15px;font-size:.95rem;color:var(--ink)}
+.callout b{font-weight:700}
+.rows{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.row{display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;padding:13px 15px;align-items:baseline;border-top:1px solid var(--line)}
+.row:first-child{border-top:none}
+.row .nm{font-weight:600;font-size:.95rem}
+.row .ds{grid-column:1/-1;font-size:.78rem;color:var(--muted-text);margin-top:-4px}
+.row .a,.row .b{font-size:.92rem;font-weight:500;text-align:right;min-width:88px}
+.row .lbl{display:block;font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted-text);font-weight:600;font-family:Archivo,sans-serif}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.88rem}
+th,td{padding:10px 13px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+th{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted-text);font-weight:700;border-top:none;background:var(--surface-2)}
+th:first-child,td:first-child{text-align:left}
+tbody tr:hover{background:var(--surface-2)}
+.coin{font-weight:700} .who{font-size:.74rem;color:var(--muted-text);font-weight:500}
+.gate{display:flex;flex-direction:column;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.g{display:grid;grid-template-columns:1fr 62px;gap:8px 12px;align-items:center;font-size:.9rem}
+.bar{grid-column:1/-1;height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:-4px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.g .c{text-align:right;font-size:.85rem;font-weight:600}
+.done{display:flex;gap:9px;align-items:flex-start;font-size:.9rem}
+.tick{color:var(--up);font-weight:800}
+.dec{display:flex;flex-direction:column;gap:10px}
+.d{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:0 10px 10px 0;padding:13px 15px}
+.d .t{font-weight:700;font-size:.93rem;margin-bottom:3px}
+.d .x{font-size:.86rem;color:var(--ink-2)}
+code{font-family:"IBM Plex Mono",monospace;font-size:.85em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+footer{color:var(--muted-text);font-size:.78rem;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:4px}
+@media (max-width:420px){.row{grid-template-columns:1fr auto}.row .a,.row .b{min-width:74px}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Practice money &middot; Binance testnet &amp; futures demo</div>
+    <h1>Are we making money?</h1>
+    <p class="sub">Updated 22 Sep 2026, 23:23 Dubai. Nothing real is at risk yet.</p>
+  </header>
+
+  <div class="verdict">
+    <span class="pill u">Up right now</span>
+    <div class="big num up">+$266.34</div>
+    <div class="cap">That is +2.66% on the $10,000 practice balance.</div>
+  </div>
+
+  <div class="split">
+    <div class="tile">
+      <span class="pill d">Lost</span>
+      <div class="k">Trades we finished</div>
+      <div class="v num down">&minus;$181.42</div>
+      <div class="n">12 trades done and sold. This money is real and counted.</div>
+    </div>
+    <div class="tile">
+      <span class="pill u">Running</span>
+      <div class="k">Trades still open</div>
+      <div class="v num up">+$447.76</div>
+      <div class="n">13 trades still open. This can still change.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Read this bit.</b> Only the left number is banked. The right one sits inside trades that are still open and can
+    shrink or vanish before we sell. Money becomes real when a trade closes.
+  </div>
+
+  <section>
+    <h2>Each bot</h2>
+    <div class="rows">
+      <div class="row">
+        <div class="nm">Money bot</div>
+        <div class="a num ">$0.00<span class="lbl">finished</span></div>
+        <div class="b num up">+$146.43<span class="lbl">open</span></div>
+        <div class="ds">8-hour candles, top 8 coins &middot; 4 open, 0 finished</div>
+      </div>
+      <div class="row">
+        <div class="nm">Learning bot</div>
+        <div class="a num down">&minus;$83.29<span class="lbl">finished</span></div>
+        <div class="b num up">+$157.55<span class="lbl">open</span></div>
+        <div class="ds">1-hour candles, tiny amounts - it tests orders and stops, not profit &middot; 4 open, 7 finished</div>
+      </div>
+      <div class="row">
+        <div class="nm">Quick bot</div>
+        <div class="a num down">&minus;$87.31<span class="lbl">finished</span></div>
+        <div class="b num up">+$134.99<span class="lbl">open</span></div>
+        <div class="ds">4-hour candles, sells anything still open after 4 days &middot; 3 open, 3 finished</div>
+      </div>
+      <div class="row">
+        <div class="nm">Short bot</div>
+        <div class="a num down">&minus;$10.82<span class="lbl">finished</span></div>
+        <div class="b num ">$0.00<span class="lbl">open</span></div>
+        <div class="ds">Futures demo, bets on prices falling &middot; 0 open, 2 finished</div>
+      </div>
+      <div class="row">
+        <div class="nm">Turtle 55</div>
+        <div class="a num ">$0.00<span class="lbl">finished</span></div>
+        <div class="b num up">+$4.73<span class="lbl">open</span></div>
+        <div class="ds">8-hour candles, slower and pickier &middot; 1 open, 0 finished</div>
+      </div>
+      <div class="row">
+        <div class="nm">Daily leg</div>
+        <div class="a num ">$0.00<span class="lbl">finished</span></div>
+        <div class="b num up">+$4.06<span class="lbl">open</span></div>
+        <div class="ds">Daily candles &middot; 1 open, 0 finished</div>
+      </div>
+      <div class="row">
+        <div class="nm">$10 plan bot <span class="pill n">Not started</span></div>
+        <div class="a num ">$0.00<span class="lbl">finished</span></div>
+        <div class="b num ">$0.00<span class="lbl">open</span></div>
+        <div class="ds">The Milestone 1 bot - the one that would get your real $10 &middot; 0 open, 0 finished</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Trades open now</h2>
+    <p class="sub" style="font-size:.86rem">Every one has a safety stop sitting on Binance, so it sells itself if the price falls &mdash; even with the laptop off.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Coin</th><th>Put in</th><th>Worth now</th><th>Up or down</th><th>Sells itself at</th></tr></thead>
+        <tbody>
+          <tr><td><span class="coin">LTC</span> <span class="who">Learning</span></td><td class="num">$648.69</td><td class="num">$761.37</td><td class="num up">+$112.68&nbsp;&nbsp;+17.4%</td><td class="num">59.0900</td></tr>
+          <tr><td><span class="coin">ADA</span> <span class="who">Quick</span></td><td class="num">$398.58</td><td class="num">$455.88</td><td class="num up">+$57.30&nbsp;&nbsp;+14.4%</td><td class="num">0.20940</td></tr>
+          <tr><td><span class="coin">DOGE</span> <span class="who">Money</span></td><td class="num">$356.06</td><td class="num">$408.22</td><td class="num up">+$52.16&nbsp;&nbsp;+14.7%</td><td class="num">0.08284</td></tr>
+          <tr><td><span class="coin">BTC</span> <span class="who">Quick</span></td><td class="num">$767.80</td><td class="num">$819.58</td><td class="num up">+$51.78&nbsp;&nbsp;+6.7%</td><td class="num">78,722.55</td></tr>
+          <tr><td><span class="coin">ADA</span> <span class="who">Money</span></td><td class="num">$278.27</td><td class="num">$318.27</td><td class="num up">+$40.00&nbsp;&nbsp;+14.4%</td><td class="num">0.20490</td></tr>
+          <tr><td><span class="coin">BTC</span> <span class="who">Money</span></td><td class="num">$529.81</td><td class="num">$565.41</td><td class="num up">+$35.60&nbsp;&nbsp;+6.7%</td><td class="num">77,822.59</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Quick</span></td><td class="num">$500.08</td><td class="num">$525.99</td><td class="num up">+$25.91&nbsp;&nbsp;+5.2%</td><td class="num">106.87</td></tr>
+          <tr><td><span class="coin">ADA</span> <span class="who">Learning</span></td><td class="num">$145.18</td><td class="num">$165.01</td><td class="num up">+$19.83&nbsp;&nbsp;+13.7%</td><td class="num">0.22010</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Money</span></td><td class="num">$360.10</td><td class="num">$378.75</td><td class="num up">+$18.66&nbsp;&nbsp;+5.2%</td><td class="num">105.21</td></tr>
+          <tr><td><span class="coin">XRP</span> <span class="who">Learning</span></td><td class="num">$127.06</td><td class="num">$143.48</td><td class="num up">+$16.42&nbsp;&nbsp;+12.9%</td><td class="num">1.3728</td></tr>
+          <tr><td><span class="coin">LINK</span> <span class="who">Learning</span></td><td class="num">$156.05</td><td class="num">$164.67</td><td class="num up">+$8.63&nbsp;&nbsp;+5.5%</td><td class="num">12.1060</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Turtle 55</span></td><td class="num">$90.19</td><td class="num">$94.92</td><td class="num up">+$4.73&nbsp;&nbsp;+5.2%</td><td class="num">105.21</td></tr>
+          <tr><td><span class="coin">SOL</span> <span class="who">Daily leg</span></td><td class="num">$71.21</td><td class="num">$75.28</td><td class="num up">+$4.06&nbsp;&nbsp;+5.7%</td><td class="num">103.04</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Before any real money goes in</h2>
+    <div class="gate">
+      <div class="g"><span>Money bot &mdash; finished practice trades</span><span class="c">0 / 10</span><div class="bar"><i style="width:0%"></i></div></div>
+      <div class="g"><span>Quick bot &mdash; finished practice trades</span><span class="c">3 / 10</span><div class="bar"><i style="width:30%"></i></div></div>
+      <div class="g"><span>Short bot &mdash; finished practice trades</span><span class="c">2 / 10</span><div class="bar"><i style="width:20%"></i></div></div>
+      <div class="g"><span>Turtle 55 &mdash; finished practice trades</span><span class="c">0 / 10</span><div class="bar"><i style="width:0%"></i></div></div>
+      <div class="g"><span>Daily leg &mdash; finished practice trades</span><span class="c">0 / 10</span><div class="bar"><i style="width:0%"></i></div></div>
+      <div class="g"><span><b>$10 plan bot</b> &mdash; finished practice trades</span><span class="c">0 / 3</span><div class="bar"><i style="width:0%"></i></div></div>
+      <div class="done"><span class="tick">&check;</span><span>Stops work with the laptop off &mdash; proved 15 Sep</span></div>
+      <div class="done"><span class="tick">&check;</span><span>Emergency stop works &mdash; <code>live/HALT_ALL</code> halts every bot at once</span></div>
+      <div class="done"><span class="tick">&check;</span><span>Clock drift fixed &mdash; 22 Sep, bots now take the time from Binance</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Can a strategy be 100%?</h2>
+    <div class="callout">
+      No &mdash; and anything claiming it is lying. This one wins about <b>36 trades in every 100</b>. It makes money because
+      the wins are bigger than the losses, not because it is right often. Expect long losing runs: <b>27 losses in a row is
+      normal here</b>, not a disaster.
+      <br><br>
+      "Ready for real money" can never mean "never loses". It means the bot did in practice what the tests said it would,
+      for enough trades to trust it. That is the checklist above.
+    </div>
+  </section>
+
+  <section>
+    <h2>Waiting on you</h2>
+    <div class="dec">
+      <div class="d"><div class="t">Pick the emergency brake</div>
+        <div class="x">It stops the bots after a bad run. Today it trips at &minus;15%, which fires often and costs about 39% of the
+        long-run profit. At &minus;25% it almost never trips and keeps nearly all of it. My pick: <b>&minus;25%</b>. Loosening a safety
+        limit is your call, so nothing has been changed.</div></div>
+      <div class="d"><div class="t">Add the daily leg to the proper schedule</div>
+        <div class="x">It runs hourly right now instead of its proper three-times-a-day slot. Fixing it needs the scheduled task
+        re-registered, which is a Windows change.</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Practice money only &mdash; Binance spot testnet and futures demo. No real funds, no real orders.</div>
+    <div>Built from the bots&rsquo; own logs and live Binance prices at 22 Sep 2026, 23:23 Dubai.</div>
+  </footer>
+
+</div>

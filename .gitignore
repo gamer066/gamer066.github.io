@@ -1,0 +1,8 @@
+# Safety first: this repo becomes a PUBLIC website, so nothing but the page may ever live here.
+# Keys, logs, state files and trade history stay in D:\claude-workspace\trading and are never copied in.
+*.env
+*.key
+*.csv
+*.json
+*.log
+*.py
