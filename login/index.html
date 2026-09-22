@@ -13,11 +13,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
 <style>
-  .hero{padding-top:46px;display:flex;flex-direction:column;gap:11px;text-align:center;align-items:center}
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:10px;text-align:center;align-items:center}
   .hero h1{font-size:clamp(1.7rem,7vw,2.2rem)}
-  .box{margin-top:26px;padding:22px;background:var(--surface);border:1px solid var(--line);
+  .box{margin-top:24px;padding:22px;background:var(--surface);border:1px solid var(--line);
     border-radius:var(--radius);box-shadow:var(--shadow)}
-  .foot{margin-top:20px;text-align:center}
+  .foot{margin-top:18px;text-align:center}
+  .backrow{margin-top:2px}
 </style>
 </head>
 <body>
@@ -26,7 +27,7 @@
   <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
   <nav class="navlinks">
     <a href="/">Home</a>
-    <a href="/login/" class="on">Sign in</a>
+    <a href="/login/" class="on" id="account">Sign in</a>
   </nav>
 </div></div>
 
@@ -34,36 +35,45 @@
 
   <header class="hero">
     <div class="eyebrow">Private area</div>
-    <h1>Sign in</h1>
+    <h1 id="title">Sign in</h1>
     <p class="lede" style="font-size:.93rem">The home page is open to everyone. Everything else on this site is
       behind this door.</p>
   </header>
 
   <div class="box">
-    <div class="tabs" role="tablist">
-      <button id="tabIn" role="tab" aria-selected="true" aria-controls="panelIn">Sign in</button>
-      <button id="tabUp" role="tab" aria-selected="false" aria-controls="panelUp">Create account</button>
+    <div class="tabs" role="tablist" id="tabs">
+      <button id="tabIn" role="tab" aria-selected="true">Sign in</button>
+      <button id="tabUp" role="tab" aria-selected="false">Create account</button>
     </div>
 
     <div id="msg" class="msg" role="status" aria-live="polite"></div>
 
+    <!-- sign in -->
     <form id="panelIn" class="auth" novalidate>
       <div class="field">
         <label for="inEmail">Email</label>
-        <input id="inEmail" name="email" type="email" autocomplete="username" required>
+        <input id="inEmail" name="email" type="email" autocomplete="username" inputmode="email" required>
       </div>
       <div class="field">
         <label for="inPass">Password</label>
-        <input id="inPass" name="password" type="password" autocomplete="current-password" required>
+        <div class="pw">
+          <input id="inPass" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <span class="caps">Caps Lock is on.</span>
+      </div>
+      <div class="rowsplit">
+        <label class="remember"><input type="checkbox" id="inRemember" name="remember" checked> Keep me signed in</label>
+        <button type="button" class="linkish" id="goReset">Forgot your password?</button>
       </div>
       <button class="go" type="submit">Sign in</button>
     </form>
 
+    <!-- create account -->
     <form id="panelUp" class="auth" novalidate hidden>
       <div class="field">
         <label for="upInvite">Invite code</label>
         <input id="upInvite" name="invite" type="text" autocomplete="off" required>
-        <span class="hint">Accounts are made by invitation only. Ask Salman for the code.</span>
+        <span class="hint">Accounts are by invitation only. Ask Salman for the code.</span>
       </div>
       <div class="field">
         <label for="upName">Your name</label>
@@ -71,14 +81,40 @@
       </div>
       <div class="field">
         <label for="upEmail">Email</label>
-        <input id="upEmail" name="email" type="email" autocomplete="username" required>
+        <input id="upEmail" name="email" type="email" autocomplete="username" inputmode="email" required>
       </div>
       <div class="field">
         <label for="upPass">Choose a password</label>
-        <input id="upPass" name="password" type="password" autocomplete="new-password" required minlength="10">
+        <div class="pw">
+          <input id="upPass" name="password" type="password" autocomplete="new-password" required minlength="10">
+        </div>
+        <span class="caps">Caps Lock is on.</span>
         <span class="hint">At least 10 characters. Nobody can read it back, not even from the database.</span>
       </div>
       <button class="go" type="submit">Create my account</button>
+    </form>
+
+    <!-- forgotten password -->
+    <form id="panelRe" class="auth" novalidate hidden>
+      <div class="field">
+        <label for="reInvite">Invite code</label>
+        <input id="reInvite" name="invite" type="text" autocomplete="off" required>
+        <span class="hint">There is no reset email on this site, so the invite code is what proves it is you.</span>
+      </div>
+      <div class="field">
+        <label for="reEmail">Email</label>
+        <input id="reEmail" name="email" type="email" autocomplete="username" inputmode="email" required>
+      </div>
+      <div class="field">
+        <label for="rePass">New password</label>
+        <div class="pw">
+          <input id="rePass" name="password" type="password" autocomplete="new-password" required minlength="10">
+        </div>
+        <span class="caps">Caps Lock is on.</span>
+        <span class="hint">At least 10 characters. Every other device gets signed out.</span>
+      </div>
+      <button class="go" type="submit">Set my new password</button>
+      <div class="backrow"><button type="button" class="linkish" id="backIn">&larr; Back to sign in</button></div>
     </form>
   </div>
 
@@ -90,39 +126,84 @@
 <script>
 (function () {
   var msg = document.getElementById("msg");
+  var title = document.getElementById("title");
+  var tabs = document.getElementById("tabs");
   var tabIn = document.getElementById("tabIn"), tabUp = document.getElementById("tabUp");
-  var panelIn = document.getElementById("panelIn"), panelUp = document.getElementById("panelUp");
+  var panels = {
+    in: document.getElementById("panelIn"),
+    up: document.getElementById("panelUp"),
+    re: document.getElementById("panelRe")
+  };
+  var titles = { in: "Sign in", up: "Create account", re: "New password" };
 
-  // Where to go after signing in. Only addresses on this site are allowed.
+  // Where to go afterwards. Only addresses on this site are allowed.
   var wanted = new URLSearchParams(location.search).get("next") || "/profile/";
   if (wanted.charAt(0) !== "/" || wanted.charAt(1) === "/") wanted = "/profile/";
 
-  function say(text, kind) {
-    msg.textContent = text;
-    msg.className = "msg show " + (kind || "bad");
-  }
-  function clear() { msg.className = "msg"; msg.textContent = ""; }
+  /* ---- the eye button that shows or hides a password ---- */
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.2A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-3.2 4.1"/><path d="M6.3 6.4A18 18 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
 
+  Array.prototype.forEach.call(document.querySelectorAll(".pw"), function (box) {
+    var input = box.querySelector("input");
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "eye";
+    b.innerHTML = EYE;
+    b.setAttribute("aria-label", "Show password");
+    b.addEventListener("click", function () {
+      var showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      b.innerHTML = showing ? EYE : EYE_OFF;
+      b.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      input.focus();
+    });
+    box.appendChild(b);
+  });
+
+  /* ---- Caps Lock warning, the way banks do it ---- */
+  Array.prototype.forEach.call(document.querySelectorAll('input[type="password"]'), function (input) {
+    var warn = input.closest(".field").querySelector(".caps");
+    function check(e) {
+      var on = e.getModifierState && e.getModifierState("CapsLock");
+      warn.className = on ? "caps show" : "caps";
+    }
+    input.addEventListener("keydown", check);
+    input.addEventListener("keyup", check);
+    input.addEventListener("blur", function () { warn.className = "caps"; });
+  });
+
+  /* ---- switching between the three screens ---- */
   function show(which) {
-    var signIn = which === "in";
-    tabIn.setAttribute("aria-selected", signIn ? "true" : "false");
-    tabUp.setAttribute("aria-selected", signIn ? "false" : "true");
-    panelIn.hidden = !signIn;
-    panelUp.hidden = signIn;
+    for (var k in panels) panels[k].hidden = (k !== which);
+    tabIn.setAttribute("aria-selected", which === "in" ? "true" : "false");
+    tabUp.setAttribute("aria-selected", which === "up" ? "true" : "false");
+    tabs.style.display = which === "re" ? "none" : "";
+    title.textContent = titles[which];
+    document.title = titles[which] + " · Salman.D.Life";
     clear();
+    var first = panels[which].querySelector("input");
+    if (first && window.innerWidth > 700) first.focus();
   }
   tabIn.addEventListener("click", function () { show("in"); });
   tabUp.addEventListener("click", function () { show("up"); });
+  document.getElementById("goReset").addEventListener("click", function () { show("re"); });
+  document.getElementById("backIn").addEventListener("click", function () { show("in"); });
   if (new URLSearchParams(location.search).get("new") === "1") show("up");
 
-  function send(form, where) {
+  function say(text, kind) { msg.textContent = text; msg.className = "msg show " + (kind || "bad"); }
+  function clear() { msg.className = "msg"; msg.textContent = ""; }
+
+  function send(form, where, doing) {
     var button = form.querySelector("button.go");
     var original = button.textContent;
     var body = {};
-    Array.prototype.forEach.call(form.querySelectorAll("input"), function (i) { body[i.name] = i.value; });
+    Array.prototype.forEach.call(form.querySelectorAll("input"), function (i) {
+      body[i.name] = (i.type === "checkbox") ? i.checked : i.value;
+    });
 
     button.disabled = true;
-    button.textContent = "One moment\u2026";
+    button.textContent = doing;
     clear();
 
     fetch(where, {
@@ -134,23 +215,25 @@
       return r.json().catch(function () { return { error: "The server did not answer properly." }; });
     }).then(function (out) {
       if (out && out.ok) {
-        say("Signed in. Taking you through\u2026", "good");
+        say("Done. Taking you through…", "good");
         location.replace(wanted);
         return;
       }
       say((out && out.error) || "That did not work. Please try again.");
+      button.disabled = false;
+      button.textContent = original;
     }).catch(function () {
       say("No connection. Check your internet and try again.");
-    }).then(function () {
       button.disabled = false;
       button.textContent = original;
     });
   }
 
-  panelIn.addEventListener("submit", function (e) { e.preventDefault(); send(panelIn, "/api/login"); });
-  panelUp.addEventListener("submit", function (e) { e.preventDefault(); send(panelUp, "/api/signup"); });
+  panels.in.addEventListener("submit", function (e) { e.preventDefault(); send(panels.in, "/api/login", "Signing in…"); });
+  panels.up.addEventListener("submit", function (e) { e.preventDefault(); send(panels.up, "/api/signup", "Creating…"); });
+  panels.re.addEventListener("submit", function (e) { e.preventDefault(); send(panels.re, "/api/reset", "Saving…"); });
 
-  // Already signed in? Don't make him type anything.
+  // Already signed in? Don't make anyone type anything.
   fetch("/api/me", { credentials: "same-origin" })
     .then(function (r) { return r.json(); })
     .then(function (out) {

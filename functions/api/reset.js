@@ -1,19 +1,19 @@
-/* Signs someone in.
+/* Sets a new password for someone who has forgotten theirs.
  *
- * It scrambles the password that was typed and compares it with the scrambled copy saved when the
- * account was made. The real password is never stored and never leaves this check.
+ * There is no email on this site, so a reset link cannot be sent. Instead the invite code is the proof:
+ * whoever knows it is allowed to set a new password. That is the same key that lets a person make an
+ * account in the first place, so it gives nothing extra away.
  *
- * Too many wrong tries from the same place are blocked for fifteen minutes, so nobody can sit there
- * guessing passwords.
+ * Setting a new password signs out every device that was signed in before.
  */
 
 const COOKIE = "sdl_session";
+const ROUNDS = 12000;
 const SESSION_DAYS = 30;
 const MAX_TRIES = 10;
 const WINDOW_MINUTES = 15;
 
 export async function onRequestPost(context) {
-  // Never show a visitor a raw error page. If anything at all goes wrong, say so in plain words.
   try {
     return await handle(context);
   } catch (e) {
@@ -23,13 +23,15 @@ export async function onRequestPost(context) {
 
 async function handle({ request, env }) {
   if (!env.DB) return json({ error: "The database is not connected yet." }, 503);
+  if (!env.INVITE_CODE) return json({ error: "Resets are closed until the invite code is set." }, 503);
 
   let body;
   try { body = await request.json(); } catch (e) { return json({ error: "Something went wrong. Try again." }, 400); }
 
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
-  const who = (request.headers.get("CF-Connecting-IP") || "unknown") + "|" + email;
+  const invite = String(body.invite || "");
+  const who = "reset|" + (request.headers.get("CF-Connecting-IP") || "unknown");
 
   const since = new Date(Date.now() - WINDOW_MINUTES * 60000).toISOString();
   const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM login_attempts WHERE who = ? AND at > ?")
@@ -38,26 +40,28 @@ async function handle({ request, env }) {
     return json({ error: "Too many tries. Please wait fifteen minutes and try again." }, 429);
   }
 
-  const user = await env.DB.prepare(
-    "SELECT id, email, name, password_hash, password_salt, iterations FROM users WHERE email = ?"
-  ).bind(email).first();
-
-  let good = false;
-  if (user && password) {
-    const tried = await scramble(password, unb64(user.password_salt), user.iterations || 12000);
-    good = same(tried, user.password_hash);
-  }
-
-  if (!good) {
+  if (!same(invite, env.INVITE_CODE)) {
     await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
-    // The same message either way, so nobody can find out which emails have accounts.
-    return json({ error: "That email and password do not match." }, 401);
+    return json({ error: "That invite code is not right." }, 403);
+  }
+  if (password.length < 10) return json({ error: "Please pick a password of at least 10 characters." }, 400);
+  if (password.length > 200) return json({ error: "That password is too long." }, 400);
+
+  const user = await env.DB.prepare("SELECT id, email, name FROM users WHERE email = ?").bind(email).first();
+  if (!user) {
+    await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
+    return json({ error: "There is no account with that email." }, 404);
   }
 
-  await env.DB.prepare("DELETE FROM login_attempts WHERE who = ? OR at < ?")
-    .bind(who, new Date(Date.now() - 86400000).toISOString()).run();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await scramble(password, salt, ROUNDS);
 
-  const cookie = await startSession(env, user.id, body.remember !== false);
+  await env.DB.prepare("UPDATE users SET password_hash = ?, password_salt = ?, iterations = ? WHERE id = ?")
+    .bind(hash, b64(salt), ROUNDS, user.id).run();
+  await env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(user.id).run();
+  await env.DB.prepare("DELETE FROM login_attempts WHERE who = ?").bind(who).run();
+
+  const cookie = await startSession(env, user.id, true);
   return json({ ok: true, email: user.email, name: user.name }, 200, cookie);
 }
 
@@ -69,8 +73,6 @@ async function scramble(password, salt, rounds) {
   return b64(new Uint8Array(bits));
 }
 
-/* "Keep me signed in" ticked: the cookie lasts 30 days. Unticked: it disappears when the browser closes,
-   which is what you want on a borrowed or shared computer. */
 async function startSession(env, userId, remember) {
   const token = hex(crypto.getRandomValues(new Uint8Array(32)));
   const days = remember ? SESSION_DAYS : 1;
@@ -90,11 +92,6 @@ function same(a, b) {
 }
 
 function b64(bytes) { let s = ""; for (const b of bytes) s += String.fromCharCode(b); return btoa(s); }
-function unb64(text) {
-  const s = atob(text); const a = new Uint8Array(s.length);
-  for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
-  return a;
-}
 function hex(bytes) { return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join(""); }
 async function sha256Hex(text) {
   return hex(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))));

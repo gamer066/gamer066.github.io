@@ -84,18 +84,6 @@
 
 </div>
 
-<script>
-// Swaps the top-right link between "Sign in" and "Profile" depending on whether you are signed in.
-fetch("/api/me", { credentials: "same-origin" })
-  .then(function (r) { return r.json(); })
-  .then(function (out) {
-    if (out && out.signedIn) {
-      var a = document.getElementById("account");
-      a.href = "/profile/";
-      a.textContent = "Profile";
-    }
-  })
-  .catch(function () {});
-</script>
+<script src="/assets/account.js" defer></script>
 </body>
 </html>
