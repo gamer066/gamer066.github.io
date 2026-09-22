@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in &middot; Salman.D.Life</title>
+<meta name="description" content="Sign in to the private sections of Salman.D.Life.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0C0B0A">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23E3A951'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%230C0B0A'>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  .hero{padding-top:46px;display:flex;flex-direction:column;gap:11px;text-align:center;align-items:center}
+  .hero h1{font-size:clamp(1.7rem,7vw,2.2rem)}
+  .box{margin-top:26px;padding:22px;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow)}
+  .foot{margin-top:20px;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/login/" class="on">Sign in</a>
+  </nav>
+</div></div>
+
+<div class="narrow">
+
+  <header class="hero">
+    <div class="eyebrow">Private area</div>
+    <h1>Sign in</h1>
+    <p class="lede" style="font-size:.93rem">The home page is open to everyone. Everything else on this site is
+      behind this door.</p>
+  </header>
+
+  <div class="box">
+    <div class="tabs" role="tablist">
+      <button id="tabIn" role="tab" aria-selected="true" aria-controls="panelIn">Sign in</button>
+      <button id="tabUp" role="tab" aria-selected="false" aria-controls="panelUp">Create account</button>
+    </div>
+
+    <div id="msg" class="msg" role="status" aria-live="polite"></div>
+
+    <form id="panelIn" class="auth" novalidate>
+      <div class="field">
+        <label for="inEmail">Email</label>
+        <input id="inEmail" name="email" type="email" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="inPass">Password</label>
+        <input id="inPass" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="go" type="submit">Sign in</button>
+    </form>
+
+    <form id="panelUp" class="auth" novalidate hidden>
+      <div class="field">
+        <label for="upInvite">Invite code</label>
+        <input id="upInvite" name="invite" type="text" autocomplete="off" required>
+        <span class="hint">Accounts are made by invitation only. Ask Salman for the code.</span>
+      </div>
+      <div class="field">
+        <label for="upName">Your name</label>
+        <input id="upName" name="name" type="text" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="upEmail">Email</label>
+        <input id="upEmail" name="email" type="email" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="upPass">Choose a password</label>
+        <input id="upPass" name="password" type="password" autocomplete="new-password" required minlength="10">
+        <span class="hint">At least 10 characters. Nobody can read it back, not even from the database.</span>
+      </div>
+      <button class="go" type="submit">Create my account</button>
+    </form>
+  </div>
+
+  <div class="foot muted">Your password is never stored anywhere on this site &mdash; only a scrambled copy
+    that cannot be turned back.</div>
+
+</div>
+
+<script>
+(function () {
+  var msg = document.getElementById("msg");
+  var tabIn = document.getElementById("tabIn"), tabUp = document.getElementById("tabUp");
+  var panelIn = document.getElementById("panelIn"), panelUp = document.getElementById("panelUp");
+
+  // Where to go after signing in. Only addresses on this site are allowed.
+  var wanted = new URLSearchParams(location.search).get("next") || "/profile/";
+  if (wanted.charAt(0) !== "/" || wanted.charAt(1) === "/") wanted = "/profile/";
+
+  function say(text, kind) {
+    msg.textContent = text;
+    msg.className = "msg show " + (kind || "bad");
+  }
+  function clear() { msg.className = "msg"; msg.textContent = ""; }
+
+  function show(which) {
+    var signIn = which === "in";
+    tabIn.setAttribute("aria-selected", signIn ? "true" : "false");
+    tabUp.setAttribute("aria-selected", signIn ? "false" : "true");
+    panelIn.hidden = !signIn;
+    panelUp.hidden = signIn;
+    clear();
+  }
+  tabIn.addEventListener("click", function () { show("in"); });
+  tabUp.addEventListener("click", function () { show("up"); });
+  if (new URLSearchParams(location.search).get("new") === "1") show("up");
+
+  function send(form, where) {
+    var button = form.querySelector("button.go");
+    var original = button.textContent;
+    var body = {};
+    Array.prototype.forEach.call(form.querySelectorAll("input"), function (i) { body[i.name] = i.value; });
+
+    button.disabled = true;
+    button.textContent = "One moment\u2026";
+    clear();
+
+    fetch(where, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().catch(function () { return { error: "The server did not answer properly." }; });
+    }).then(function (out) {
+      if (out && out.ok) {
+        say("Signed in. Taking you through\u2026", "good");
+        location.replace(wanted);
+        return;
+      }
+      say((out && out.error) || "That did not work. Please try again.");
+    }).catch(function () {
+      say("No connection. Check your internet and try again.");
+    }).then(function () {
+      button.disabled = false;
+      button.textContent = original;
+    });
+  }
+
+  panelIn.addEventListener("submit", function (e) { e.preventDefault(); send(panelIn, "/api/login"); });
+  panelUp.addEventListener("submit", function (e) { e.preventDefault(); send(panelUp, "/api/signup"); });
+
+  // Already signed in? Don't make him type anything.
+  fetch("/api/me", { credentials: "same-origin" })
+    .then(function (r) { return r.json(); })
+    .then(function (out) {
+      if (out && out.signedIn) location.replace(wanted);
+      else if (out && out.ready === false) say("The database is not connected yet, so signing in will not work.");
+    })
+    .catch(function () {});
+})();
+</script>
+</body>
+</html>

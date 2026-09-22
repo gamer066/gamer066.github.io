@@ -1,0 +1,91 @@
+/* Makes a new account.
+ *
+ * It only works for someone who knows the invite code, so the public cannot create accounts here.
+ * The invite code is typed into Cloudflare's own settings screen by Salman and is never written
+ * down in this repository.
+ *
+ * The password itself is never saved. It is scrambled with a random extra piece of text and only
+ * the scrambled result is kept, so nobody - including whoever can read the database - can read it back.
+ */
+
+const COOKIE = "sdl_session";
+const ROUNDS = 12000;      // how hard the scrambling is; kept inside Cloudflare's free 10ms thinking time
+const SESSION_DAYS = 30;
+
+export async function onRequestPost(context) {
+  // Never show a visitor a raw error page. If anything at all goes wrong, say so in plain words.
+  try {
+    return await handle(context);
+  } catch (e) {
+    return json({ error: "Something went wrong on the site. Please try again in a moment." }, 500);
+  }
+}
+
+async function handle({ request, env }) {
+  if (!env.DB) return json({ error: "The database is not connected yet." }, 503);
+  if (!env.INVITE_CODE) return json({ error: "Sign-up is closed until the invite code is set." }, 503);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ error: "Something went wrong. Try again." }, 400); }
+
+  const email = String(body.email || "").trim().toLowerCase();
+  const password = String(body.password || "");
+  const name = String(body.name || "").trim().slice(0, 60);
+  const invite = String(body.invite || "");
+
+  if (!same(invite, env.INVITE_CODE)) return json({ error: "That invite code is not right." }, 403);
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 200) {
+    return json({ error: "That email address does not look right." }, 400);
+  }
+  if (password.length < 10) return json({ error: "Please pick a password of at least 10 characters." }, 400);
+  if (password.length > 200) return json({ error: "That password is too long." }, 400);
+
+  const taken = await env.DB.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
+  if (taken) return json({ error: "There is already an account with that email." }, 409);
+
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await scramble(password, salt, ROUNDS);
+
+  const added = await env.DB.prepare(
+    "INSERT INTO users (email, name, password_hash, password_salt, iterations) VALUES (?, ?, ?, ?, ?)"
+  ).bind(email, name, hash, b64(salt), ROUNDS).run();
+
+  const cookie = await startSession(env, added.meta.last_row_id);
+  return json({ ok: true, email: email, name: name }, 200, cookie);
+}
+
+/* ---- shared bits (kept in each file on purpose, so every route stands on its own) ---- */
+
+async function scramble(password, salt, rounds) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: salt, iterations: rounds }, key, 256);
+  return b64(new Uint8Array(bits));
+}
+
+async function startSession(env, userId) {
+  const token = hex(crypto.getRandomValues(new Uint8Array(32)));
+  const expires = new Date(Date.now() + SESSION_DAYS * 86400000).toISOString();
+  await env.DB.prepare("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)")
+    .bind(await sha256Hex(token), userId, expires).run();
+  return `${COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_DAYS * 86400}`;
+}
+
+function same(a, b) {
+  const x = new TextEncoder().encode(String(a)), y = new TextEncoder().encode(String(b));
+  if (x.length !== y.length) return false;
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+function b64(bytes) { let s = ""; for (const b of bytes) s += String.fromCharCode(b); return btoa(s); }
+function hex(bytes) { return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join(""); }
+async function sha256Hex(text) {
+  return hex(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))));
+}
+
+function json(obj, status, setCookie) {
+  const headers = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" };
+  if (setCookie) headers["Set-Cookie"] = setCookie;
+  return new Response(JSON.stringify(obj), { status: status || 200, headers: headers });
+}

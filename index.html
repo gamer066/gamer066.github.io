@@ -28,6 +28,7 @@
   <nav class="navlinks">
     <a href="/" class="on">Home</a>
     <a href="/trading/">Trading</a>
+    <a href="/login/" id="account">Sign in</a>
   </nav>
 </div></div>
 
@@ -46,7 +47,7 @@
     <div class="cards">
 
       <a class="card" href="/trading/">
-        <span class="pill a">Live</span>
+        <span class="pill a">Live</span> <span class="pill">Sign-in needed</span>
         <h3>Trading bots</h3>
         <p class="muted">Seven bots on Binance practice money. Open trades priced live, finished trades counted
           honestly, and exactly what is still needed before real money goes in.</p>
@@ -82,5 +83,19 @@
   </footer>
 
 </div>
+
+<script>
+// Swaps the top-right link between "Sign in" and "Profile" depending on whether you are signed in.
+fetch("/api/me", { credentials: "same-origin" })
+  .then(function (r) { return r.json(); })
+  .then(function (out) {
+    if (out && out.signedIn) {
+      var a = document.getElementById("account");
+      a.href = "/profile/";
+      a.textContent = "Profile";
+    }
+  })
+  .catch(function () {});
+</script>
 </body>
 </html>

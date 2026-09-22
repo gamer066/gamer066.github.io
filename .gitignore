@@ -6,3 +6,13 @@
 *.json
 *.log
 *.py
+
+# The site needs this one small file, so it is allowed through the rule above.
+!_routes.json
+
+# Build notes for me, not for the website.
+LOGIN_BUILD.md
+
+# Local testing leftovers - never part of the website.
+node_modules/
+.wrangler/
