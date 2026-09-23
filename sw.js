@@ -5,7 +5,7 @@
  * /api/, /trading/, /profile/ and /login/ are all skipped. That is the important part - a saved copy
  * of a private page could otherwise be read by the next person on the same device.
  */
-const VERSION = "sdl-v1";
+const VERSION = "sdl-v2";
 const SHELL = [
   "/",
   "/404.html",
@@ -41,16 +41,13 @@ self.addEventListener("fetch", (e) => {
   if (url.origin !== self.location.origin) return;   // fonts and prices go straight out
   if (isPrivate(url)) return;                         // never stored, never served from a copy
 
-  // Shared files barely change: serve the saved copy at once, and quietly fetch a fresher one.
-  if (url.pathname.startsWith("/assets/")) {
+  // Pictures never change once drawn, so the saved copy is served straight away.
+  if (/\.(png|jpg|jpeg|gif|webp|svg|ico|woff2?)$/i.test(url.pathname)) {
     e.respondWith(
-      caches.match(req).then((hit) => {
-        const live = fetch(req).then((res) => {
-          if (res && res.ok) caches.open(VERSION).then((c) => c.put(req, res.clone()));
-          return res;
-        }).catch(() => hit);
-        return hit || live;
-      })
+      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+        if (res && res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); }
+        return res;
+      }))
     );
     return;
   }

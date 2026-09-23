@@ -18,11 +18,12 @@
 /assets/*.png
   Cache-Control: public, max-age=31536000, immutable
 
-# The shared look and the small scripts change with the site, so they are checked more often.
+# The shared look and the small scripts change whenever the site does, so the browser must always
+# ask whether its copy is still the newest. The answer is a few bytes when nothing has changed.
 /assets/*.css
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate
 /assets/*.js
-  Cache-Control: public, max-age=300
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Anything private must never be kept in a shared cache.
 /profile/*
