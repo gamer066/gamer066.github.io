@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studies &middot; Salman.D.Life</title>
+<meta name="description" content="Everything about my studies in one place.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0C0B0A">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23E3A951'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%230C0B0A'>S</text></svg>">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Salman.D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v=42792b93">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#FAF7F1");}}catch(e){}})();</script>
+<style>
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
+  .hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem)}
+  .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
+  .facts{display:flex;gap:22px;flex-wrap:wrap;margin-top:2px}
+  .facts div{display:flex;flex-direction:column;gap:2px}
+  .facts .k{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+  .facts .v{font-family:var(--mono);font-size:.98rem;font-weight:600}
+
+  /* units */
+  .units{display:grid;grid-template-columns:repeat(auto-fit,minmax(288px,1fr));gap:14px}
+  .unit{display:flex;flex-direction:column;gap:11px;padding:20px;border-radius:var(--radius);
+    background:var(--surface);border:1px solid var(--line);position:relative;overflow:hidden}
+  .unit::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--accent)}
+  .unit.done::before{background:var(--up)}
+  .unit.ready::before{background:var(--accent-2)}
+  .unit .top{display:flex;align-items:flex-start;gap:10px}
+  .unit .code{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--accent);
+    padding-top:3px}
+  .unit h3{font-size:1.02rem;line-height:1.25}
+  .unit .sub{font-size:.76rem;color:var(--ink-3);margin-top:2px}
+  .count{margin-top:2px;font-family:var(--mono);font-size:1.45rem;font-weight:600;letter-spacing:-.03em}
+  .count small{font-family:var(--sans);font-size:.74rem;font-weight:600;color:var(--ink-3);letter-spacing:.04em;
+    display:block;margin-top:1px}
+  .miniFacts{display:flex;flex-wrap:wrap;gap:6px}
+  .miniFacts span{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border-radius:7px;
+    background:var(--surface-2);color:var(--ink-2)}
+  .miniFacts b{color:var(--ink);font-weight:600}
+  .unit .note{font-size:.85rem;color:var(--ink-2)}
+  .unit .go{margin-top:auto;padding-top:4px}
+  .unit .go a{font-size:.82rem;color:var(--accent);text-decoration:none;font-weight:600}
+  .unit .go a:hover{text-decoration:underline}
+
+  /* timeline */
+  .time{border-left:2px solid var(--line);margin-left:6px;padding-left:18px;display:flex;
+    flex-direction:column;gap:15px}
+  .ev{position:relative}
+  .ev::before{content:"";position:absolute;left:-25px;top:6px;width:9px;height:9px;border-radius:50%;
+    background:var(--surface-2);border:2px solid var(--line)}
+  .ev.past::before{background:var(--accent);border-color:var(--accent)}
+  .ev .when{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);font-weight:600}
+  .ev .what{font-size:.9rem;margin-top:2px}
+  .ev .tag{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.08em;color:var(--accent);
+    margin-right:7px}
+
+  /* documents */
+  .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .toolbar input[type=search]{flex:1;min-width:170px;padding:10px 12px;border-radius:10px;
+    border:1px solid var(--line);background:var(--bg-2);color:var(--ink);font-family:var(--sans);font-size:.92rem}
+  .toolbar input[type=search]:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .chip2{padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:transparent;
+    color:var(--ink-2);font-family:var(--sans);font-size:.82rem;font-weight:600;cursor:pointer}
+  .chip2[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+  .docs{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+  .doc{display:grid;grid-template-columns:1fr auto;gap:3px 14px;padding:13px 16px;
+    border-top:1px solid var(--line-soft);align-items:baseline}
+  .doc:first-child{border-top:none}
+  .doc .nm{font-size:.89rem;font-weight:600;word-break:break-word}
+  .doc .meta{grid-column:1/-1;font-size:.74rem;color:var(--ink-3);font-family:var(--mono)}
+  .doc .sz{font-family:var(--mono);font-size:.78rem;color:var(--ink-3);white-space:nowrap}
+  .doc .badge2{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink-3);margin-right:7px}
+  .doc .badge2.mine{background:var(--accent-soft);color:var(--accent)}
+  .doc .badge2.final{background:var(--up-soft);color:var(--up)}
+  .none{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:.88rem}
+
+  .list{display:flex;flex-direction:column;gap:9px}
+  .list div{display:flex;gap:11px;align-items:flex-start;font-size:.89rem;color:var(--ink-2)}
+  .list .tick{color:var(--accent);font-weight:800;flex:none;line-height:1.4}
+
+  .empty{padding:34px 22px;text-align:center;border:1px dashed var(--line);border-radius:var(--radius);
+    background:var(--surface);display:flex;flex-direction:column;gap:12px;align-items:center}
+  .empty code{font-family:var(--mono);font-size:.82rem;background:var(--surface-2);padding:6px 10px;
+    border-radius:7px;color:var(--accent);word-break:break-all}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/study/" class="on">Studies</a>
+    <a href="/accounts/">Accounts</a>
+    <a href="/trading/">Trading</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="wrap" id="main">
+
+  <header class="hero">
+    <div class="eyebrow">My studies</div>
+    <h1 id="progTitle">Studies</h1>
+    <p class="lede" id="progSub">Loading everything&hellip;</p>
+    <div class="rule"></div>
+    <div class="facts" id="progFacts"></div>
+  </header>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:18px"></div>
+
+  <div id="body" hidden>
+
+    <section class="block">
+      <div class="headrow"><h2>Units</h2><span class="muted" id="unitsNote"></span></div>
+      <div class="units" id="units"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>What happened when</h2></div>
+      <div class="time" id="history"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>Documents</h2><span class="muted" id="docCount"></span></div>
+      <div class="toolbar">
+        <input type="search" id="find" placeholder="Search by name, kind or unit&hellip;" aria-label="Search documents">
+        <button class="chip2" type="button" data-unit="" aria-pressed="true">All</button>
+        <button class="chip2" type="button" data-unit="MIK" aria-pressed="false">MIK</button>
+        <button class="chip2" type="button" data-unit="MQ" aria-pressed="false">MQ</button>
+        <button class="chip2" type="button" data-unit="CRM" aria-pressed="false">CRM</button>
+        <button class="chip2" type="button" data-mine="1" aria-pressed="false">Only my work</button>
+      </div>
+      <div class="docs" id="docs"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>The rules I must not break</h2></div>
+      <div class="panel pad list" id="formatRules"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>How I use AI on this course</h2></div>
+      <div class="panel pad list" id="aiPosition"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>Links</h2></div>
+      <div class="kv" id="links"></div>
+    </section>
+
+  </div>
+
+  <section class="block">
+    <div class="headrow"><h2>Keeping this up to date</h2></div>
+    <div class="panel pad">
+      <p class="lede" style="font-size:.92rem">None of this is stored in the website's public code &mdash; it
+        lives in the site's own private database, so only a signed-in person ever sees it.</p>
+      <p class="muted" style="margin:10px 0 14px">On the laptop, run
+        <code style="font-family:var(--mono);color:var(--accent)">python D:\claude-workspace\study_sync.py</code>
+        then load the file it puts on the Desktop.</p>
+      <div class="toolbar">
+        <button class="go" type="button" id="pick">Update from my laptop</button>
+        <input type="file" id="file" accept="application/json,.json" hidden>
+      </div>
+      <div class="muted" id="savedAt" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. Nothing on this page is public.</div>
+    <div>Built with Claude Code.</div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var msg = document.getElementById("msg");
+  var body = document.getElementById("body");
+  var all = [];
+  var filterUnit = "";
+  var onlyMine = false;
+
+  function say(text, kind) {
+    msg.textContent = text;
+    msg.className = "msg show " + (kind || "bad");
+  }
+  function clear() { msg.className = "msg"; msg.textContent = ""; }
+
+  function esc(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function size(bytes) {
+    if (!bytes && bytes !== 0) return "";
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " KB";
+    return (bytes / 1048576).toFixed(1) + " MB";
+  }
+  function day(stamp) {
+    var d = new Date(String(stamp).replace(" ", "T"));
+    if (isNaN(d)) return String(stamp || "");
+    return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  }
+  function daysLeft(stamp) {
+    var d = new Date(String(stamp).replace(" ", "T"));
+    if (isNaN(d)) return null;
+    return Math.ceil((d - Date.now()) / 86400000);
+  }
+
+  /* ---------- painting ---------- */
+
+  function paint(d) {
+    var p = d.programme || {};
+    document.getElementById("progTitle").textContent = p.name || "Studies";
+    document.getElementById("progSub").textContent =
+      [p.level, p.school, p.city].filter(Boolean).join(" \u00b7 ") + (p.why ? " " + p.why : "");
+
+    var facts = [];
+    if (p.registration) facts.push(["Student number", p.registration]);
+    if (p.termEnds) facts.push(["Term ends", p.termEnds]);
+    facts.push(["Units", (d.units || []).length]);
+    facts.push(["Documents", (d.documents || []).length]);
+    document.getElementById("progFacts").innerHTML = facts.map(function (f) {
+      return '<div><span class="k">' + esc(f[0]) + '</span><span class="v">' + esc(f[1]) + "</span></div>";
+    }).join("");
+
+    /* units */
+    var open = (d.units || []).filter(function (u) { return u.state !== "done"; }).length;
+    document.getElementById("unitsNote").textContent = open ? open + " still open" : "all handed in";
+    document.getElementById("units").innerHTML = (d.units || []).map(function (u) {
+      var left = daysLeft(u.due);
+      var big, small;
+      if (u.state === "done") { big = "Done"; small = "handed in and reviewed"; }
+      else if (left === null) { big = "\u2014"; small = u.dueLabel || ""; }
+      else if (left < 0) { big = "Passed"; small = u.dueLabel || ""; }
+      else if (left === 0) { big = "Today"; small = u.dueLabel || ""; }
+      else { big = left + (left === 1 ? " day" : " days"); small = "until " + (u.dueLabel || "the deadline"); }
+
+      return '<article class="unit ' + esc(u.state || "") + '">' +
+        '<div class="top"><span class="code">' + esc(u.code) + "</span><div><h3>" + esc(u.title) + "</h3>" +
+        '<div class="sub">Unit ' + esc(u.number) + " \u00b7 " + esc((u.tutors || []).join(", ")) + "</div></div></div>" +
+        '<div class="count">' + esc(big) + "<small>" + esc(small) + "</small></div>" +
+        '<div class="miniFacts">' + (u.facts || []).map(function (f) {
+          return "<span>" + esc(f[0]) + " <b>" + esc(f[1]) + "</b></span>";
+        }).join("") + "</div>" +
+        (u.note ? '<p class="note">' + esc(u.note) + "</p>" : "") +
+        '<div class="go"><a href="https://lms.namedubai.ac.ae/courses/' + esc(u.canvasId) +
+        '/assignments" target="_blank" rel="noopener">Open in Canvas &rarr;</a></div>' +
+        "</article>";
+    }).join("");
+
+    /* timeline */
+    var today = new Date().toISOString().slice(0, 10);
+    document.getElementById("history").innerHTML = (d.history || []).map(function (e) {
+      return '<div class="ev ' + (e.date <= today ? "past" : "") + '">' +
+        '<div class="when">' + esc(day(e.date)) + "</div>" +
+        '<div class="what"><span class="tag">' + esc(e.unit) + "</span>" + esc(e.what) + "</div></div>";
+    }).join("");
+
+    /* documents */
+    all = d.documents || [];
+    drawDocs();
+
+    document.getElementById("formatRules").innerHTML = (d.formatRules || []).map(function (r) {
+      return '<div><span class="tick">&#10003;</span><span>' + esc(r) + "</span></div>";
+    }).join("");
+    document.getElementById("aiPosition").innerHTML = (d.aiPosition || []).map(function (r) {
+      return '<div><span class="tick">&bull;</span><span>' + esc(r) + "</span></div>";
+    }).join("");
+    document.getElementById("links").innerHTML = (d.links || []).map(function (l) {
+      return '<div><span class="k">' + esc(l.label) + '</span><span class="v"><a href="' + esc(l.url) +
+        '" target="_blank" rel="noopener" style="color:var(--accent)">Open &rarr;</a></span></div>';
+    }).join("");
+
+    body.hidden = false;
+  }
+
+  function drawDocs() {
+    var q = (document.getElementById("find").value || "").toLowerCase().trim();
+    var rows = all.filter(function (x) {
+      if (filterUnit && x.unit !== filterUnit) return false;
+      if (onlyMine && x.role !== "His work" && x.role !== "Final copy") return false;
+      if (!q) return true;
+      return (x.name + " " + x.kind + " " + x.unit + " " + x.role).toLowerCase().indexOf(q) >= 0;
+    });
+
+    document.getElementById("docCount").textContent =
+      rows.length + (rows.length === 1 ? " document" : " documents");
+
+    document.getElementById("docs").innerHTML = rows.length ? rows.map(function (x) {
+      var cls = x.role === "Final copy" ? "final" : (x.role === "His work" ? "mine" : "");
+      var role = x.role === "His work" ? "Mine" : x.role;
+      return '<div class="doc"><div class="nm"><span class="badge2 ' + cls + '">' + esc(x.unit) + " \u00b7 " +
+        esc(role) + '</span>' + esc(x.name) + '</div><div class="sz">' + esc(size(x.bytes)) + "</div>" +
+        '<div class="meta">' + esc(x.kind) + " \u00b7 changed " + esc(day(x.modified)) + " \u00b7 " +
+        esc(x.where) + "</div></div>";
+    }).join("") : '<div class="none">Nothing matches that.</div>';
+  }
+
+  document.getElementById("find").addEventListener("input", drawDocs);
+  Array.prototype.forEach.call(document.querySelectorAll(".chip2"), function (b) {
+    b.addEventListener("click", function () {
+      if (b.hasAttribute("data-mine")) {
+        onlyMine = !onlyMine;
+        b.setAttribute("aria-pressed", onlyMine ? "true" : "false");
+      } else {
+        filterUnit = b.getAttribute("data-unit") || "";
+        Array.prototype.forEach.call(document.querySelectorAll(".chip2[data-unit]"), function (o) {
+          o.setAttribute("aria-pressed", o === b ? "true" : "false");
+        });
+      }
+      drawDocs();
+    });
+  });
+
+  /* ---------- loading and saving ---------- */
+
+  function load() {
+    fetch("/api/study", { credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (out) {
+        if (out && out.error) { say(out.error); return; }
+        if (!out || out.empty) {
+          document.getElementById("progSub").textContent =
+            "Nothing loaded yet. Run the script on the laptop and press the button at the bottom.";
+          return;
+        }
+        clear();
+        paint(out.data || {});
+        document.getElementById("savedAt").textContent =
+          "Last updated " + day(out.savedAt) + (out.savedBy ? " by " + out.savedBy : "") + ".";
+      })
+      .catch(function () { say("Could not load your studies. Try refreshing the page."); });
+  }
+
+  document.getElementById("pick").addEventListener("click", function () {
+    document.getElementById("file").click();
+  });
+
+  document.getElementById("file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var button = document.getElementById("pick");
+    button.disabled = true;
+    button.textContent = "Loading\u2026";
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      fetch("/api/study", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: reader.result
+      }).then(function (r) { return r.json(); }).then(function (out) {
+        if (out && out.ok) {
+          say("Saved. " + out.units + " units and " + out.documents + " documents.", "good");
+          load();
+        } else {
+          say((out && out.error) || "That did not work. Try again.");
+        }
+        button.disabled = false;
+        button.textContent = "Update from my laptop";
+      }).catch(function () {
+        say("No connection. Check your internet and try again.");
+        button.disabled = false;
+        button.textContent = "Update from my laptop";
+      });
+    };
+    reader.onerror = function () {
+      say("That file could not be read.");
+      button.disabled = false;
+      button.textContent = "Update from my laptop";
+    };
+    reader.readAsText(f);
+    this.value = "";
+  });
+
+  load();
+})();
+</script>
+<script src="/assets/account.js?v=379a43d3" defer></script>
+<script src="/assets/theme.js?v=7c9a6c3f" defer></script>
+</body>
+</html>

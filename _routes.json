@@ -1,5 +1,15 @@
 {
   "version": 1,
-  "include": ["/api/*", "/trading", "/trading/*", "/profile", "/profile/*"],
+  "include": [
+    "/api/*",
+    "/trading",
+    "/trading/*",
+    "/profile",
+    "/profile/*",
+    "/study",
+    "/study/*",
+    "/accounts",
+    "/accounts/*"
+  ],
   "exclude": []
 }

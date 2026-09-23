@@ -227,3 +227,12 @@ button.quiet:hover{background:var(--surface-2);color:var(--ink)}
 /* ---------- how far down the page you are ---------- */
 .progress{position:fixed;left:0;top:0;height:2px;width:0;z-index:40;pointer-events:none;
   background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+
+/* With several sections the top bar runs out of room on a phone, so the links slide sideways
+   instead of spilling off the edge. */
+@media (max-width:640px){
+  .navlinks{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-ms-overflow-style:none;
+    mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{white-space:nowrap}
+}

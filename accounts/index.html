@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Accounts &middot; Salman.D.Life</title>
+<meta name="description" content="Every account in one organised place.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0C0B0A">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23E3A951'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%230C0B0A'>S</text></svg>">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Salman.D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v=42792b93">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#FAF7F1");}}catch(e){}})();</script>
+<style>
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
+  .hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem)}
+  .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
+
+  .safe{margin-top:18px;padding:15px 17px;border-radius:0 12px 12px 0;background:var(--accent-soft);
+    border-left:3px solid var(--accent);font-size:.9rem}
+  .safe b{font-weight:700}
+  .safe a{color:var(--accent);font-weight:600}
+
+  .mails{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px}
+  .mail{padding:18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);
+    display:flex;flex-direction:column;gap:6px}
+  .mail .role{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .mail .addr{font-family:var(--mono);font-size:.95rem;font-weight:600;word-break:break-all}
+  .mail .use{font-size:.83rem;color:var(--ink-2)}
+
+  .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .toolbar input[type=search]{flex:1;min-width:180px;padding:10px 12px;border-radius:10px;
+    border:1px solid var(--line);background:var(--bg-2);color:var(--ink);font-family:var(--sans);font-size:.92rem}
+  .toolbar input[type=search]:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .chip2{padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:transparent;
+    color:var(--ink-2);font-family:var(--sans);font-size:.82rem;font-weight:600;cursor:pointer}
+  .chip2[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+
+  .grp{margin-top:26px}
+  .grp h3{font-family:var(--serif);font-size:1.08rem;font-weight:600}
+  .grp .gn{font-size:.82rem;color:var(--ink-3);margin-top:2px}
+  .cards2{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:13px;margin-top:12px}
+  .acc{display:flex;flex-direction:column;gap:9px;padding:18px;border-radius:var(--radius);
+    background:var(--surface);border:1px solid var(--line);transition:border-color .18s ease,transform .18s ease}
+  .acc:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .acc.closed{opacity:.6}
+  .acc .row1{display:flex;align-items:center;gap:10px}
+  .acc .av{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;
+    background:var(--accent-soft);color:var(--accent);font-family:var(--serif);font-weight:700;font-size:.95rem}
+  .acc h4{font-size:.98rem;font-weight:650}
+  .acc .hd{font-family:var(--mono);font-size:.79rem;color:var(--ink-2);word-break:break-all}
+  .acc .em{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);word-break:break-all}
+  .acc .nt{font-size:.83rem;color:var(--ink-2)}
+  .acc .br{font-size:.72rem;color:var(--ink-3)}
+  .acc .open2{margin-top:auto;padding-top:4px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .acc .open2 a{font-size:.82rem;color:var(--accent);text-decoration:none;font-weight:600}
+  .acc .open2 a:hover{text-decoration:underline}
+  .acc .open2 button{background:none;border:0;padding:0;color:var(--ink-3);font-family:var(--sans);
+    font-size:.79rem;font-weight:600;cursor:pointer}
+  .acc .open2 button:hover{color:var(--ink)}
+  .none{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:.88rem}
+
+  .list{display:flex;flex-direction:column;gap:9px}
+  .list div{display:flex;gap:11px;align-items:flex-start;font-size:.89rem;color:var(--ink-2)}
+  .list .tick{color:var(--accent);font-weight:800;flex:none;line-height:1.4}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/study/">Studies</a>
+    <a href="/accounts/" class="on">Accounts</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="wrap" id="main">
+
+  <header class="hero">
+    <div class="eyebrow">Everything in one place</div>
+    <h1>Accounts</h1>
+    <p class="lede" id="sub">Loading&hellip;</p>
+    <div class="rule"></div>
+  </header>
+
+  <div class="safe">
+    <b>No passwords here, on purpose.</b> This page tells you which account, which inbox and where to sign in.
+    Your actual passwords belong in a password manager &mdash;
+    <a href="https://bitwarden.com" target="_blank" rel="noopener">Bitwarden</a> is free, needs no card and no
+    code sent to your phone.
+  </div>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:16px"></div>
+
+  <div id="body" hidden>
+
+    <section class="block">
+      <div class="headrow"><h2>Your two inboxes</h2><span class="muted">Which one to use, every time</span></div>
+      <div class="mails" id="mails"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>All accounts</h2><span class="muted" id="count"></span></div>
+      <div class="toolbar">
+        <input type="search" id="find" placeholder="Search by name, handle or email&hellip;" aria-label="Search accounts">
+        <button class="chip2" type="button" data-group="" aria-pressed="true">All</button>
+        <button class="chip2" type="button" data-open="1" aria-pressed="false">Hide closed</button>
+      </div>
+      <div id="groups"></div>
+    </section>
+
+    <section class="block">
+      <div class="headrow"><h2>Rules I keep to</h2></div>
+      <div class="panel pad list" id="rules"></div>
+    </section>
+
+  </div>
+
+  <section class="block">
+    <div class="headrow"><h2>Keeping this up to date</h2></div>
+    <div class="panel pad">
+      <p class="muted" style="margin-bottom:14px">On the laptop run
+        <code style="font-family:var(--mono);color:var(--accent)">python D:\claude-workspace\accounts_sync.py</code>
+        then load the file it puts on the Desktop.</p>
+      <div class="toolbar">
+        <button class="go" type="button" id="pick">Update from my laptop</button>
+        <input type="file" id="file" accept="application/json,.json" hidden>
+      </div>
+      <div class="muted" id="savedAt" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. No passwords are stored anywhere on this site.</div>
+    <div>Built with Claude Code.</div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var msg = document.getElementById("msg");
+  var body = document.getElementById("body");
+  var all = [], groups = [], filterGroup = "", hideClosed = false;
+
+  function say(t, k) { msg.textContent = t; msg.className = "msg show " + (k || "bad"); }
+  function clear() { msg.className = "msg"; msg.textContent = ""; }
+  function esc(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function day(stamp) {
+    var d = new Date(String(stamp).replace(" ", "T"));
+    return isNaN(d) ? String(stamp || "") : d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function paint(d) {
+    all = d.accounts || [];
+    groups = d.groups || [];
+
+    document.getElementById("sub").textContent =
+      all.length + " accounts, sorted so you never have to guess which email you used.";
+
+    document.getElementById("mails").innerHTML = (d.emails || []).map(function (m) {
+      return '<div class="mail"><span class="role">' + esc(m.role) + '</span>' +
+        '<span class="addr">' + esc(m.address) + '</span>' +
+        '<span class="use">' + esc(m.usedFor) + "</span></div>";
+    }).join("");
+
+    var bar = document.querySelector(".toolbar");
+    var mark = bar.querySelector('[data-open]');
+    groups.forEach(function (g) {
+      var b = document.createElement("button");
+      b.className = "chip2";
+      b.type = "button";
+      b.setAttribute("data-group", g.name);
+      b.setAttribute("aria-pressed", "false");
+      b.textContent = g.name;
+      bar.insertBefore(b, mark);
+    });
+    wire();
+
+    document.getElementById("rules").innerHTML = (d.rules || []).map(function (r) {
+      return '<div><span class="tick">&#10003;</span><span>' + esc(r) + "</span></div>";
+    }).join("");
+
+    draw();
+    body.hidden = false;
+  }
+
+  function draw() {
+    var q = (document.getElementById("find").value || "").toLowerCase().trim();
+    var rows = all.filter(function (a) {
+      if (filterGroup && a.group !== filterGroup) return false;
+      if (hideClosed && a.state === "closed") return false;
+      if (!q) return true;
+      return (a.name + " " + (a.handle || "") + " " + (a.email || "") + " " + a.group).toLowerCase().indexOf(q) >= 0;
+    });
+
+    document.getElementById("count").textContent = rows.length + (rows.length === 1 ? " account" : " accounts");
+
+    var order = groups.map(function (g) { return g.name; });
+    var html = "";
+    order.forEach(function (name) {
+      var mine = rows.filter(function (a) { return a.group === name; });
+      if (!mine.length) return;
+      var note = (groups.filter(function (g) { return g.name === name; })[0] || {}).note || "";
+      html += '<div class="grp"><h3>' + esc(name) + '</h3><div class="gn">' + esc(note) + '</div><div class="cards2">' +
+        mine.map(card).join("") + "</div></div>";
+    });
+    document.getElementById("groups").innerHTML = html || '<div class="none">Nothing matches that.</div>';
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (b) {
+      b.addEventListener("click", function () {
+        var text = b.getAttribute("data-copy");
+        var done = function () { var o = b.textContent; b.textContent = "Copied"; setTimeout(function () { b.textContent = o; }, 1400); };
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+        else done();
+      });
+    });
+  }
+
+  function card(a) {
+    return '<article class="acc ' + (a.state === "closed" ? "closed" : "") + '">' +
+      '<div class="row1"><span class="av">' + esc((a.name || "?").charAt(0).toUpperCase()) + '</span>' +
+      "<div><h4>" + esc(a.name) + "</h4>" +
+      (a.handle ? '<div class="hd">' + esc(a.handle) + "</div>" : "") + "</div></div>" +
+      (a.email ? '<div class="em">' + esc(a.email) + "</div>" : "") +
+      (a.note ? '<div class="nt">' + esc(a.note) + "</div>" : "") +
+      (a.browser ? '<div class="br">' + esc(a.browser) + "</div>" : "") +
+      '<div class="open2">' +
+      (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">Open &rarr;</a>' : "") +
+      (a.email ? '<button type="button" data-copy="' + esc(a.email) + '">Copy email</button>' : "") +
+      "</div></article>";
+  }
+
+  function wire() {
+    Array.prototype.forEach.call(document.querySelectorAll(".chip2"), function (b) {
+      if (b.dataset.wired) return;
+      b.dataset.wired = "1";
+      b.addEventListener("click", function () {
+        if (b.hasAttribute("data-open")) {
+          hideClosed = !hideClosed;
+          b.setAttribute("aria-pressed", hideClosed ? "true" : "false");
+        } else {
+          filterGroup = b.getAttribute("data-group") || "";
+          Array.prototype.forEach.call(document.querySelectorAll(".chip2[data-group]"), function (o) {
+            o.setAttribute("aria-pressed", o === b ? "true" : "false");
+          });
+        }
+        draw();
+      });
+    });
+  }
+  document.getElementById("find").addEventListener("input", draw);
+  wire();
+
+  function load() {
+    fetch("/api/accounts", { credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (out) {
+        if (out && out.error) { say(out.error); return; }
+        if (!out || out.empty) {
+          document.getElementById("sub").textContent =
+            "Nothing loaded yet. Run the script on the laptop and press the button at the bottom.";
+          return;
+        }
+        clear();
+        paint(out.data || {});
+        document.getElementById("savedAt").textContent = "Last updated " + day(out.savedAt) + ".";
+      })
+      .catch(function () { say("Could not load your accounts. Try refreshing the page."); });
+  }
+
+  document.getElementById("pick").addEventListener("click", function () { document.getElementById("file").click(); });
+  document.getElementById("file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var b = document.getElementById("pick");
+    b.disabled = true; b.textContent = "Loading\u2026";
+    var reader = new FileReader();
+    reader.onload = function () {
+      fetch("/api/accounts", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        credentials: "same-origin", body: reader.result
+      }).then(function (r) { return r.json(); }).then(function (out) {
+        if (out && out.ok) { say("Saved. " + out.accounts + " accounts.", "good"); location.reload(); }
+        else say((out && out.error) || "That did not work. Try again.");
+        b.disabled = false; b.textContent = "Update from my laptop";
+      }).catch(function () {
+        say("No connection. Check your internet and try again.");
+        b.disabled = false; b.textContent = "Update from my laptop";
+      });
+    };
+    reader.onerror = function () { say("That file could not be read."); b.disabled = false; b.textContent = "Update from my laptop"; };
+    reader.readAsText(f);
+    this.value = "";
+  });
+
+  load();
+})();
+</script>
+<script src="/assets/account.js?v=379a43d3" defer></script>
+<script src="/assets/theme.js?v=7c9a6c3f" defer></script>
+</body>
+</html>
