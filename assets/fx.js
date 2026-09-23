@@ -1,0 +1,108 @@
+/* The futuristic layer, shared by every page of Salman.D.Life.
+ *
+ *  - a quiet backdrop: faint grid, two slow violet/cyan glows, and a live particle network
+ *  - cards that tilt in 3D under the mouse (never on touch screens)
+ *
+ * It adds the backdrop itself if a page does not have one, so pages only need to load this file.
+ * Everything stops for anyone whose device asks for less motion, and the particles pause whenever the
+ * tab is hidden, so it costs nothing in the background.
+ */
+(function () {
+  var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var finePointer = window.matchMedia && matchMedia("(pointer: fine)").matches;
+
+  function start() {
+    /* ---- the backdrop ---- */
+    var back = document.querySelector(".backdrop");
+    if (!back) {
+      back = document.createElement("div");
+      back.className = "backdrop";
+      back.setAttribute("aria-hidden", "true");
+      back.innerHTML = '<canvas id="stars"></canvas><div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div>';
+      document.body.insertBefore(back, document.body.firstChild);
+    }
+    // inner pages are for reading, so their network is thinner than the home page's
+    var density = document.body.classList.contains("home") || document.querySelector(".hero .console") ? 1 : 0.55;
+    particles(document.getElementById("stars"), density);
+
+    /* ---- 3D tilt on cards (mouse only) ---- */
+    if (finePointer && !still) {
+      Array.prototype.forEach.call(document.querySelectorAll(".cell,.unit,.acc,.mail,.tile"), function (card) {
+        card.addEventListener("pointermove", function (e) {
+          var b = card.getBoundingClientRect();
+          var x = (e.clientX - b.left) / b.width - 0.5, y = (e.clientY - b.top) / b.height - 0.5;
+          card.style.setProperty("--mx", (e.clientX - b.left) + "px");
+          card.style.setProperty("--my", (e.clientY - b.top) + "px");
+          card.style.transform = "perspective(900px) rotateX(" + (-y * 5).toFixed(2) + "deg) rotateY(" +
+            (x * 6).toFixed(2) + "deg) translateY(-3px)";
+        });
+        card.addEventListener("pointerleave", function () { card.style.transform = ""; });
+      });
+    }
+  }
+
+  /* ---- the live particle network ---- */
+  function particles(canvas, density) {
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d"), dots = [], w = 0, h = 0, mouse = { x: -9999, y: -9999 }, colours = [];
+    var running = false;
+
+    function readColours() {
+      var cs = getComputedStyle(document.documentElement);
+      colours = [cs.getPropertyValue("--accent").trim() || "#A78BFA", cs.getPropertyValue("--accent-2").trim() || "#22D3EE"];
+    }
+    function size() {
+      var ratio = Math.min(2, window.devicePixelRatio || 1);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = Math.round(w * ratio); canvas.height = Math.round(h * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      var want = Math.round(Math.max(18, Math.min(72, (w * h) / 22000)) * density);
+      while (dots.length < want) dots.push({ x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r: Math.random() * 1.4 + 0.6,
+        c: Math.random() < 0.5 ? 0 : 1 });
+      dots.length = want;
+    }
+    function rgba(hex, a) {
+      var s = hex.replace("#", "");
+      if (s.length !== 6) return "rgba(167,139,250," + a + ")";
+      return "rgba(" + parseInt(s.slice(0, 2), 16) + "," + parseInt(s.slice(2, 4), 16) + "," + parseInt(s.slice(4, 6), 16) + "," + a + ")";
+    }
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      var link = 130;
+      for (var i = 0; i < dots.length; i++) {
+        var d = dots[i];
+        if (!still) {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < -10) d.x = w + 10; if (d.x > w + 10) d.x = -10;
+          if (d.y < -10) d.y = h + 10; if (d.y > h + 10) d.y = -10;
+          var mx = d.x - mouse.x, my = d.y - mouse.y;
+          if (mx * mx + my * my < 16000) { d.x += mx * 0.006; d.y += my * 0.006; }
+        }
+        for (var j = i + 1; j < dots.length; j++) {
+          var e = dots[j], dx = d.x - e.x, dy = d.y - e.y, dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < link) {
+            ctx.strokeStyle = rgba(colours[d.c], (1 - dist / link) * 0.22);
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(e.x, e.y); ctx.stroke();
+          }
+        }
+        ctx.fillStyle = rgba(colours[d.c], 0.75);
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill();
+      }
+      if (!still && !document.hidden) requestAnimationFrame(frame); else running = false;
+    }
+    function go() { if (!running) { running = true; requestAnimationFrame(frame); } }
+
+    readColours(); size();
+    if (still) frame(); else go();
+    addEventListener("resize", function () { size(); if (still) frame(); });
+    addEventListener("pointermove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && !still) go(); });
+    new MutationObserver(function () { readColours(); if (still) frame(); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
