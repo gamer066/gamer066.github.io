@@ -28,6 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#FAF7F1");}}catch(e){}})();</script>
 <script>document.documentElement.className="js"</script>
 <style>
   /* ---------- the glow behind the first screen ---------- */
@@ -113,6 +114,7 @@
 
 <a class="skip" href="#main">Skip to content</a>
 
+<div class="progress" id="prog"></div>
 <div class="aura"><i></i><i></i><i></i></div>
 <div class="grain"></div>
 
@@ -269,7 +271,31 @@
       el.title = new Date(st.updated).toLocaleString();
     }
   }
+
+  // The thin amber bar at the very top, showing how far down the page you are.
+  var prog = document.getElementById("prog");
+  if (prog) {
+    var tick = false;
+    addEventListener("scroll", function () {
+      if (tick) return;
+      tick = true;
+      requestAnimationFrame(function () {
+        var max = document.documentElement.scrollHeight - innerHeight;
+        prog.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + "%";
+        tick = false;
+      });
+    }, { passive: true });
+  }
+
+  // Keeps a copy of the public pages on the device, so the site opens instantly next time
+  // and still opens with no internet at all. Private pages are never copied.
+  if ("serviceWorker" in navigator) {
+    addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () {});
+    });
+  }
 })();
 </script>
+<script src="/assets/theme.js" defer></script>
 </body>
 </html>

@@ -28,8 +28,33 @@
   --sans:"Archivo","Segoe UI",system-ui,-apple-system,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
-/* The site commits to one nocturnal look on purpose, so it stays itself on any host ground.
-   Every colour is painted explicitly below - nothing is inherited from the viewer's theme. */
+/* Daylight. The same site in warm paper and ink, so it is readable outdoors and on a bright phone.
+   Chosen by the little sun/moon button in the top bar; the choice is remembered on that device. */
+:root[data-theme="light"]{
+  --bg:#FAF7F1;
+  --bg-2:#F3EEE6;
+  --surface:#FFFFFF;
+  --surface-2:#F6F1E9;
+  --line:#E3DACD;
+  --line-soft:#EEE8DE;
+  --ink:#1B1713;
+  --ink-2:#5B5148;
+  --ink-3:#877C71;
+  --accent:#B0761F;
+  --accent-2:#8E5C17;
+  --accent-soft:rgba(176,118,31,.13);
+  --up:#2F7D50;
+  --up-soft:rgba(47,125,80,.12);
+  --down:#C0412D;
+  --down-soft:rgba(192,65,45,.12);
+  --shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 14px 32px -24px rgba(60,45,25,.45);
+}
+:root[data-theme="light"] .topbar{background:rgba(250,247,241,.88)}
+:root[data-theme="light"] .aura i{opacity:.32}
+:root[data-theme="light"] .grain{background:radial-gradient(120% 80% at 50% 0%,transparent 45%,rgba(250,247,241,.9) 100%)}
+:root[data-theme="light"] .tile::after{background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(176,118,31,.12),transparent 60%)}
+
+/* Dark is the home look and stays the default, so the site keeps its own character. */
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -190,3 +215,15 @@ button.quiet:hover{background:var(--surface-2);color:var(--ink)}
 .skip{position:absolute;left:-9999px;top:0;z-index:100;padding:11px 16px;border-radius:0 0 10px 0;
   background:var(--accent);color:var(--bg);font-weight:700;font-size:.9rem;text-decoration:none}
 .skip:focus{left:0}
+
+/* ---------- the sun / moon switch ---------- */
+.themeBtn{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:9px;cursor:pointer;
+  background:transparent;border:1px solid var(--line);color:var(--ink-2);padding:0}
+.themeBtn:hover{color:var(--ink);border-color:var(--accent);background:var(--surface-2)}
+.themeBtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.themeBtn svg{width:17px;height:17px}
+@media (max-width:430px){.themeBtn{width:30px;height:30px}.themeBtn svg{width:15px;height:15px}}
+
+/* ---------- how far down the page you are ---------- */
+.progress{position:fixed;left:0;top:0;height:2px;width:0;z-index:40;pointer-events:none;
+  background:linear-gradient(90deg,var(--accent-2),var(--accent))}
