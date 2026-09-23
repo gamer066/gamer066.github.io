@@ -14,7 +14,9 @@
  *   POST /api/google   -> { credential } from Google's button; answers like /api/login
  */
 
-const CLIENT_ID = "";   // filled in once the Google project's web ID exists (public, safe to commit)
+const CLIENT_ID = "461192636506-hkqn1ir1qpm5f1iqn969jei8asq6pi98.apps.googleusercontent.com";
+// ^ the website's Google ID (Google Cloud project "salman-d-life"). Public by design - it is printed in every page
+//   that shows the button - so it is safe in this repository. The client SECRET is never used and never stored.
 const COOKIE = "sdl_session";
 const SESSION_DAYS = 30;
 const MAX_TRIES = 20;
