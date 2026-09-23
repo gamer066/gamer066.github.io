@@ -11,6 +11,8 @@
 const COOKIE = "sdl_session";
 const ROUNDS = 12000;      // how hard the scrambling is; kept inside Cloudflare's free 10ms thinking time
 const SESSION_DAYS = 30;
+const MAX_TRIES = 10;         // wrong invite codes allowed from one place ...
+const WINDOW_MINUTES = 15;    // ... in this many minutes, so the code cannot be guessed
 
 export async function onRequestPost(context) {
   // Never show a visitor a raw error page. If anything at all goes wrong, say so in plain words.
@@ -33,7 +35,17 @@ async function handle({ request, env }) {
   const name = String(body.name || "").trim().slice(0, 60);
   const invite = String(body.invite || "");
 
-  if (!same(invite, env.INVITE_CODE)) return json({ error: "That invite code is not right." }, 403);
+  const who = "signup|" + (request.headers.get("CF-Connecting-IP") || "unknown");
+  const since = new Date(Date.now() - WINDOW_MINUTES * 60000).toISOString();
+  const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM login_attempts WHERE who = ? AND at > ?")
+    .bind(who, since).first();
+  if (recent && recent.n >= MAX_TRIES) {
+    return json({ error: "Too many tries. Please wait fifteen minutes and try again." }, 429);
+  }
+  if (!same(invite, env.INVITE_CODE)) {
+    await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
+    return json({ error: "That invite code is not right." }, 403);
+  }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 200) {
     return json({ error: "That email address does not look right." }, 400);
   }

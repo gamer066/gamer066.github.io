@@ -5,6 +5,12 @@
  * account in the first place, so it gives nothing extra away.
  *
  * Setting a new password signs out every device that was signed in before.
+ *
+ * THE OWNER IS PROTECTED. Everyone Salman invites knows the invite code, so the invite code alone must not
+ * be able to reset HIS account (found 23 Sep 2026: it could). The owner is the first account ever made on the
+ * site. His account can only be reset with RESET_CODE, a second code only he knows, set in Cloudflare's
+ * settings like the invite code. Until he sets one, his way back in is Continue with Google, or starting his
+ * account again with the invite code after Claude clears it from the Cloudflare database console.
  */
 
 const COOKIE = "sdl_session";
@@ -40,7 +46,9 @@ async function handle({ request, env }) {
     return json({ error: "Too many tries. Please wait fifteen minutes and try again." }, 429);
   }
 
-  if (!same(invite, env.INVITE_CODE)) {
+  const isInvite = same(invite, env.INVITE_CODE);
+  const isOwnerCode = !!env.RESET_CODE && same(invite, env.RESET_CODE);
+  if (!isInvite && !isOwnerCode) {
     await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
     return json({ error: "That invite code is not right." }, 403);
   }
@@ -51,6 +59,12 @@ async function handle({ request, env }) {
   if (!user) {
     await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
     return json({ error: "There is no account with that email." }, 404);
+  }
+
+  const owner = await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
+  if (owner && owner.id === user.id && !isOwnerCode) {
+    await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
+    return json({ error: "This account cannot be reset with the invite code. Use Continue with Google instead." }, 403);
   }
 
   const salt = crypto.getRandomValues(new Uint8Array(16));
