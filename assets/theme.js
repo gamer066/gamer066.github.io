@@ -17,7 +17,7 @@
   function apply(mode) {
     document.documentElement.setAttribute("data-theme", mode);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", mode === "light" ? "#FAF7F1" : "#0C0B0A");
+    if (meta) meta.setAttribute("content", mode === "light" ? "#F6F7FE" : "#05060B");
     try { localStorage.setItem("sdl-theme", mode); } catch (e) { /* private browsing */ }
   }
 
