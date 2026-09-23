@@ -1,4 +1,4 @@
-/* The sun / moon switch in the top bar.
+/* The sun / moon switch in the top bar, and the phone menu button beside it.
  *
  * Dark is the site's own look and stays the default. Tapping the button swaps to daylight and
  * remembers the choice on that device only. Nothing is sent anywhere.
@@ -42,6 +42,54 @@
     nav.insertBefore(b, nav.firstChild);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
-  else build();
+  /* ---- the phone menu ----
+     On a narrow screen the section links fold away behind a menu button (the CSS decides when).
+     They are copied into a panel under the bar, so each page keeps writing its links in one place. */
+  var MENU = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  var CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+  function buildMenu() {
+    var bar = document.querySelector(".topbar");
+    var inner = bar && bar.querySelector(".inner");
+    var nav = inner && inner.querySelector(".navlinks");
+    if (!nav || inner.querySelector(".menuBtn")) return;
+
+    var links = Array.prototype.filter.call(nav.children, function (el) {
+      return el.tagName === "A" && el.id !== "account";
+    });
+    if (!links.length) return;
+
+    var panel = document.createElement("nav");
+    panel.className = "mobileNav";
+    panel.setAttribute("aria-label", "Site sections");
+    links.forEach(function (a) {
+      var copy = a.cloneNode(true);
+      copy.removeAttribute("id");
+      panel.appendChild(copy);
+    });
+    bar.appendChild(panel);
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "menuBtn";
+    function dress(open) {
+      btn.innerHTML = open ? CLOSE : MENU;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.setAttribute("aria-label", open ? "Close the menu" : "Open the menu");
+    }
+    dress(false);
+    btn.addEventListener("click", function () {
+      var open = !bar.classList.contains("open");
+      bar.classList.toggle("open", open);
+      dress(open);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && bar.classList.contains("open")) { bar.classList.remove("open"); dress(false); }
+    });
+    inner.appendChild(btn);
+  }
+
+  function start() { build(); buildMenu(); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();

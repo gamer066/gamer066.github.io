@@ -12,7 +12,7 @@
   --line-soft:#221D1A;
   --ink:#F1EBE3;
   --ink-2:#B6ABA0;
-  --ink-3:#8A7F75;
+  --ink-3:#8E8379;   /* nudged lighter 23 Sep 2026 so small grey text passes the 4.5:1 readability standard */
   /* Signature accent: burnished amber. Used for structure and emphasis only - never for money. */
   --accent:#E3A951;
   --accent-2:#C98B2E;
@@ -39,12 +39,12 @@
   --line-soft:#EEE8DE;
   --ink:#1B1713;
   --ink-2:#5B5148;
-  --ink-3:#877C71;
-  --accent:#B0761F;
-  --accent-2:#8E5C17;
-  --accent-soft:rgba(176,118,31,.13);
-  --up:#2F7D50;
-  --up-soft:rgba(47,125,80,.12);
+  --ink-3:#746B61;
+  --accent:#94631A;     /* deeper gold in daylight: links, labels and button text all pass 4.5:1 */
+  --accent-2:#7A5114;
+  --accent-soft:rgba(148,99,26,.13);
+  --up:#2E7A4E;
+  --up-soft:rgba(46,122,78,.12);
   --down:#C0412D;
   --down-soft:rgba(192,65,45,.12);
   --shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 14px 32px -24px rgba(60,45,25,.45);
@@ -228,11 +228,22 @@ button.quiet:hover{background:var(--surface-2);color:var(--ink)}
 .progress{position:fixed;left:0;top:0;height:2px;width:0;z-index:40;pointer-events:none;
   background:linear-gradient(90deg,var(--accent-2),var(--accent))}
 
-/* With several sections the top bar runs out of room on a phone, so the links slide sideways
-   instead of spilling off the edge. */
+/* ---------- phone menu ----------
+   On a phone the section links fold away behind a menu button, the way most sites do it.
+   The sun/moon switch and the account button stay in the bar. The button itself is added by theme.js. */
+.menuBtn{display:none;width:36px;height:34px;border-radius:9px;border:1px solid var(--line);background:transparent;
+  color:var(--ink);cursor:pointer;place-items:center;padding:0;flex:none}
+.menuBtn:hover{border-color:var(--accent)}
+.menuBtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.menuBtn svg{width:18px;height:18px}
+.mobileNav{display:none}
 @media (max-width:640px){
-  .navlinks{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-ms-overflow-style:none;
-    mask-image:linear-gradient(90deg,#000 88%,transparent)}
-  .navlinks::-webkit-scrollbar{display:none}
-  .navlinks a{white-space:nowrap}
+  .menuBtn{display:grid}
+  .navlinks > a:not(#account){display:none}
+  .topbar.open .mobileNav{display:flex}
+  .mobileNav{flex-direction:column;gap:2px;padding:6px 16px 14px;border-top:1px solid var(--line-soft);
+    max-width:900px;margin:0 auto}
+  .mobileNav a{padding:12px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-weight:600;font-size:.95rem}
+  .mobileNav a.on{background:var(--accent-soft);color:var(--accent)}
+  .mobileNav a:hover{background:var(--surface-2);color:var(--ink)}
 }

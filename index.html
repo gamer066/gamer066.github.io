@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Salman.D.Life</title>
-<meta name="description" content="Salman's control room. Trading bots first, more to come.">
+<meta name="description" content="A private control room for my studies, my accounts and my trading bots. One invite-only sign-in.">
 <meta name="theme-color" content="#0C0B0A">
 <meta property="og:title" content="Salman.D.Life">
-<meta property="og:description" content="A private control room for everything I'm building. Trading bots first.">
+<meta property="og:description" content="A private control room for my studies, my accounts and my trading bots.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://salmandlife.pages.dev/">
 <meta property="og:image" content="https://salmandlife.pages.dev/assets/og.png">
@@ -15,7 +15,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Salman.D.Life">
-<meta name="twitter:description" content="A private control room for everything I'm building. Trading bots first.">
+<meta name="twitter:description" content="A private control room for my studies, my accounts and my trading bots.">
 <meta name="twitter:image" content="https://salmandlife.pages.dev/assets/og.png">
 <link rel="canonical" href="https://salmandlife.pages.dev/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23E3A951'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%230C0B0A'>S</text></svg>">
@@ -26,97 +26,202 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/style.css?v=42792b93">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,600&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v=20c0939d">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#FAF7F1");}}catch(e){}})();</script>
-<script>document.documentElement.className="js"</script>
+<script>document.documentElement.classList.add("js")</script>
 <style>
-  /* ---------- the glow behind the first screen ---------- */
-  .aura{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-  .aura i{position:absolute;display:block;border-radius:50%;filter:blur(90px);opacity:.5}
-  .aura i:nth-child(1){width:52vw;height:52vw;left:-14vw;top:-18vw;background:rgba(227,169,81,.30);
-    animation:drift1 26s ease-in-out infinite}
-  .aura i:nth-child(2){width:40vw;height:40vw;right:-12vw;top:6vh;background:rgba(201,139,46,.22);
-    animation:drift2 32s ease-in-out infinite}
-  .aura i:nth-child(3){width:34vw;height:34vw;left:34vw;top:42vh;background:rgba(92,190,124,.10);
-    animation:drift1 38s ease-in-out infinite reverse}
-  @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(6vw,5vh,0) scale(1.12)}}
-  @keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-7vw,7vh,0) scale(1.08)}}
-  .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
-    background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(12,11,10,.85) 100%)}
+  /* =====================================================================
+     Home page, built on the patterns the best modern templates share:
+     a quiet grid-and-glow backdrop, a centred hero with a real product view,
+     a feature marquee, a bento grid, a closing call-to-action and a real footer.
+     Every number on the page is real (assets/status.js). None of it is made up for show.
+     ===================================================================== */
+
+  /* ---------- backdrop: a faint grid fading out from the top, and two slow glows ---------- */
+  .backdrop{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+  .backdrop .grid{position:absolute;inset:-1px;
+    background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
+            mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
+    opacity:.55}
+  .backdrop .glow{position:absolute;border-radius:50%;filter:blur(100px)}
+  .backdrop .g1{width:62vw;height:42vw;left:19vw;top:-22vw;background:rgba(227,169,81,.20);animation:float1 24s ease-in-out infinite}
+  .backdrop .g2{width:30vw;height:30vw;right:-8vw;top:28vh;background:rgba(92,190,124,.07);animation:float2 30s ease-in-out infinite}
+  @keyframes float1{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-3vw,3vh,0) scale(1.06)}}
+  @keyframes float2{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-4vw,-4vh,0)}}
+  :root[data-theme="light"] .backdrop .g1{background:rgba(176,118,31,.14)}
+  :root[data-theme="light"] .backdrop .grid{opacity:.8}
+
+  .wide{max-width:1080px;margin:0 auto;padding-inline:20px}
+  @media (max-width:480px){.wide{padding-inline:16px}}
 
   /* ---------- hero ---------- */
-  .hero{padding:78px 0 10px;display:flex;flex-direction:column;gap:18px;align-items:flex-start}
-  .badge{display:inline-flex;align-items:center;gap:9px;padding:6px 13px 6px 7px;border-radius:999px;
-    background:var(--surface);border:1px solid var(--line);font-size:.78rem;color:var(--ink-2);font-weight:500}
-  .badge b{color:var(--ink);font-weight:650}
-  .beat{width:7px;height:7px;border-radius:50%;background:var(--up);flex:none;
-    box-shadow:0 0 0 0 rgba(92,190,124,.6);animation:beat 2.6s ease-out infinite}
-  @keyframes beat{0%{box-shadow:0 0 0 0 rgba(92,190,124,.55)}70%{box-shadow:0 0 0 9px rgba(92,190,124,0)}
-    100%{box-shadow:0 0 0 0 rgba(92,190,124,0)}}
-  .hero h1{font-size:clamp(2.3rem,8.2vw,4.1rem);line-height:1.02;max-width:15ch;letter-spacing:-.028em}
-  .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent),#F2D08A 55%,var(--accent-2));
-    -webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero .lede{font-size:clamp(1rem,2.6vw,1.12rem);max-width:54ch}
-  .ctas{display:flex;gap:11px;flex-wrap:wrap;margin-top:4px}
-  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 20px;border-radius:11px;
-    text-decoration:none;font-size:.95rem;font-weight:700;border:1px solid transparent;
-    transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
-  .btn.primary{background:var(--accent);color:var(--bg);box-shadow:0 12px 30px -14px rgba(227,169,81,.85)}
-  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 18px 38px -14px rgba(227,169,81,.95)}
-  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
-  .btn.ghost:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .hero{padding-top:84px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px}
+  .announce{display:inline-flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:999px;
+    text-decoration:none;color:var(--ink-2);font-size:.8rem;font-weight:500;
+    background:var(--surface);background:color-mix(in srgb,var(--surface) 80%,transparent);border:1px solid var(--line);
+    transition:border-color .2s ease}
+  .announce:hover{border-color:var(--accent)}
+  .announce b{color:var(--ink);font-weight:650}
+  .announce .go2{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+    background:var(--surface-2);color:var(--ink)}
+  .announce .go2 svg{width:12px;height:12px}
+  .beat{width:7px;height:7px;border-radius:50%;background:var(--up);flex:none;animation:beat 2.6s ease-out infinite}
+  @keyframes beat{0%{box-shadow:0 0 0 0 rgba(92,190,124,.55)}70%{box-shadow:0 0 0 9px rgba(92,190,124,0)}100%{box-shadow:0 0 0 0 rgba(92,190,124,0)}}
+
+  .hero h1{font-size:clamp(2.6rem,8.6vw,5.2rem);line-height:.98;letter-spacing:-.035em;max-width:13ch;margin:4px 0 0}
+  .hero h1 em{font-style:italic;font-weight:600;background:linear-gradient(100deg,var(--accent) 0%,#F4D69A 45%,var(--accent-2) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.04em}
+  :root[data-theme="light"] .hero h1 em{background:linear-gradient(100deg,#7A5114,#B0761F 50%,#7A5114);
+    -webkit-background-clip:text;background-clip:text}
+  .hero .lede{font-size:clamp(1rem,2.4vw,1.15rem);max-width:56ch;margin:0 auto}
+
+  .ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:12px;text-decoration:none;
+    font-size:.95rem;font-weight:700;border:1px solid transparent;
+    transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
   .btn svg{width:17px;height:17px}
+  .btn.primary{background:var(--accent);color:var(--bg);
+    box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 14px 34px -14px rgba(227,169,81,.9)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 20px 44px -14px rgba(227,169,81,1)}
+  .btn.ghost{color:var(--ink);border-color:var(--line);background:var(--surface)}
+  .btn.ghost:hover{border-color:var(--accent);transform:translateY(-2px)}
   .btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-  /* ---------- numbers strip ---------- */
-  .strip{align-self:stretch;margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
-  .strip div{padding:18px 20px;border-left:1px solid var(--line-soft)}
-  .strip div:first-child{border-left:none}
-  .strip .k{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
-  .strip .v{font-family:var(--mono);font-size:1.5rem;font-weight:600;letter-spacing:-.03em;margin-top:5px}
+  .trust{display:flex;gap:8px 20px;flex-wrap:wrap;justify-content:center;margin-top:4px;color:var(--ink-3);font-size:.8rem}
+  .trust span{display:inline-flex;align-items:center;gap:7px}
+  .trust svg{width:14px;height:14px;color:var(--accent)}
 
-  /* ---------- section cards ---------- */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:14px}
-  .tile{position:relative;display:flex;flex-direction:column;gap:11px;padding:22px;border-radius:var(--radius);
-    text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);overflow:hidden;
-    transition:border-color .2s ease,transform .2s ease}
-  .tile::after{content:"";position:absolute;inset:-1px;border-radius:var(--radius);opacity:0;
-    background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(227,169,81,.16),transparent 60%);
-    transition:opacity .25s ease;pointer-events:none}
-  a.tile:hover{border-color:var(--accent);transform:translateY(-3px)}
-  a.tile:hover::after{opacity:1}
-  a.tile:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-  .tile .ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;
-    background:var(--accent-soft);color:var(--accent)}
-  .tile .ico svg{width:21px;height:21px}
-  .tile h3{font-size:1.02rem}
-  .tile .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
-  .tile.soon{opacity:.6;border-style:dashed}
+  /* ---------- the console: a real, live view of the site's numbers ---------- */
+  .console{position:relative;width:100%;max-width:880px;margin:44px auto 0;border-radius:18px;padding:1px;
+    background:linear-gradient(160deg,rgba(227,169,81,.55),rgba(227,169,81,.06) 40%,var(--line) 70%,rgba(227,169,81,.25));
+    box-shadow:0 40px 90px -40px rgba(0,0,0,.9)}
+  :root[data-theme="light"] .console{box-shadow:0 30px 70px -40px rgba(60,45,25,.5)}
+  .console .shell{border-radius:17px;background:var(--surface);overflow:hidden}
+  .console .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line-soft)}
+  .console .bar i{width:10px;height:10px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line)}
+  .console .bar .addr{margin-left:10px;font-family:var(--mono);font-size:.72rem;color:var(--ink-3);
+    padding:4px 10px;border-radius:7px;background:var(--bg-2)}
+  .console .bar .live{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:.72rem;color:var(--ink-2);font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stats > div{padding:22px 20px;border-left:1px solid var(--line-soft);text-align:left}
+  .stats > div:first-child{border-left:none}
+  .stats .k{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+  .stats .v{font-family:var(--mono);font-size:clamp(1.4rem,3.4vw,2rem);font-weight:600;letter-spacing:-.04em;margin-top:6px}
+  .stats .n{font-size:.76rem;color:var(--ink-3);margin-top:3px}
+  .rooms{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-soft)}
+  .rooms a{display:flex;align-items:center;gap:10px;padding:14px 18px;text-decoration:none;color:var(--ink-2);
+    font-size:.86rem;font-weight:600;border-left:1px solid var(--line-soft);transition:background .15s ease,color .15s ease}
+  .rooms a:first-child{border-left:none}
+  .rooms a:hover{background:var(--surface-2);color:var(--ink)}
+  .rooms .lock{margin-left:auto;color:var(--ink-3)}
+  .rooms svg{width:15px;height:15px;flex:none}
+  @media (max-width:640px){
+    .stats{grid-template-columns:1fr 1fr}
+    .stats > div:nth-child(3){border-left:none}
+    .stats > div:nth-child(n+3){border-top:1px solid var(--line-soft)}
+    .rooms{grid-template-columns:1fr}
+    .rooms a{border-left:none;border-top:1px solid var(--line-soft)}
+    .rooms a:first-child{border-top:none}
+    .console .bar .addr{display:none}
+  }
+
+  /* ---------- marquee of what the site does ---------- */
+  .marquee{margin-top:72px;overflow:hidden;border-block:1px solid var(--line-soft);padding:16px 0;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .marquee .track{display:flex;gap:44px;width:max-content;animation:slide 38s linear infinite}
+  .marquee:hover .track{animation-play-state:paused}
+  .marquee span{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;color:var(--ink-2);font-size:.9rem;font-weight:500}
+  .marquee span::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  /* ---------- section headings ---------- */
+  .sect{padding-top:96px}
+  .sect > .eyebrow{display:block;text-align:center}
+  .sect > h2{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.025em;line-height:1.05;text-align:center;margin-top:10px}
+  .sect > .intro{text-align:center;color:var(--ink-2);max-width:54ch;margin:12px auto 0}
+
+  /* ---------- bento grid ---------- */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:40px}
+  .cell{position:relative;display:flex;flex-direction:column;gap:12px;padding:26px;border-radius:18px;text-decoration:none;
+    color:inherit;background:var(--surface);border:1px solid var(--line);overflow:hidden;isolation:isolate;
+    transition:border-color .25s ease,transform .25s ease}
+  .cell::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .3s ease;
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(227,169,81,.14),transparent 60%)}
+  a.cell:hover{border-color:var(--accent-2);transform:translateY(-3px)}
+  .cell:hover::before{opacity:1}
+  a.cell:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .c-trade{grid-column:span 4;grid-row:span 2;min-height:320px}
+  .c-study{grid-column:span 2}
+  .c-acct{grid-column:span 2}
+  .c-safe{grid-column:span 3}
+  .c-phone{grid-column:span 3}
+  @media (max-width:860px){.c-trade{grid-column:span 6;grid-row:auto;min-height:0}.c-study,.c-acct{grid-column:span 3}}
+  @media (max-width:560px){.bento{grid-template-columns:1fr}.cell{grid-column:auto!important}}
+  .ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;
+    background:var(--accent-soft);color:var(--accent);border:1px solid var(--line)}
+  .ico svg{width:21px;height:21px}
+  .cell h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;letter-spacing:-.01em}
+  .cell p{color:var(--ink-2);font-size:.92rem;max-width:52ch}
+  .cell .more{margin-top:auto;display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:650;font-size:.86rem}
+  .cell .more svg{width:14px;height:14px;transition:transform .2s ease}
+  a.cell:hover .more svg{transform:translateX(3px)}
+  .bigNums{display:flex;gap:30px;flex-wrap:wrap;margin-top:6px}
+  .bigNums div{display:flex;flex-direction:column;gap:2px}
+  .bigNums .v{font-family:var(--mono);font-size:clamp(2rem,5vw,2.9rem);font-weight:600;letter-spacing:-.05em;line-height:1}
+  .bigNums .k{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+  .checks{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .checks div{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;color:var(--ink-2)}
+  .checks svg{width:16px;height:16px;flex:none;color:var(--up);margin-top:3px}
 
   /* ---------- how it works ---------- */
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-  .step{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
-  .step .n{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--accent);letter-spacing:.1em}
-  .step h3{margin-top:9px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px}
+  .step{position:relative;padding:24px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+  .step .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;font-family:var(--mono);
+    font-size:.82rem;font-weight:600;color:var(--accent);background:var(--accent-soft);border:1px solid var(--line)}
+  .step h3{margin-top:14px;font-size:1.02rem}
   .step p{margin-top:6px;color:var(--ink-2);font-size:.9rem}
+  @media (max-width:760px){.steps{grid-template-columns:1fr}}
 
-  /* ---------- soft entrance ---------- */
-  .js .rise{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  /* ---------- closing call to action ---------- */
+  .cta{margin-top:96px;position:relative;overflow:hidden;border-radius:24px;padding:56px 24px;text-align:center;
+    background:var(--surface);
+    background:radial-gradient(120% 140% at 50% 0%,color-mix(in srgb,var(--accent) 20%,var(--surface)) 0%,var(--surface) 55%);
+    border:1px solid var(--line)}
+  .cta h2{font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.025em;line-height:1.05;margin-top:10px}
+  .cta p{color:var(--ink-2);margin:12px auto 0;max-width:46ch}
+  .cta .ctas{margin-top:24px}
+
+  /* ---------- footer ---------- */
+  .foot{margin-top:72px;padding-top:40px;padding-bottom:48px;border-top:1px solid var(--line-soft);
+    display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:28px}
+  .foot .brand{margin-bottom:10px}
+  .foot p{color:var(--ink-3);font-size:.84rem;max-width:34ch}
+  .foot h4{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:0 0 12px}
+  .foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .foot ul a{color:var(--ink-2);text-decoration:none;font-size:.9rem}
+  .foot ul a:hover{color:var(--ink)}
+  .fine{grid-column:1/-1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:22px;
+    border-top:1px solid var(--line-soft);color:var(--ink-3);font-size:.78rem}
+  @media (max-width:760px){.foot{grid-template-columns:1fr 1fr}.foot > div:first-child{grid-column:1/-1}}
+
+  /* ---------- entrance ---------- */
+  .js .rise{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
   .js .rise.in{opacity:1;transform:none}
-  @media (prefers-reduced-motion:reduce){.js .rise{opacity:1;transform:none}.aura i{animation:none}}
-  @media (max-width:520px){.hero{padding-top:56px}.strip div{border-left:none;border-top:1px solid var(--line-soft)}
-    .strip div:first-child{border-top:none}}
+  @media (prefers-reduced-motion:reduce){
+    .js .rise{opacity:1;transform:none}
+    .marquee .track,.backdrop .glow,.beat{animation:none}
+  }
 </style>
 </head>
 <body>
 
 <a class="skip" href="#main">Skip to content</a>
-
 <div class="progress" id="prog"></div>
-<div class="aura"><i></i><i></i><i></i></div>
-<div class="grain"></div>
+<div class="backdrop" aria-hidden="true"><div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div></div>
 
 <div class="topbar"><div class="inner">
   <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
@@ -129,81 +234,152 @@
   </nav>
 </div></div>
 
-<div class="wrap" id="main">
+<main id="main">
 
-  <header class="hero">
-    <span class="badge"><span class="beat"></span> <b>Live</b> &mdash; seven bots trading right now</span>
+  <!-- ================= hero ================= -->
+  <header class="wide hero">
+    <a class="announce" href="/trading/">
+      <span class="beat"></span><span><b>Live</b> &middot; <span id="aBots">7</span> bots trading &middot; updated <span id="aWhen">recently</span></span>
+      <span class="go2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+    </a>
+
     <h1>Everything I'm building, <em>in one place.</em></h1>
-    <p class="lede">A private control room for the three things I'm running: my studies, every account I own,
-      and seven trading bots practising on Binance with play money. One sign-in opens all of it.</p>
+
+    <p class="lede">A private control room for my studies, every account I own, and seven trading bots practising
+      with play money. One invite-only sign-in opens all of it.</p>
+
     <div class="ctas">
-      <a class="btn primary" href="/trading/">
-        Enter the control room
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-      </a>
+      <a class="btn primary" href="/trading/">Enter the control room
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
       <a class="btn ghost" href="/login/">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        Sign in
-      </a>
+        Sign in</a>
     </div>
 
-    <div class="strip rise">
-      <div><div class="k">Bots running</div><div class="v" id="sBots">7</div></div>
-      <div><div class="k">Trades open</div><div class="v neutral" id="sOpen">&mdash;</div></div>
-      <div><div class="k">Real money at risk</div><div class="v up">$0.00</div></div>
-      <div><div class="k">Mode</div><div class="v neutral" id="sMode">Practice</div></div>
-      <div><div class="k">Updated</div><div class="v neutral" id="sWhen">&mdash;</div></div>
+    <div class="trust">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Invite-only</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6Z"/></svg>Passwords never stored readable</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Numbers straight from the bots</span>
+    </div>
+
+    <!-- a real view of the site: every figure comes from assets/status.js -->
+    <div class="console rise" role="group" aria-label="Live numbers">
+      <div class="shell">
+        <div class="bar">
+          <i></i><i></i><i></i>
+          <span class="addr">salmandlife / control room</span>
+          <span class="live"><span class="beat"></span>Live</span>
+        </div>
+        <div class="stats">
+          <div><div class="k">Bots running</div><div class="v" id="sBots">7</div><div class="n">on Binance's test system</div></div>
+          <div><div class="k">Trades open</div><div class="v" id="sOpen">&mdash;</div><div class="n">priced live in your browser</div></div>
+          <div><div class="k">Real money at risk</div><div class="v up">$0.00</div><div class="n" id="sMode">Practice only</div></div>
+          <div><div class="k">Last update</div><div class="v" id="sWhen">&mdash;</div><div class="n">rebuilt from the bots' records</div></div>
+        </div>
+        <div class="rooms">
+          <a href="/trading/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg>Trading<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></a>
+          <a href="/study/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/></svg>Studies<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></a>
+          <a href="/accounts/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Accounts<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></a>
+        </div>
+      </div>
     </div>
   </header>
 
-  <section class="block rise">
-    <div class="headrow"><h2>Sections</h2><span class="muted">One address, many rooms</span></div>
-    <div class="grid">
+  <!-- ================= marquee ================= -->
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <span>Invite-only sign-in</span><span>Passwords stored scrambled</span><span>Private database</span>
+      <span>Opens on your phone like an app</span><span>Works offline</span><span>Dark and daylight</span>
+      <span>Live Binance prices</span><span>Documents open anywhere</span><span>Strict security headers</span>
+      <span>Invite-only sign-in</span><span>Passwords stored scrambled</span><span>Private database</span>
+      <span>Opens on your phone like an app</span><span>Works offline</span><span>Dark and daylight</span>
+      <span>Live Binance prices</span><span>Documents open anywhere</span><span>Strict security headers</span>
+    </div>
+  </div>
 
-      <a class="tile" href="/trading/">
+  <!-- ================= bento ================= -->
+  <section class="wide sect rise" aria-labelledby="roomsTitle">
+    <span class="eyebrow">What's inside</span>
+    <h2 id="roomsTitle">Three rooms behind one door.</h2>
+    <p class="intro">Each section is private and opens with the same sign-in. This front page is the only part anyone
+      else can see.</p>
+
+    <div class="bento">
+      <a class="cell c-trade" href="/trading/">
         <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 5-7 4 5"/><path d="M3 21h18"/></svg></span>
         <h3>Trading bots</h3>
-        <p class="muted">Seven bots on Binance play money. Open trades priced live in your browser, finished trades
-          counted honestly, and exactly what has to happen before real money goes anywhere near it.</p>
-        <div class="tags"><span class="pill a">Live</span><span class="pill">Sign-in needed</span></div>
+        <p>Seven bots on Binance play money. Open trades are priced live in your browser, finished trades are counted
+          honestly, and the page says exactly what has to happen before real money goes anywhere near it.</p>
+        <div class="bigNums">
+          <div><span class="v" id="bBots">7</span><span class="k">Bots</span></div>
+          <div><span class="v" id="bOpen">&mdash;</span><span class="k">Trades open</span></div>
+          <div><span class="v up">$0</span><span class="k">Real money</span></div>
+        </div>
+        <div class="checks">
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Every open trade, re-priced from Binance while you watch.</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Finished trades kept apart, so the settled number is the honest one.</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>A clear list of what must happen before real money is ever used.</div>
+        </div>
+        <span class="more">Open the trading room <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
       </a>
 
-      <a class="tile" href="/study/">
+      <a class="cell c-study" href="/study/">
         <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M8 7h8M8 11h6"/></svg></span>
         <h3>Studies</h3>
-        <p class="muted">The whole course in one place: every unit and deadline, what was handed in and when,
-          all the documents, and the rules each tutor marks against.</p>
-        <div class="tags"><span class="pill a">Live</span><span class="pill">Sign-in needed</span></div>
+        <p>Every unit and deadline, what was handed in and when, the marking rules, and all the documents &mdash;
+          each one opens from a phone.</p>
+        <span class="more">Open studies <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
       </a>
 
-      <a class="tile" href="/accounts/">
+      <a class="cell c-acct" href="/accounts/">
         <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
         <h3>Accounts</h3>
-        <p class="muted">Every account in one organised list: which inbox it uses, the handle, and a link straight
-          to it. No passwords are kept here &mdash; those belong in a password manager.</p>
-        <div class="tags"><span class="pill a">Live</span><span class="pill">Sign-in needed</span></div>
+        <p>Every account in one organised list: which inbox it uses, the handle, and a link straight to it. No
+          passwords, ever.</p>
+        <span class="more">Open accounts <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
       </a>
 
+      <div class="cell c-safe">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <h3>Private by design</h3>
+        <div class="checks">
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Sign-up needs an invite code, and guessing it gets blocked.</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Passwords are stored scrambled and cannot be read back.</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Nothing personal lives in the website's public code.</div>
+        </div>
+      </div>
+
+      <div class="cell c-phone">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span>
+        <h3>Works like an app</h3>
+        <div class="checks">
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Add it to your home screen and it opens full-screen.</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Opens instantly the second time, even with no internet.</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Dark or daylight, remembered on each device.</div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="block rise">
-    <div class="headrow"><h2>How this works</h2></div>
+  <!-- ================= how it works ================= -->
+  <section class="wide sect rise" aria-labelledby="howTitle">
+    <span class="eyebrow">How it works</span>
+    <h2 id="howTitle">Built to be trusted.</h2>
     <div class="steps">
       <div class="step">
-        <div class="n">01</div>
+        <span class="n">01</span>
         <h3>One door for everything</h3>
-        <p>This front page is open to anyone. Studies, accounts and trading sit behind a single invite-only sign-in,
-          so a shared link never lets a stranger further than here.</p>
+        <p>This page is open to anyone. Studies, accounts and trading sit behind a single invite-only sign-in, so a
+          shared link never lets a stranger further than here.</p>
       </div>
       <div class="step">
-        <div class="n">02</div>
+        <span class="n">02</span>
         <h3>Nothing personal in the code</h3>
-        <p>The website's code is public, so none of my details live in it. Coursework, deadlines and accounts are
-          kept in a private database and only come out for a signed-in visitor.</p>
+        <p>The website's code is public, so none of my details live in it. They are kept in a private database and
+          only come out for a signed-in visitor.</p>
       </div>
       <div class="step">
-        <div class="n">03</div>
+        <span class="n">03</span>
         <h3>Real numbers, never typed in</h3>
         <p>The trading page is rebuilt from the bots' own records and re-prices itself live from Binance's public
           feed. Nothing is entered by hand, so nothing can be dressed up.</p>
@@ -211,44 +387,81 @@
     </div>
   </section>
 
-  <section class="block rise">
-    <div class="headrow"><h2>The honest part</h2></div>
-    <div class="panel pad">
-      <p class="lede" style="font-size:.95rem">The trading is practice money on Binance's test system &mdash; no
-        real funds and no real orders. No passwords and no keys of any kind are stored on this website. When
-        something here is good enough to trust with real money, that will be said plainly on this page before it
-        happens, not quietly afterwards.</p>
+  <!-- ================= closing call to action ================= -->
+  <section class="wide rise">
+    <div class="cta">
+      <span class="eyebrow">Practice money only</span>
+      <h2>One door. Everything behind it.</h2>
+      <p>No real funds and no real orders. When something here is good enough for real money, this page will say so
+        plainly &mdash; before it happens, not after.</p>
+      <div class="ctas">
+        <a class="btn primary" href="/trading/">Enter the control room
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <a class="btn ghost" href="/login/">Sign in</a>
+      </div>
     </div>
   </section>
 
-  <footer>
-    <div>Salman.D.Life &mdash; practice money only. No real funds, no real orders, no API keys on this site.</div>
-    <div>Built with Claude Code.</div>
+  <!-- ================= footer ================= -->
+  <footer class="wide foot">
+    <div>
+      <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+      <p>A private control room for my studies, my accounts and my trading bots.</p>
+    </div>
+    <div>
+      <h4>Rooms</h4>
+      <ul><li><a href="/trading/">Trading</a></li><li><a href="/study/">Studies</a></li><li><a href="/accounts/">Accounts</a></li></ul>
+    </div>
+    <div>
+      <h4>You</h4>
+      <ul><li><a href="/login/">Sign in</a></li><li><a href="/profile/">Profile</a></li></ul>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <ul><li><a href="/sitemap.xml">Sitemap</a></li><li><a href="https://github.com/gamer066/gamer066.github.io" rel="noopener" target="_blank">Source</a></li></ul>
+    </div>
+    <div class="fine">
+      <span>Practice money only. No real funds, no real orders, no passwords or keys on this site.</span>
+      <span>Built with Claude Code.</span>
+    </div>
   </footer>
 
-</div>
+</main>
 
-<script src="/assets/status.js?v=33f7a232"></script>
+<script src="/assets/status.js?v=5f78cbef"></script>
 <script src="/assets/account.js?v=379a43d3" defer></script>
 <script>
-// Sections fade up as they come into view, and the cards pick up a soft glow under the cursor.
 (function () {
-  var bits = document.querySelectorAll(".rise");
-  if (!("IntersectionObserver" in window)) {
-    Array.prototype.forEach.call(bits, function (b) { b.classList.add("in"); });
-  } else {
-    var watcher = new IntersectionObserver(function (rows) {
-      rows.forEach(function (r) { if (r.isIntersecting) { r.target.classList.add("in"); watcher.unobserve(r.target); } });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
-    Array.prototype.forEach.call(bits, function (b) { watcher.observe(b); });
-    setTimeout(function () {
-      Array.prototype.forEach.call(bits, function (b) {
-        if (b.getBoundingClientRect().top < window.innerHeight) b.classList.add("in");
-      });
-    }, 1500);
+  /* ---- real numbers from the file the laptop writes on every publish ---- */
+  var st = window.SITE_STATUS || {};
+  function put(id, v) { var el = document.getElementById(id); if (el && v !== null && v !== undefined) el.textContent = v; }
+  put("sBots", st.bots); put("bBots", st.bots); put("aBots", st.bots);
+  put("sOpen", st.openTrades); put("bOpen", st.openTrades);
+  if (st.mode) put("sMode", st.mode + " only");
+  if (st.updated) {
+    var mins = Math.max(0, Math.round((Date.now() - Date.parse(st.updated)) / 60000));
+    var when = mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : mins < 1440 ? Math.round(mins / 60) + " hr ago" : Math.round(mins / 1440) + " d ago";
+    var short = mins < 1 ? "now" : mins < 60 ? mins + "m ago" : mins < 1440 ? Math.round(mins / 60) + "h ago" : Math.round(mins / 1440) + "d ago";
+    put("aWhen", when); put("sWhen", short);
+    var el = document.getElementById("sWhen"); if (el) el.title = new Date(st.updated).toLocaleString();
   }
 
-  Array.prototype.forEach.call(document.querySelectorAll("a.tile"), function (card) {
+  /* ---- sections rise into view; a fallback shows them anyway if the watcher never fires ---- */
+  var bits = document.querySelectorAll(".rise");
+  if ("IntersectionObserver" in window) {
+    var watcher = new IntersectionObserver(function (rows) {
+      rows.forEach(function (r) { if (r.isIntersecting) { r.target.classList.add("in"); watcher.unobserve(r.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+    Array.prototype.forEach.call(bits, function (b) { watcher.observe(b); });
+    setTimeout(function () {
+      Array.prototype.forEach.call(bits, function (b) { if (b.getBoundingClientRect().top < innerHeight) b.classList.add("in"); });
+    }, 1500);
+  } else {
+    Array.prototype.forEach.call(bits, function (b) { b.classList.add("in"); });
+  }
+
+  /* ---- the soft light that follows the pointer across each card ---- */
+  Array.prototype.forEach.call(document.querySelectorAll(".cell"), function (card) {
     card.addEventListener("pointermove", function (e) {
       var box = card.getBoundingClientRect();
       card.style.setProperty("--mx", (e.clientX - box.left) + "px");
@@ -256,49 +469,20 @@
     });
   });
 
-  // The numbers above come from a file the laptop writes every time the site is published,
-  // so they are the real ones rather than something typed in by hand.
-  var st = window.SITE_STATUS;
-  if (st) {
-    if (st.bots) document.getElementById("sBots").textContent = st.bots;
-    if (st.openTrades !== null && st.openTrades !== undefined) document.getElementById("sOpen").textContent = st.openTrades;
-    if (st.mode) document.getElementById("sMode").textContent = st.mode;
-    if (st.updated) {
-      var mins = Math.max(0, Math.round((Date.now() - Date.parse(st.updated)) / 60000));
-      var when = mins < 1 ? "just now"
-               : mins < 60 ? mins + " min ago"
-               : mins < 1440 ? Math.round(mins / 60) + " hr ago"
-               : Math.round(mins / 1440) + " d ago";
-      var el = document.getElementById("sWhen");
-      el.textContent = when;
-      el.title = new Date(st.updated).toLocaleString();
-    }
-  }
-
-  // The thin amber bar at the very top, showing how far down the page you are.
-  var prog = document.getElementById("prog");
-  if (prog) {
-    var tick = false;
-    addEventListener("scroll", function () {
-      if (tick) return;
-      tick = true;
-      requestAnimationFrame(function () {
-        var max = document.documentElement.scrollHeight - innerHeight;
-        prog.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + "%";
-        tick = false;
-      });
-    }, { passive: true });
-  }
-
-  // Keeps a copy of the public pages on the device, so the site opens instantly next time
-  // and still opens with no internet at all. Private pages are never copied.
-  if ("serviceWorker" in navigator) {
-    addEventListener("load", function () {
-      navigator.serviceWorker.register("/sw.js").catch(function () {});
+  /* ---- the thin bar at the top showing how far down the page you are ---- */
+  var prog = document.getElementById("prog"), tick = false;
+  if (prog) addEventListener("scroll", function () {
+    if (tick) return; tick = true;
+    requestAnimationFrame(function () {
+      var max = document.documentElement.scrollHeight - innerHeight;
+      prog.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + "%"; tick = false;
     });
-  }
+  }, { passive: true });
+
+  /* ---- keeps a copy of the public pages so the site opens instantly and offline; private pages are never copied ---- */
+  if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
 })();
 </script>
-<script src="/assets/theme.js?v=7c9a6c3f" defer></script>
+<script src="/assets/theme.js?v=da4bdb92" defer></script>
 </body>
 </html>
