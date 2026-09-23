@@ -25,6 +25,12 @@
     border-radius:var(--radius);box-shadow:var(--shadow)}
   .foot{margin-top:18px;text-align:center}
   .backrow{margin-top:2px}
+  .gwrap{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+  .gwrap[hidden]{display:none}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  .or{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:700}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 </style>
 </head>
 <body>
@@ -49,6 +55,10 @@
   </header>
 
   <div class="box">
+    <div class="gwrap" id="gwrap" hidden>
+      <div id="gbtn"></div>
+      <div class="or">or</div>
+    </div>
     <div class="tabs" role="tablist" id="tabs">
       <button id="tabIn" role="tab" aria-selected="true">Sign in</button>
       <button id="tabUp" role="tab" aria-selected="false">Create account</button>
@@ -240,6 +250,51 @@
   panels.in.addEventListener("submit", function (e) { e.preventDefault(); send(panels.in, "/api/login", "Signing in…"); });
   panels.up.addEventListener("submit", function (e) { e.preventDefault(); send(panels.up, "/api/signup", "Creating…"); });
   panels.re.addEventListener("submit", function (e) { e.preventDefault(); send(panels.re, "/api/reset", "Saving…"); });
+
+
+  /* ---- Continue with Google ---- */
+  // Only shows up once the site has a Google ID. The note Google hands back is checked on the server
+  // against Google's own keys; this page never sees or keeps anything secret.
+  function onGoogle(resp) {
+    say("Checking with Google\u2026", "good");
+    fetch("/api/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ credential: resp && resp.credential })
+    }).then(function (r) {
+      return r.json().catch(function () { return { error: "The server did not answer properly." }; });
+    }).then(function (out) {
+      if (out && out.ok) { location.replace(wanted); return; }
+      say((out && out.error) || "Google sign-in did not work. Try again.");
+    }).catch(function () { say("No connection. Check your internet and try again."); });
+  }
+
+  fetch("/api/google", { credentials: "same-origin" })
+    .then(function (r) { return r.json(); })
+    .then(function (cfg) {
+      if (!cfg || !cfg.clientId) return;
+      var tag = document.createElement("script");
+      tag.src = "https://accounts.google.com/gsi/client";
+      tag.async = true;
+      tag.onload = function () {
+        if (!window.google || !google.accounts || !google.accounts.id) return;
+        google.accounts.id.initialize({
+          client_id: cfg.clientId, callback: onGoogle, ux_mode: "popup",
+          auto_select: false, cancel_on_tap_outside: true
+        });
+        var wrap = document.getElementById("gwrap"), slot = document.getElementById("gbtn");
+        wrap.hidden = false;
+        var light = document.documentElement.getAttribute("data-theme") === "light";
+        google.accounts.id.renderButton(slot, {
+          theme: light ? "outline" : "filled_black", size: "large", shape: "pill",
+          text: "continue_with", logo_alignment: "center",
+          width: Math.max(220, Math.min(400, slot.clientWidth || 320))
+        });
+      };
+      document.head.appendChild(tag);
+    })
+    .catch(function () {});
 
   // Already signed in? Don't make anyone type anything.
   fetch("/api/me", { credentials: "same-origin" })
