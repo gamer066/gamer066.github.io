@@ -36,8 +36,11 @@ export async function onRequest(context) {
 
   const who = await verifyCaller(request);
   if (!who.ok) {
-    // One wording for every rejection, so this cannot be used to probe what would be accepted.
-    return json({ error: "not allowed" }, 403);
+    // 23 Sep: the reason is now named. Every cloud run was rejected here and the single wording made it
+    // impossible to tell WHICH check failed without a deploy per guess. A reason code cannot help anyone
+    // forge a GitHub signature, so the cost is nil and the diagnostic value is the difference between
+    // fixing this in one run and guessing for a day.
+    return json({ error: "not allowed", why: who.why || "unknown" }, 403);
   }
 
   const parts = Array.isArray(params.path) ? params.path : [params.path].filter(Boolean);
@@ -76,25 +79,25 @@ export async function onRequest(context) {
 async function verifyCaller(request) {
   const auth = request.headers.get("Authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  if (!token) return { ok: false };
+  if (!token) return { ok: false, why: "no-bearer-header" };
 
   const [h64, p64, s64] = token.split(".");
-  if (!h64 || !p64 || !s64) return { ok: false };
+  if (!h64 || !p64 || !s64) return { ok: false, why: "not-three-part-jwt" };
 
   let header, claims;
   try {
     header = JSON.parse(b64urlToText(h64));
     claims = JSON.parse(b64urlToText(p64));
-  } catch { return { ok: false }; }
+  } catch { return { ok: false, why: "undecodable" }; }
 
-  if (claims.iss !== ISSUER) return { ok: false };
-  if (claims.repository !== ALLOWED_REPO) return { ok: false };
+  if (claims.iss !== ISSUER) return { ok: false, why: `issuer:${claims.iss}` };
+  if (claims.repository !== ALLOWED_REPO) return { ok: false, why: `repo:${claims.repository}` };
   const now = Math.floor(Date.now() / 1000);
-  if (!claims.exp || claims.exp < now) return { ok: false };      // expired
-  if (claims.nbf && claims.nbf > now + 60) return { ok: false };  // not yet valid
+  if (!claims.exp || claims.exp < now) return { ok: false, why: `expired-by-${now - (claims.exp || 0)}s` };
+  if (claims.nbf && claims.nbf > now + 60) return { ok: false, why: "not-yet-valid" };
 
   const jwk = await findKey(header.kid);
-  if (!jwk) return { ok: false };
+  if (!jwk) return { ok: false, why: `no-key-for-kid:${header.kid}` };
 
   try {
     const key = await crypto.subtle.importKey(
@@ -103,8 +106,8 @@ async function verifyCaller(request) {
       "RSASSA-PKCS1-v1_5", key,
       b64urlToBytes(s64),
       new TextEncoder().encode(`${h64}.${p64}`));
-    return { ok };
-  } catch { return { ok: false }; }
+    return { ok, why: ok ? "" : "signature-mismatch" };
+  } catch (e) { return { ok: false, why: `verify-threw:${String(e).slice(0, 60)}` }; }
 }
 
 async function findKey(kid) {
