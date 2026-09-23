@@ -184,3 +184,9 @@ button.quiet:hover{background:var(--surface-2);color:var(--ink)}
 .remember{display:flex;align-items:center;gap:9px;font-size:.86rem;color:var(--ink-2);cursor:pointer}
 .remember input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
 .rowsplit{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ---------- keyboard and screen-reader help ---------- */
+/* Hidden until someone tabs to it, then it jumps straight past the menu to the page itself. */
+.skip{position:absolute;left:-9999px;top:0;z-index:100;padding:11px 16px;border-radius:0 0 10px 0;
+  background:var(--accent);color:var(--bg);font-weight:700;font-size:.9rem;text-decoration:none}
+.skip:focus{left:0}

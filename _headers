@@ -1,0 +1,31 @@
+# Rules Cloudflare applies to every page it serves. Nothing secret here - these are safety switches.
+
+/*
+  # Nobody may put this site inside a hidden frame on their own page to trick a visitor.
+  X-Frame-Options: DENY
+  # A file is treated as what it says it is, so a picture can never be run as code.
+  X-Content-Type-Options: nosniff
+  # Other sites are told which page a visitor came from, but never the full address of a private page.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # The site never asks for a camera, a microphone or a location, so those are switched off outright.
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  # Browsers must always use the secure connection for this site, for the next two years.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  # The page may only load its own files, its fonts from Google, and prices from Binance's public feed.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://data-api.binance.vision; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+# Pictures and icons barely change, so browsers may keep them for a year.
+/assets/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+# The shared look and the small scripts change with the site, so they are checked more often.
+/assets/*.css
+  Cache-Control: public, max-age=3600
+/assets/*.js
+  Cache-Control: public, max-age=300
+
+# Anything private must never be kept in a shared cache.
+/profile/*
+  Cache-Control: private, no-store
+/trading/*
+  Cache-Control: private, no-store
