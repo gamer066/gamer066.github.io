@@ -83,6 +83,14 @@
   .doc .badge2.mine{background:var(--accent-soft);color:var(--accent)}
   .doc .badge2.final{background:var(--up-soft);color:var(--up)}
   .none{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:.88rem}
+  .doc .acts{grid-column:1/-1;display:flex;gap:14px;margin-top:4px;align-items:baseline}
+  .doc .acts a{font-size:.8rem;font-weight:600;color:var(--accent);text-decoration:none}
+  .doc .acts a:hover{text-decoration:underline}
+  .doc .onsite{color:var(--up);font-size:.68rem;font-weight:700;letter-spacing:.08em}
+  .bar2{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:12px;display:none}
+  .bar2.show{display:block}
+  .bar2 i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent-2),var(--accent));
+    transition:width .25s ease}
 
   .list{display:flex;flex-direction:column;gap:9px}
   .list div{display:flex;gap:11px;align-items:flex-start;font-size:.89rem;color:var(--ink-2)}
@@ -174,7 +182,11 @@
       <div class="toolbar">
         <button class="go" type="button" id="pick">Update from my laptop</button>
         <input type="file" id="file" accept="application/json,.json" hidden>
+        <button class="go quiet" type="button" id="pickDocs">Upload documents</button>
+        <input type="file" id="docsIn" multiple hidden>
       </div>
+      <div class="bar2" id="upBar"><i></i></div>
+      <div class="muted" id="upNote" style="margin-top:8px"></div>
       <div class="muted" id="savedAt" style="margin-top:12px"></div>
     </div>
   </section>
@@ -191,6 +203,7 @@
   var msg = document.getElementById("msg");
   var body = document.getElementById("body");
   var all = [];
+  var stored = {};          // id -> true for every file already kept on the site
   var filterUnit = "";
   var onlyMine = false;
 
@@ -289,6 +302,33 @@
     body.hidden = false;
   }
 
+
+  function docId(unit, name, bytes) {
+    return String(unit || "doc").toLowerCase() + "/" + bytes + "/" + String(name).toLowerCase();
+  }
+  function actions(x) {
+    var id = docId(x.unit, x.name, x.bytes);
+    if (!stored[id]) return "";
+    var q = "/api/doc?id=" + encodeURIComponent(id);
+    return '<div class="acts"><span class="onsite">ON THE SITE</span>' +
+      '<a href="' + q + '" target="_blank" rel="noopener">Open</a>' +
+      '<a href="' + q + '&download=1">Save</a></div>';
+  }
+  function loadStored() {
+    return fetch("/api/doc?list=1", { credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (out) {
+        stored = {};
+        ((out && out.files) || []).forEach(function (f) { stored[f.id] = true; });
+        if (all.length) drawDocs();
+        var n = Object.keys(stored).length;
+        var el = document.getElementById("docCount");
+        if (el && n) el.setAttribute("title", n + " on the site");
+        return n;
+      })
+      .catch(function () { return 0; });
+  }
+
   function drawDocs() {
     var q = (document.getElementById("find").value || "").toLowerCase().trim();
     var rows = all.filter(function (x) {
@@ -307,7 +347,7 @@
       return '<div class="doc"><div class="nm"><span class="badge2 ' + cls + '">' + esc(x.unit) + " \u00b7 " +
         esc(role) + '</span>' + esc(x.name) + '</div><div class="sz">' + esc(size(x.bytes)) + "</div>" +
         '<div class="meta">' + esc(x.kind) + " \u00b7 changed " + esc(day(x.modified)) + " \u00b7 " +
-        esc(x.where) + "</div></div>";
+        esc(x.where) + "</div>" + actions(x) + "</div>";
     }).join("") : '<div class="none">Nothing matches that.</div>';
   }
 
@@ -389,7 +429,58 @@
     this.value = "";
   });
 
+
+  /* Uploading the actual files, one at a time, matched to the laptop's list by name and size. */
+  document.getElementById("pickDocs").addEventListener("click", function () {
+    document.getElementById("docsIn").click();
+  });
+  document.getElementById("docsIn").addEventListener("change", function () {
+    var files = Array.prototype.slice.call(this.files || []);
+    this.value = "";
+    if (!files.length) return;
+    var total = files.length;
+    var button = document.getElementById("pickDocs");
+    var bar = document.getElementById("upBar"), fill = bar.querySelector("i");
+    var note = document.getElementById("upNote");
+    var done = 0, failed = [];
+    button.disabled = true;
+    bar.className = "bar2 show";
+    fill.style.width = "0%";
+
+    function unitFor(f) {
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].name.toLowerCase() === f.name.toLowerCase() && all[i].bytes === f.size) return all[i].unit;
+      }
+      return "other";
+    }
+    function next() {
+      if (!files.length) {
+        button.disabled = false;
+        note.textContent = "Uploaded " + done + " of " + total +
+          (failed.length ? ". Could not upload: " + failed.join(", ") : ".");
+        loadStored();
+        return;
+      }
+      var f = files.shift();
+      note.textContent = "Uploading " + (done + failed.length + 1) + " of " + total + ": " + f.name;
+      fetch("/api/doc", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "X-Doc-Name": encodeURIComponent(f.name), "X-Doc-Unit": encodeURIComponent(unitFor(f)) },
+        body: f
+      }).then(function (r) { return r.json(); }).then(function (out) {
+        if (out && out.ok) done++;
+        else failed.push(f.name + (out && out.error ? " (" + out.error + ")" : ""));
+      }).catch(function () { failed.push(f.name); }).then(function () {
+        fill.style.width = Math.round(((done + failed.length) / total) * 100) + "%";
+        next();
+      });
+    }
+    next();
+  });
+
   load();
+  loadStored();
 })();
 </script>
 <script src="/assets/account.js?v=379a43d3" defer></script>
