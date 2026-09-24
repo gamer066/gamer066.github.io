@@ -53,7 +53,10 @@
     }
     function size() {
       var ratio = Math.min(2, window.devicePixelRatio || 1);
+      var hadNoRoom = !w || !h;
       w = canvas.clientWidth; h = canvas.clientHeight;
+      // dots made while the page had no size all sit in one corner; spread them out once it has room
+      if (hadNoRoom && w && h) dots.forEach(function (d) { d.x = Math.random() * w; d.y = Math.random() * h; });
       canvas.width = Math.round(w * ratio); canvas.height = Math.round(h * ratio);
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       var want = Math.round(Math.max(18, Math.min(72, (w * h) / 22000)) * density);
@@ -97,8 +100,14 @@
     readColours(); size();
     if (still) frame(); else go();
     addEventListener("resize", function () { size(); if (still) frame(); });
+    // A page opened in a background tab starts with no size at all; measure again the moment it has one.
+    if ("ResizeObserver" in window) new ResizeObserver(function () { size(); if (still) frame(); }).observe(canvas);
     addEventListener("pointermove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-    document.addEventListener("visibilitychange", function () { if (!document.hidden && !still) go(); });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) return;
+      size();
+      if (still) frame(); else go();
+    });
     new MutationObserver(function () { readColours(); if (still) frame(); })
       .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   }

@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/style.css?v=96bbe11d">
+<link rel="stylesheet" href="/assets/style.css?v=b5b889c6">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <script>document.documentElement.classList.add("js")</script>
 <style>
@@ -37,22 +37,6 @@
      a feature marquee, a bento grid, a closing call-to-action and a real footer.
      Every number on the page is real (assets/status.js). None of it is made up for show.
      ===================================================================== */
-
-  /* ---------- backdrop: a faint grid fading out from the top, and two slow glows ---------- */
-  .backdrop{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-  .backdrop .grid{position:absolute;inset:-1px;
-    background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
-    background-size:56px 56px;
-    -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
-            mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
-    opacity:.55}
-  .backdrop .glow{position:absolute;border-radius:50%;filter:blur(100px)}
-  .backdrop .g1{width:62vw;height:42vw;left:19vw;top:-22vw;background:rgba(167,139,250,.20);animation:float1 24s ease-in-out infinite}
-  .backdrop .g2{width:30vw;height:30vw;right:-8vw;top:28vh;background:rgba(52,211,153,.07);animation:float2 30s ease-in-out infinite}
-  @keyframes float1{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-3vw,3vh,0) scale(1.06)}}
-  @keyframes float2{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-4vw,-4vh,0)}}
-  :root[data-theme="light"] .backdrop .g1{background:rgba(109,40,217,.14)}
-  :root[data-theme="light"] .backdrop .grid{opacity:.8}
 
   .wide{max-width:1080px;margin:0 auto;padding-inline:20px}
   @media (max-width:480px){.wide{padding-inline:16px}}
@@ -221,15 +205,6 @@
      a shimmering gradient headline, glowing buttons with a light sweep, 3D-tilting cards and numbers
      that count up. Everything here switches itself off for anyone who has asked their device for less motion.
      ===================================================================== */
-  @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
-
-  .backdrop .g2{background:rgba(34,211,238,.10)}
-  .backdrop .grid{background-image:linear-gradient(rgba(167,139,250,.08) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(167,139,250,.08) 1px,transparent 1px)}
-  :root[data-theme="light"] .backdrop .grid{background-image:linear-gradient(rgba(109,40,217,.07) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(109,40,217,.07) 1px,transparent 1px)}
-  #stars{position:absolute;inset:0;width:100%;height:100%}
-
   .hero h1{font-weight:700;letter-spacing:-.045em}
   .hero h1 em{font-style:normal;font-weight:700;
     background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3),var(--accent));
@@ -490,7 +465,7 @@
 
 </main>
 
-<script src="/assets/status.js?v=4d6ca1d1"></script>
+<script src="/assets/status.js?v=61320272"></script>
 <script src="/assets/account.js?v=379a43d3" defer></script>
 <script>
 (function () {
@@ -570,79 +545,9 @@
     });
   }
 
-  /* ---- cards tilt in 3D under the pointer (mouse only; phones keep them flat) ---- */
-  if (finePointer && !still) {
-    Array.prototype.forEach.call(document.querySelectorAll(".cell"), function (card) {
-      card.addEventListener("pointermove", function (e) {
-        var b = card.getBoundingClientRect();
-        var x = (e.clientX - b.left) / b.width - 0.5, y = (e.clientY - b.top) / b.height - 0.5;
-        card.style.transform = "perspective(900px) rotateX(" + (-y * 5).toFixed(2) + "deg) rotateY(" + (x * 6).toFixed(2) + "deg) translateY(-3px)";
-      });
-      card.addEventListener("pointerleave", function () { card.style.transform = ""; });
-    });
-  }
-
-  /* ---- the live particle network behind everything ---- */
-  (function () {
-    var canvas = document.getElementById("stars");
-    if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext("2d"), dots = [], w = 0, h = 0, ratio = 1, mouse = { x: -9999, y: -9999 };
-    var colours = [];
-
-    function readColours() {
-      var cs = getComputedStyle(document.documentElement);
-      colours = [cs.getPropertyValue("--accent").trim() || "#A78BFA", cs.getPropertyValue("--accent-2").trim() || "#22D3EE"];
-    }
-    function size() {
-      ratio = Math.min(2, window.devicePixelRatio || 1);
-      w = canvas.clientWidth; h = canvas.clientHeight;
-      canvas.width = Math.round(w * ratio); canvas.height = Math.round(h * ratio);
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      var want = Math.max(24, Math.min(72, Math.round((w * h) / 22000)));
-      while (dots.length < want) dots.push({ x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r: Math.random() * 1.4 + 0.6,
-        c: Math.random() < 0.5 ? 0 : 1 });
-      dots.length = want;
-    }
-    function hexA(hex, a) {
-      var h6 = hex.replace("#", ""); if (h6.length !== 6) return "rgba(167,139,250," + a + ")";
-      return "rgba(" + parseInt(h6.slice(0, 2), 16) + "," + parseInt(h6.slice(2, 4), 16) + "," + parseInt(h6.slice(4, 6), 16) + "," + a + ")";
-    }
-    function frame() {
-      ctx.clearRect(0, 0, w, h);
-      var link = 130;
-      for (var i = 0; i < dots.length; i++) {
-        var d = dots[i];
-        if (!still) {
-          d.x += d.vx; d.y += d.vy;
-          if (d.x < -10) d.x = w + 10; if (d.x > w + 10) d.x = -10;
-          if (d.y < -10) d.y = h + 10; if (d.y > h + 10) d.y = -10;
-          var mx = d.x - mouse.x, my = d.y - mouse.y, md = mx * mx + my * my;
-          if (md < 16000) { d.x += mx * 0.006; d.y += my * 0.006; }
-        }
-        for (var j = i + 1; j < dots.length; j++) {
-          var e = dots[j], dx = d.x - e.x, dy = d.y - e.y, dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < link) {
-            ctx.strokeStyle = hexA(colours[d.c], (1 - dist / link) * 0.22);
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(e.x, e.y); ctx.stroke();
-          }
-        }
-        ctx.fillStyle = hexA(colours[d.c], 0.75);
-        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill();
-      }
-      if (!still && !document.hidden) requestAnimationFrame(frame);
-    }
-
-    readColours(); size(); frame();
-    addEventListener("resize", function () { size(); if (still) frame(); });
-    addEventListener("pointermove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-    document.addEventListener("visibilitychange", function () { if (!document.hidden && !still) requestAnimationFrame(frame); });
-    new MutationObserver(function () { readColours(); if (still) frame(); })
-      .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  })();
 })();
 </script>
+<script src="/assets/fx.js?v=1c9ac3aa" defer></script>
 <script src="/assets/theme.js?v=a95a3270" defer></script>
 </body>
 </html>
