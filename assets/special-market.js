@@ -121,9 +121,11 @@
     var sock = null, stopped = false, fails = 0, timer = null, gaveUp = false;
     function open() {
       if (stopped || gaveUp || (hasDoc && document.hidden)) return;
+      clearTimeout(timer);
+      if (sock) return;
       try { sock = new WebSocket(WS + name); } catch (e) { fail(); return; }
       sock.onopen = function () { fails = 0; };
-      sock.onmessage = function (ev) { var d; try { d = JSON.parse(ev.data); } catch (e) { return; } try { onMsg(d); } catch (e) {} };
+      sock.onmessage = function (ev) { if (stopped) return; var d; try { d = JSON.parse(ev.data); } catch (e) { return; } try { onMsg(d); } catch (e) {} };
       sock.onclose = function () { sock = null; if (!stopped) fail(); };
       sock.onerror = function () { try { sock && sock.close(); } catch (e) {} };
     }
@@ -135,7 +137,7 @@
     function vis() {
       if (stopped) return;
       if (document.hidden) { if (sock) { var s = sock; sock = null; s.onclose = null; try { s.close(); } catch (e) {} } }
-      else if (!sock && !gaveUp) { fails = 0; open(); }
+      else if (!sock && !gaveUp) { clearTimeout(timer); fails = 0; open(); }
     }
     if (hasDoc) document.addEventListener("visibilitychange", vis);
     open();
@@ -246,9 +248,10 @@
       if (oi !== null) { set("oi", compact(oi)); set("oiusd", prem && prem.mark ? compact(oi * prem.mark) : "—"); }
     }
     function load() {
-      get("premiumIndex?symbol=" + sym).then(function (p) { prem = parsePremium(p); paint(); }).catch(function () {});
-      get("ticker/24hr?symbol=" + sym).then(function (t) { tick = parseTicker(t); paint(); }).catch(function () {});
-      get("openInterest?symbol=" + sym).then(function (o) { oi = n(o && o.openInterest); paint(); }).catch(function () {});
+      var want = sym;
+      get("premiumIndex?symbol=" + want).then(function (p) { if (want !== sym) return; prem = parsePremium(p); paint(); }).catch(function () {});
+      get("ticker/24hr?symbol=" + want).then(function (t) { if (want !== sym) return; tick = parseTicker(t); paint(); }).catch(function () {});
+      get("openInterest?symbol=" + want).then(function (o) { if (want !== sym) return; oi = n(o && o.openInterest); paint(); }).catch(function () {});
     }
     function start() {
       stops.push(every(load, 20000));
@@ -256,7 +259,12 @@
     }
     function stop() { stops.forEach(function (f) { f(); }); stops = []; }
     start();
-    return { stop: stop, setSymbol: function (s, d) { if (!okSym(s)) return; sym = s; dp = d || dp; prem = tick = null; oi = null; stop(); start(); } };
+    return { stop: stop, setSymbol: function (s, d) {
+      if (!okSym(s)) return;
+      sym = s; dp = d || dp; prem = tick = null; oi = null; stop();
+      Array.prototype.forEach.call(el.querySelectorAll("[data-k]"), function (b) { b.textContent = "\u2014"; b.className = ""; });
+      start();
+    } };
   }
 
   /* ---------- order book ---------- */
@@ -292,9 +300,10 @@
       s[0].textContent = fmt(l.p, dp); s[1].textContent = compact(l.q); s[2].textContent = compact(l.cum);
       row.style.setProperty("--w", l.pct.toFixed(1) + "%");
     }
-    function poll() { stopPoll = every(function () { get("depth?symbol=" + sym + "&limit=20").then(function (d) { book = parseBook(d.bids, d.asks, rows); paint(); }).catch(function () {}); }, 3000); }
+    function rest() { var want = sym; get("depth?symbol=" + want + "&limit=20").then(function (d) { if (want !== sym) return; book = parseBook(d.bids, d.asks, rows); paint(); }).catch(function () {}); }
+    function poll() { stopPoll = every(rest, 3000); }
     function start() {
-      get("depth?symbol=" + sym + "&limit=20").then(function (d) { book = parseBook(d.bids, d.asks, rows); paint(); }).catch(function () {});
+      rest();
       stopWs = stream(sym.toLowerCase() + "@depth20@500ms", function (d) { if (d && (d.b || d.bids)) { book = parseBook(d.b || d.bids, d.a || d.asks, rows); paint(); } }, poll);
     }
     function stop() { if (stopWs) stopWs(); if (stopPoll) stopPoll(); stopWs = stopPoll = null; }
@@ -326,9 +335,10 @@
           compact(t.q) + "</span><span>" + esc(clock(t.t)) + "</span></div>";
       }).join("");
     }, 250);
-    function poll() { stopPoll = every(function () { get("aggTrades?symbol=" + sym + "&limit=" + max).then(function (rows) { rows.map(parseAgg).forEach(add); paint(); }).catch(function () {}); }, 3000); }
+    function rest() { var want = sym; get("aggTrades?symbol=" + want + "&limit=" + max).then(function (rows) { if (want !== sym) return; rows.map(parseAgg).forEach(add); paint(); }).catch(function () {}); }
+    function poll() { stopPoll = every(rest, 3000); }
     function start() {
-      get("aggTrades?symbol=" + sym + "&limit=" + max).then(function (rows) { rows.map(parseAgg).forEach(add); paint(); }).catch(function () {});
+      rest();
       stopWs = stream(sym.toLowerCase() + "@aggTrade", function (d) { add(parseAgg(d)); paint(); }, poll);
     }
     function stop() { if (stopWs) stopWs(); if (stopPoll) stopPoll(); stopWs = stopPoll = null; }

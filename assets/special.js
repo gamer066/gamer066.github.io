@@ -18,6 +18,7 @@
   function num(v) { return typeof v === "number" && isFinite(v) ? v : null; }
   function okSymbol(s) { return typeof s === "string" && /^[A-Z0-9]{2,20}$/.test(s); }
   function okId(s) { return typeof s === "string" && /^[a-z0-9-]{1,40}$/.test(s); }
+  function okFrame(f) { return typeof f === "string" && Object.prototype.hasOwnProperty.call(FRAMES, f); }
 
   /* ---- money and numbers ---- */
   function money(v, signed) {
@@ -33,6 +34,7 @@
   }
   function price(v, dp) {
     if (num(v) === null) return "—";
+    dp = Math.max(0, Math.min(8, dp | 0));
     return v.toLocaleString(undefined, { minimumFractionDigits: dp, maximumFractionDigits: dp });
   }
   function tone(v) { return num(v) === null || v === 0 ? "" : v > 0 ? "up" : "down"; }
@@ -98,7 +100,7 @@
 
   /* ---- live prices from Binance's public futures feed ---- */
   function klines(symbol, frame, limit) {
-    if (!okSymbol(symbol) || !FRAMES[frame]) return Promise.reject(new Error("bad symbol or frame"));
+    if (!okSymbol(symbol) || !okFrame(frame)) return Promise.reject(new Error("bad symbol or frame"));
     return fetch(FAPI + "klines?symbol=" + symbol + "&interval=" + frame + "&limit=" + (limit || 500))
       .then(function (r) { if (!r.ok) throw new Error("status " + r.status); return r.json(); });
   }
@@ -111,6 +113,7 @@
      5 seconds if the stream cannot connect. Returns a stop() function. */
   function stream(symbol, frame, onCandle, onState) {
     var stopped = false, sock = null, poll = null, fails = 0;
+    if (!okSymbol(symbol) || !okFrame(frame)) return function () {};
     function usePolling() {
       if (poll || stopped) return;
       onState && onState("delayed");
@@ -126,6 +129,7 @@
       catch (e) { usePolling(); return; }
       sock.onopen = function () { fails = 0; onState && onState("live"); };
       sock.onmessage = function (ev) {
+        if (stopped) return;
         try {
           var k = JSON.parse(ev.data).k;
           if (k) onCandle({ t: k.t, o: +k.o, h: +k.h, l: +k.l, c: +k.c, v: +k.v });
@@ -156,7 +160,7 @@
   }
 
   window.SDLSpecial = {
-    FRAMES: FRAMES, esc: esc, num: num, okId: okId, okSymbol: okSymbol, money: money, pct: pct, price: price,
+    FRAMES: FRAMES, esc: esc, num: num, okId: okId, okSymbol: okSymbol, okFrame: okFrame, money: money, pct: pct, price: price,
     tone: tone, when: when, ago: ago, load: load, stats: stats, klines: klines, ticker: ticker, stream: stream,
     statusPill: statusPill
   };

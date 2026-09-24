@@ -45,6 +45,8 @@
   .term{position:relative;background:var(--tv-bg);border:1px solid var(--tv-line);border-radius:14px;overflow:hidden;
     box-shadow:0 30px 80px -40px rgba(0,0,0,.9);display:flex;flex-direction:column}
   .term:fullscreen{border-radius:0;border:0;height:100vh;overflow:auto}
+  .term:-webkit-full-screen{border-radius:0;border:0;height:100vh;overflow:auto}
+  .tb[hidden]{display:none}
   .tbar{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--tv-line)}
   .symx{display:flex;align-items:center;gap:10px;min-width:0}
   .symx b{display:block;font-size:.98rem;font-weight:700;color:#fff;letter-spacing:.01em}
@@ -341,10 +343,10 @@
 </div>
 
 <script src="/assets/lwc-5.2.1.js"></script>
-<script src="/assets/special.js?v=da985bc8"></script>
+<script src="/assets/special.js?v=470dcc47"></script>
 <script src="/assets/special-ind.js?v=be597379"></script>
-<script src="/assets/special-perf.js?v=c6017e37"></script>
-<script src="/assets/special-market.js?v=769cf741"></script>
+<script src="/assets/special-perf.js?v=35d030ab"></script>
+<script src="/assets/special-market.js?v=bbd38722"></script>
 <script>
 (function () {
   var S = window.SDLSpecial, LW = window.LightweightCharts, I = window.SDLInd, P = window.SDLPerf, M = window.SDLMarket;
@@ -364,7 +366,7 @@
   var bot = null, st = null, frame = "1h", dp = 2, sym = "", ctype = "candles", stopStream = null, lastPx = null, open24 = null;
   var chart = null, main = null, vol = null, marks = null, posLines = [], alertLines = [], bars = [], tIndex = {}, lastBar = null;
   var active = [], indSeries = [], indData = {}, cmpSym = "", cmpSeries = null, cmpTimer = null, logOn = false, magOn = false;
-  var gen = 0, watch = null, book = null, tape = null, details = null, mdata = {};
+  var gen = 0, watch = null, book = null, tape = null, details = null, mdata = {}, hoverT = null, prevBy = {};
 
   function chartMsg(t) { var m = $("chartMsg"); m.textContent = t || ""; m.hidden = !t; }
   function viewingBot() { return !!bot && sym === bot.symbol; }
@@ -458,12 +460,12 @@
       try {
         if (full) x.s.setData(x.hist ? I.toHist(bars, arr) : I.toLine(bars, arr, !!x.gaps));
         else if (x.hist) { var h = I.toHist(bars, arr); if (h.length) x.s.update(h[h.length - 1]); }
-        else { var lp = I.lastPoint(bars, arr); if (lp) x.s.update(lp); }
+        else { var lp = I.lastPoint(bars, arr); if (lp) x.s.update(lp); else if (x.gaps) x.s.update({ time: bars[bars.length - 1].time }); }
       } catch (e) {}
     });
   }
   var indTimer = null;
-  function indLive() { if (indTimer) return; indTimer = setTimeout(function () { indTimer = null; indFill(false); legend(null); }, 600); }
+  function indLive() { if (indTimer) return; indTimer = setTimeout(function () { indTimer = null; indFill(false); legend(hoverT); }, 600); }
   function indMenu() {
     var groups = [["On the price", ["ema20", "ema50", "sma200", "bb", "vwap", "st", "dc", "vol"]], ["Below the chart", ["rsi", "macd", "srsi", "atr"]]];
     $("indPop").innerHTML = groups.map(function (g) {
@@ -487,12 +489,13 @@
       crosshair: { mode: LW.CrosshairMode.Normal,
         vertLine: { color: "#758696", labelBackgroundColor: "#2A2E39" }, horzLine: { color: "#758696", labelBackgroundColor: "#2A2E39" } },
       rightPriceScale: { borderColor: "#2A2E39", scaleMargins: { top: 0.1, bottom: 0.22 } },
-      timeScale: { borderColor: "#2A2E39", timeVisible: true, secondsVisible: false, rightOffset: 6, barSpacing: 8 }
+      timeScale: { borderColor: "#2A2E39", timeVisible: true, secondsVisible: false, rightOffset: 6, barSpacing: 8 },
+      handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false }
     });
     vol = chart.addSeries(LW.HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "", lastValueVisible: false, priceLineVisible: false });
     vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
     makeMain();
-    chart.subscribeCrosshairMove(function (p) { legend(p && p.time !== undefined ? p.time : null); });
+    chart.subscribeCrosshairMove(function (p) { hoverT = p && p.time !== undefined ? p.time : null; legend(hoverT); });
     return true;
   }
   function isOHLC() { return ctype === "candles" || ctype === "hollow" || ctype === "bars" || ctype === "ha"; }
@@ -552,15 +555,16 @@
     if (R.macd) add("macd", f(at(R.macd.macd), dp) + " / " + f(at(R.macd.signal), dp));
     if (R.srsi) add("srsi", f(at(R.srsi.k), 1) + " / " + f(at(R.srsi.d), 1));
     if (R.atr) add("atr", v(at(R.atr)));
-    if (cmpSym) parts.push("<span style='color:#FF9800'>vs " + S.esc(cmpSym) + " (% change)</span>");
+    if (cmpSym) parts.push("<span style='color:#FF9800'>orange line = " + S.esc(cmpSym) + ", scaled to start at this price</span>");
     $("legend").innerHTML = h + (parts.length ? '<div class="l2">' + parts.join("") + "</div>" : "");
   }
 
   function setTfButtons() {
     Array.prototype.forEach.call(document.querySelectorAll("#tfs .tb"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-tf") === frame)); });
   }
-  function load(tf) {
+  function load(tf, keep) {
     var my = ++gen;
+    var view = keep && chart && bars.length ? chart.timeScale().getVisibleLogicalRange() : null, oldLen = bars.length, oldLast = lastBar ? lastBar.time : 0;
     frame = tf; setTfButtons();
     if (stopStream) { stopStream(); stopStream = null; }
     chartMsg("");
@@ -581,7 +585,11 @@
       vol.setData(bars.map(volBar));
       rebuildInd();
       var n = bars.length;
-      chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, n - 140), to: n + 6 });
+      if (view && oldLen) {
+        // at the live edge: keep following it; scrolled back: keep the same candles in view
+        var shift = view.to >= oldLen - 2 ? 0 : Math.round((bars[n - 1].time - oldLast) / S.FRAMES[tf]);
+        chart.timeScale().setVisibleLogicalRange({ from: view.from - shift, to: view.to - shift });
+      } else chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, n - 140), to: n + 6 });
       tick(lastBar.close);
       legend(null);
       if (cmpSym) loadCompare();
@@ -598,6 +606,7 @@
   function onCandle(k) {
     var b = bar(k);
     if (!bars.length || b.time < lastBar.time) return;
+    if (b.time > lastBar.time + S.FRAMES[frame]) { load(frame, true); return; }   // candles were missed while offline
     if (b.time === lastBar.time) bars[bars.length - 1] = b;
     else { bars.push(b); tIndex[b.time] = bars.length - 1; }
     lastBar = b;
@@ -631,7 +640,7 @@
   function barAt(iso) {
     var t = Date.parse(iso), secs = S.FRAMES[frame];
     if (isNaN(t)) return null;
-    return Math.floor((Math.floor(t / 1000) + TZ) / secs) * secs;
+    return Math.floor(t / 1000 / secs) * secs + TZ;   // candles open on UTC boundaries, drawn shifted to local time
   }
   function drawMarkers() {
     if (!marks || !bars.length || !st) return;
@@ -670,17 +679,22 @@
   function loadCompare() {
     if (cmpTimer) { clearInterval(cmpTimer); cmpTimer = null; }
     if (cmpSeries) { try { chart.removeSeries(cmpSeries); } catch (e) {} cmpSeries = null; }
-    if (!cmpSym) { chart.priceScale("right").applyOptions({ mode: logOn ? 1 : 0 }); legend(null); return; }
+    if (!cmpSym) { legend(hoverT); return; }
     var want = cmpSym, my = gen;
     function fill() {
       S.klines(want, frame, 700).then(function (rows) {
         if (want !== cmpSym || my !== gen) return;
         var data = rows.map(function (k) { return { time: Math.floor(k[0] / 1000) + TZ, value: +k[4] }; })
           .filter(function (p) { return tIndex[p.time] !== undefined; });
-        if (!cmpSeries) cmpSeries = chart.addSeries(LW.LineSeries, { color: "#FF9800", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: want }, 0);
+        if (!data.length) return;
+        // scaled so it starts at this market's price on the first shared candle: both then move on one scale,
+        // and the indicators, bands and log scale all stay correct
+        var c0 = data[0].value, m0 = bars[tIndex[data[0].time]].close;
+        data = data.map(function (p) { return { time: p.time, value: c0 ? p.value * m0 / c0 : p.value }; });
+        if (!cmpSeries) cmpSeries = chart.addSeries(LW.LineSeries, { color: "#FF9800", lineWidth: 2, priceLineVisible: false, lastValueVisible: false,
+          title: want, priceFormat: { type: "price", precision: dp, minMove: Math.pow(10, -dp) } }, 0);
         cmpSeries.setData(data);
-        chart.priceScale("right").applyOptions({ mode: 2 });   // % change, so both markets share one scale
-        legend(null);
+        legend(hoverT);
       }).catch(function () { say("Could not load " + want + " to compare."); });
     }
     fill();
@@ -688,7 +702,34 @@
   }
 
   /* ================= alerts ================= */
-  function alerts() { var a = store("alerts"); return (Array.isArray(a) ? a : []).filter(function (x) { return x && S.num(x.price) !== null && S.okSymbol(x.sym); }); }
+  function alerts() {
+    var a = store("alerts");
+    return (Array.isArray(a) ? a : []).filter(function (x) { return x && S.num(x.price) !== null && S.okSymbol(x.sym); })
+      .map(function (x) { var d = Math.round(+x.dp); return { sym: x.sym, price: x.price, dp: d >= 0 && d <= 8 ? d : 2 }; });
+  }
+  function notify(text, tag) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    var opts = { body: text, tag: tag };
+    try {
+      // phones (Android) only show notifications through the service worker
+      if (navigator.serviceWorker) navigator.serviceWorker.getRegistration().then(function (r) {
+        if (r && r.showNotification) r.showNotification("Price alert", opts); else new Notification("Price alert", opts);
+      }).catch(function () {});
+      else new Notification("Price alert", opts);
+    } catch (e) {}
+  }
+  function fire(a) { var text = a.sym + " reached " + S.price(a.price, a.dp); say("Alert: " + text, "good"); notify(text, "sdl-" + a.sym + "-" + a.price); }
+  /* alerts on the other watched markets, checked with the watchlist prices that arrive every 10 seconds */
+  function otherAlerts(d) {
+    var keep = [], hit = [];
+    alerts().forEach(function (a) {
+      var now = a.sym !== sym && d[a.sym] ? d[a.sym].last : null, prev = prevBy[a.sym];
+      if (now !== null && prev !== undefined && ((prev < a.price && now >= a.price) || (prev > a.price && now <= a.price))) hit.push(a); else keep.push(a);
+    });
+    Object.keys(d).forEach(function (k) { if (d[k] && d[k].last !== null) prevBy[k] = d[k].last; });
+    if (!hit.length) return;
+    store("alerts", keep); drawAlerts(); hit.forEach(fire);
+  }
   function drawAlerts() {
     if (main) {
       alertLines.forEach(function (l) { try { main.removePriceLine(l); } catch (e) {} });
@@ -709,11 +750,7 @@
     });
     if (!hit.length) return;
     store("alerts", keep); drawAlerts();
-    hit.forEach(function (a) {
-      var text = a.sym + " reached " + S.price(a.price, a.dp || 2);
-      say("Alert: " + text, "good");
-      try { if ("Notification" in window && Notification.permission === "granted") new Notification("Price alert", { body: text, tag: "sdl-" + a.sym + "-" + a.price }); } catch (e) {}
-    });
+    hit.forEach(fire);
   }
 
   /* ================= side panels ================= */
@@ -724,17 +761,18 @@
       if (it.symbol === bot.symbol) return;
       var o = document.createElement("option"); o.value = it.symbol; o.textContent = it.label + " (" + it.symbol + ")"; $("cmp").appendChild(o);
     });
-    watch = M.mountWatchlist($("watch"), items, { active: sym, onPick: switchSymbol, onData: function (d) { mdata = d; marketContext(); } });
+    watch = M.mountWatchlist($("watch"), items, { active: sym, onPick: switchSymbol, onData: function (d) { mdata = d; marketContext(); otherAlerts(d); } });
     book = M.mountBook($("book"), sym, { dp: dp, rows: 10 });
     details = M.mountDetails($("details"), sym, { dp: dp });
   }
   function switchSymbol(s) {
     if (!S.okSymbol(s) || s === sym) return;
     sym = s;
-    if (cmpSym === s) { cmpSym = ""; $("cmp").value = ""; }
+    if (cmpSym === s) { cmpSym = ""; $("cmp").value = ""; loadCompare(); }
     header();
     if (watch) watch.setActive(s);
     load(frame).then(function () {
+      if (s !== sym) return;
       if (book) book.setSymbol(s, dp); if (tape) tape.setSymbol(s, dp); if (details) details.setSymbol(s, dp);
       drawAlerts();
     });
@@ -802,7 +840,7 @@
   var filter = "all", eqChart = null;
   function report() {
     if (!P) { $("sum").innerHTML = '<div class="empty">The report could not load.</div>'; return; }
-    var a = P.analyze(bot.trades || [], bot.start_balance, TZ);
+    var a = P.analyze(Array.isArray(bot.trades) ? bot.trades : [], bot.start_balance, TZ);
     $("tradeCount").textContent = a.n ? a.n + (a.n === 1 ? " closed trade" : " closed trades") : "";
     $("sum").innerHTML = P.summaryHTML(a);
     $("repNote").textContent = a.n ? P.NOTE : "";
@@ -830,7 +868,7 @@
     eqChart.timeScale().fitContent();
   }
   function tradeList() {
-    var list = (bot.trades || []).filter(function (t) {
+    var list = (Array.isArray(bot.trades) ? bot.trades : []).filter(function (t) {
       if (!t || S.num(t.result_usd) === null) return false;
       if (filter === "long") return t.side !== "short";
       if (filter === "short") return t.side === "short";
@@ -897,7 +935,9 @@
   }
   function full() {
     var t = $("term");
-    try { if (document.fullscreenElement) document.exitFullscreen(); else if (t.requestFullscreen) t.requestFullscreen(); } catch (e) {}
+    var on = document.fullscreenElement || document.webkitFullscreenElement;
+    var req = t.requestFullscreen || t.webkitRequestFullscreen, ex = document.exitFullscreen || document.webkitExitFullscreen;
+    try { var r = on ? (ex && ex.call(document)) : (req && req.call(t)); if (r && r.catch) r.catch(function () {}); } catch (e) {}
   }
   function wire() {
     $("tfs").addEventListener("click", function (e) {
@@ -914,7 +954,7 @@
     $("cmp").addEventListener("change", function () { cmpSym = this.value; loadCompare(); });
     $("logBtn").addEventListener("click", function () {
       logOn = !logOn; this.setAttribute("aria-pressed", String(logOn));
-      if (!cmpSym) chart.priceScale("right").applyOptions({ mode: logOn ? 1 : 0 });
+      chart.priceScale("right").applyOptions({ mode: logOn ? 1 : 0 });
     });
     $("magBtn").addEventListener("click", function () {
       magOn = !magOn; this.setAttribute("aria-pressed", String(magOn));
@@ -923,6 +963,7 @@
     $("nowBtn").addEventListener("click", function () { chart.timeScale().scrollToRealTime(); });
     $("shotBtn").addEventListener("click", shot);
     $("fullBtn").addEventListener("click", full);
+    if (!(document.fullscreenEnabled || document.webkitFullscreenEnabled)) $("fullBtn").hidden = true;
     $("alertBtn").addEventListener("click", function () { $("alertIn").value = lastPx !== null ? lastPx.toFixed(dp) : ""; drawAlerts(); openPop("alertPop", "alertBtn"); });
     $("alertAdd").addEventListener("click", function () {
       var v = parseFloat($("alertIn").value);
@@ -975,11 +1016,11 @@
       Array.prototype.forEach.call(document.querySelectorAll(".tfilter [data-f]"), function (o) { o.setAttribute("aria-pressed", String(o === b)); });
       tradeList();
     });
-    $("csvBtn").addEventListener("click", function () { if (P) P.downloadCSV(bot.trades || [], bot.id + "-trades.csv"); });
+    $("csvBtn").addEventListener("click", function () { if (P) P.downloadCSV(Array.isArray(bot.trades) ? bot.trades : [], bot.id + "-trades.csv"); });
     if (P && P.bindSort) P.bindSort($("tlist"));
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) { if (stopStream) { stopStream(); stopStream = null; } }
-      else if (bot && chart) { load(frame); day24(); }
+      else if (bot && chart) { load(frame, true); day24(); }
     });
   }
 
@@ -999,7 +1040,7 @@
     if (!makeChart()) return;
     wire();
     var pick = store("tf");
-    load(S.FRAMES[pick] ? pick : (S.FRAMES[bot.timeframe] ? bot.timeframe : "1h")).then(function () { mountSide(); drawAlerts(); });
+    load(S.okFrame(pick) ? pick : (S.okFrame(bot.timeframe) ? bot.timeframe : "1h")).then(function () { mountSide(); drawAlerts(); });
     day24();
     setInterval(function () { if (!document.hidden) refreshData(); }, 300000);
     setInterval(function () { if (!document.hidden) day24(); }, 600000);

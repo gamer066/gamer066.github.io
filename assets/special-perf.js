@@ -43,7 +43,7 @@
   }
   function num(v) { return typeof v === "number" && isFinite(v) ? v : null; }
   function time(v) {
-    if (typeof v === "number") return isFinite(v) ? v : null;
+    if (typeof v === "number") return isFinite(v) && Math.abs(v) <= 8.64e15 ? v : null;   // outside JS dates = not a time
     if (typeof v !== "string" || !v) return null;
     var t = Date.parse(v);
     return isNaN(t) ? null : t;
@@ -237,6 +237,8 @@
     if (!vals.length) return { edges: [], counts: [], step: 0, lo: null, hi: null };
     var min = Infinity, max = -Infinity, i;
     for (i = 0; i < vals.length; i++) { if (vals[i] < min) min = vals[i]; if (vals[i] > max) max = vals[i]; }
+    // absurd values (e.g. 1e308) would make the bin count infinite and freeze the page
+    if (!isFinite(max - min)) return { edges: [], counts: [], step: 0, lo: null, hi: null };
     var step, lo, hi;
     if (max - min < 1e-9 * Math.max(1, Math.abs(max))) {
       step = niceStep(Math.max(Math.abs(min), 1) / 4);
@@ -248,7 +250,7 @@
       hi = sig(Math.ceil(max / step - 1e-9) * step);
       if (hi <= lo) hi = sig(lo + step);
     }
-    var k = Math.max(1, Math.round((hi - lo) / step)), edges = [], counts = [];
+    var k = Math.min(500, Math.max(1, Math.round((hi - lo) / step))), edges = [], counts = [];
     for (i = 0; i <= k; i++) edges.push(sig(lo + i * step));
     for (i = 0; i < k; i++) counts.push(0);
     vals.forEach(function (v) {
@@ -785,7 +787,7 @@
     if (num(v) === null) return "";
     return dp == null ? String(sig(v)) : String(sig(+v.toFixed(dp)));
   }
-  function iso(ms) { return num(ms) === null ? "" : new Date(ms).toISOString(); }
+  function iso(ms) { if (num(ms) === null) return ""; var d = new Date(ms); return isNaN(d) ? "" : d.toISOString(); }
 
   /** csv(trades) -> CSV text (header + one row per closed trade, oldest first, times in UTC). */
   function csv(trades) {
