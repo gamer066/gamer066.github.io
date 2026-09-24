@@ -21,7 +21,19 @@ export async function onRequest(context) {
   data.user = await signedInUser(request, env, context.waitUntil ? context.waitUntil.bind(context) : null);
 
   // The /api/ routes each decide for themselves who is allowed to call them.
-  if (url.pathname.startsWith("/api/")) return next();
+  if (url.pathname.startsWith("/api/")) {
+    // SAME-1 (24 Sep 2026): anything that changes something (sign in, save, upload, delete) must come from this
+    // site's own pages. A browser always says which site a request comes from; another website's hidden form is
+    // refused here, so it cannot, for example, sign a visitor into the wrong account. Requests with no Origin at
+    // all (the trading bots' cloud run, the laptop's scripts) are not from a browser page and go on as before.
+    const origin = request.headers.get("Origin");
+    if (!["GET", "HEAD", "OPTIONS"].includes(request.method) && origin && origin !== url.origin) {
+      return new Response(JSON.stringify({ error: "That request did not come from this site." }), {
+        status: 403, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
+      });
+    }
+    return next();
+  }
 
   const isPrivate = PRIVATE.some((p) => url.pathname === p || url.pathname.startsWith(p + "/"));
   if (!isPrivate) return next();

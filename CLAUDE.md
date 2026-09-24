@@ -50,7 +50,9 @@ npx wrangler pages dev . --port 8788
 
 Then check, signed out and signed in: sign up with the test invite code, sign in, wrong password, Keep me signed
 in, rate limit (11th try is refused), reset (the first account needs `RESET_CODE`), name and password change,
-devices list, photo upload, documents, and every private page redirecting when signed out. Look at each page at
+devices list, photo upload, documents, and every private page redirecting when signed out. Also: a second
+account gets "only for its owner" on Studies and Accounts and 403 from `/api/study`, `/api/accounts`, `/api/doc`
+(OWNER-1), and a POST with `Origin: https://evil.example` is refused with 403 (SAME-1). Look at each page at
 phone width in both themes: no script errors and no sideways scrolling.
 
 ## Rules
@@ -62,3 +64,5 @@ phone width in both themes: no script errors and no sideways scrolling.
 - Error messages never reveal whether an email has an account, in wording or in timing.
 - `/api/doc` must never serve or delete `avatar/` keys; photos belong to `/api/avatar`, one person each.
 - Keep `_headers` strict (CSP, HSTS, frame-ancestors none). A new outside host needs a CSP entry and a reason.
+- State-changing API calls must come from the site's own pages: `functions/_middleware.js` refuses a POST, PUT or
+  DELETE whose Origin is another site (SAME-1). Server-to-server callers send no Origin and are unaffected.
