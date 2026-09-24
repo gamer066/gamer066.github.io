@@ -10,6 +10,7 @@
 const COOKIE = "sdl_session";
 const SESSION_DAYS = 30;
 const MAX_TRIES = 10;
+const MAX_TRIES_PER_PLACE = 50;   // wrong tries from one place across all emails
 const WINDOW_MINUTES = 15;
 
 export async function onRequestPost(context) {
@@ -35,6 +36,14 @@ async function handle({ request, env }) {
   const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM login_attempts WHERE who = ? AND at > ?")
     .bind(who, since).first();
   if (recent && recent.n >= MAX_TRIES) {
+    return json({ error: "Too many tries. Please wait fifteen minutes and try again." }, 429);
+  }
+  // SPRAY-1 (24 Sep 2026): the limit above is per place AND email, so one place could still try a common password
+  // against many different emails. This caps wrong tries from one place across all emails as well.
+  const place = (request.headers.get("CF-Connecting-IP") || "unknown") + "|%";
+  const fromPlace = await env.DB.prepare("SELECT COUNT(*) AS n FROM login_attempts WHERE who LIKE ? AND at > ?")
+    .bind(place, since).first();
+  if (fromPlace && fromPlace.n >= MAX_TRIES_PER_PLACE) {
     return json({ error: "Too many tries. Please wait fifteen minutes and try again." }, 429);
   }
 
