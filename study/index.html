@@ -57,6 +57,11 @@
   .unit .go{margin-top:auto;padding-top:4px}
   .unit .go a{font-size:.82rem;color:var(--accent);text-decoration:none;font-weight:600}
   .unit .go a:hover{text-decoration:underline}
+  .unit .go{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+  .unit .go .ics{background:none;border:0;padding:0;color:var(--ink-2);font-family:var(--sans);font-size:.82rem;
+    font-weight:600;cursor:pointer}
+  .unit .go .ics:hover{color:var(--ink);text-decoration:underline}
+  .unit .go .ics:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
 
   /* timeline */
   .time{border-left:2px solid var(--line);margin-left:6px;padding-left:18px;display:flex;
@@ -255,6 +260,40 @@
     return Math.ceil((d - Date.now()) / 86400000);
   }
 
+  /* ---------- "Add to calendar": a small calendar file made on this device, with reminders a day and 3 hours before ---------- */
+  var unitsNow = [];
+  function icsText(u) {
+    var due = new Date(String(u.due).replace(" ", "T"));
+    function stamp(d) { return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, ""); }
+    function clean(s) { return String(s || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+    var title = (u.code ? u.code + " " : "") + (u.title || "Deadline") + " \u2014 due";
+    return [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Salman.D.Life//Studies//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:" + String(u.code || "unit").replace(/[^A-Za-z0-9]/g, "") + "-" + stamp(due) + "@salmandlife",
+      "DTSTAMP:" + stamp(new Date()),
+      "DTSTART:" + stamp(new Date(due.getTime() - 3600000)),
+      "DTEND:" + stamp(due),
+      "SUMMARY:" + clean(title),
+      "DESCRIPTION:" + clean((u.dueLabel || "") + (u.canvasId ? "\nCanvas: https://lms.namedubai.ac.ae/courses/" + u.canvasId + "/assignments" : "")),
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + clean(title), "TRIGGER:-P1D", "END:VALARM",
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + clean(title), "TRIGGER:-PT3H", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR", ""
+    ].join("\r\n");
+  }
+  document.getElementById("units").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".ics");
+    if (!b) return;
+    var u = unitsNow[+b.getAttribute("data-i")];
+    if (!u || isNaN(new Date(String(u.due).replace(" ", "T")))) return;
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([icsText(u)], { type: "text/calendar;charset=utf-8" }));
+    link.download = String(u.code || "deadline").replace(/[^A-Za-z0-9]+/g, "-") + "-deadline.ics";
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 4000);
+    say("Calendar file saved. Open it to add the deadline, with reminders a day and 3 hours before.", "good");
+  });
+
   /* ---------- painting ---------- */
 
   function paint(d) {
@@ -275,7 +314,8 @@
     /* units */
     var open = (d.units || []).filter(function (u) { return u.state !== "done"; }).length;
     document.getElementById("unitsNote").textContent = open ? open + " still open" : "all handed in";
-    document.getElementById("units").innerHTML = (d.units || []).map(function (u) {
+    unitsNow = d.units || [];
+    document.getElementById("units").innerHTML = (d.units || []).map(function (u, i) {
       var left = daysLeft(u.due);
       var big, small;
       if (u.state === "done") { big = "Done"; small = "handed in and reviewed"; }
@@ -295,7 +335,8 @@
         }).join("") + "</div>" +
         (u.note ? '<p class="note">' + esc(u.note) + "</p>" : "") +
         '<div class="go"><a href="https://lms.namedubai.ac.ae/courses/' + esc(u.canvasId) +
-        '/assignments" target="_blank" rel="noopener">Open in Canvas &rarr;</a></div>' +
+        '/assignments" target="_blank" rel="noopener">Open in Canvas &rarr;</a>' +
+        (live ? '<button type="button" class="ics" data-i="' + i + '">Add to calendar</button>' : "") + "</div>" +
         "</article>";
     }).join("");
 
