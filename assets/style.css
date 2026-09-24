@@ -390,3 +390,21 @@ html.palOpen{overflow:hidden}
 /* ---------- profile photo in the round account button ---------- */
 .chip .dot.pic{background:none;overflow:hidden}
 .chip .dot.pic img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+
+/* ---------- printing (Ctrl+P): plain black on white, no effects, menus or buttons, cards kept whole ---------- */
+@media print{
+  :root,:root[data-theme]{--bg:#fff;--bg-2:#fff;--surface:#fff;--surface-2:#fff;--line:#bbb;--line-soft:#ddd;
+    --ink:#000;--ink-2:#222;--ink-3:#444;--accent:#000;--accent-2:#000;--accent-3:#000;--accent-soft:transparent;
+    --glow:none;--shadow:none;--up:#000;--down:#000;color-scheme:light}
+  html,body{background:#fff!important;color:#000}
+  .backdrop,.cursorGlow,.toasts,.offline,.topbar,.skip,.palette,.skel,.skelGrid,.toolbar,.dropHint,footer,
+    button,input,select,textarea,canvas,.aura,.grain{display:none!important}
+  *,*::before,*::after{box-shadow:none!important;text-shadow:none!important;animation:none!important;transition:none!important}
+  .wrap .hero h1,.narrow .hero h1{background:none;color:#000;-webkit-text-fill-color:#000}
+  .block,.panel,.unit,.acc,.mail,.cell,.tile,.card,tr{break-inside:avoid;page-break-inside:avoid}
+  .unit,.acc,.mail,.cell,.tile,.panel{border:1px solid #bbb!important;background:#fff!important;transform:none!important}
+  h1,h2,h3,h4{break-after:avoid;page-break-after:avoid}
+  a{color:#000;text-decoration:underline}
+  main a[href^="http"]::after{content:" (" attr(href) ")";font-size:.72em;word-break:break-all;color:#444}
+  @page{margin:14mm}
+}

@@ -1,9 +1,11 @@
 # Search engines may list the front page. The private rooms are off limits.
 User-agent: *
 Allow: /$
-Disallow: /trading/
-Disallow: /profile/
-Disallow: /login/
+Disallow: /trading
+Disallow: /profile
+Disallow: /study
+Disallow: /accounts
+Disallow: /login
 Disallow: /api/
 
 Sitemap: https://salmandlife.pages.dev/sitemap.xml

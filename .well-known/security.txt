@@ -1,0 +1,5 @@
+# If you find a security problem on this site, please say so privately through GitHub.
+Contact: https://github.com/gamer066
+Expires: 2027-09-24T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://salmandlife.pages.dev/.well-known/security.txt
