@@ -405,6 +405,6 @@ html.palOpen{overflow:hidden}
   .unit,.acc,.mail,.cell,.tile,.panel{border:1px solid #bbb!important;background:#fff!important;transform:none!important}
   h1,h2,h3,h4{break-after:avoid;page-break-after:avoid}
   a{color:#000;text-decoration:underline}
-  main a[href^="http"]::after{content:" (" attr(href) ")";font-size:.72em;word-break:break-all;color:#444}
+  .wrap a[href^="http"]::after,.narrow a[href^="http"]::after{content:" (" attr(href) ")";font-size:.72em;word-break:break-all;color:#444}
   @page{margin:14mm}
 }
