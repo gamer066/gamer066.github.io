@@ -363,3 +363,22 @@ html.palOpen{overflow:hidden}
 .keysBox .palItem{cursor:default}
 .keysBox .palItem:hover{background:none}
 .keysBox .ph{letter-spacing:0;text-transform:none}
+
+/* ---------- pop-up notes (made by fx.js from each page's message box) ---------- */
+.toasts{position:fixed;right:18px;bottom:18px;z-index:95;display:flex;flex-direction:column;gap:10px;
+  width:min(380px,calc(100vw - 32px));pointer-events:none}
+.toast{pointer-events:auto;display:flex;align-items:flex-start;gap:12px;padding:13px 14px 13px 16px;border-radius:14px;
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--down);box-shadow:var(--glow),var(--shadow);
+  color:var(--ink);font-size:.9rem;animation:toastIn .26s cubic-bezier(.2,.8,.2,1)}
+.toast.good{border-left-color:var(--up)}
+.toast .tx{flex:1}
+.toast button{flex:none;background:none;border:0;color:var(--ink-3);font-size:1.1rem;line-height:1;cursor:pointer;padding:0 2px}
+.toast button:hover{color:var(--ink)}
+.toast.out{animation:toastOut .26s ease forwards}
+@keyframes toastIn{from{transform:translateY(12px);opacity:0}}
+@keyframes toastOut{to{transform:translateY(8px);opacity:0}}
+/* the original box stays for screen readers but no longer pushes the page around */
+.msg.toasted{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;
+  clip:rect(0 0 0 0);white-space:nowrap;padding:0!important;border:0!important;margin:0!important}
+@media (max-width:640px){.toasts{left:16px;right:16px;width:auto;bottom:72px}}
+@media (prefers-reduced-motion:reduce){.toast,.toast.out{animation:none}}

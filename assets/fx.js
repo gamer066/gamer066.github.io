@@ -36,6 +36,34 @@
     addEventListener("offline", function () { pill.hidden = false; });
     addEventListener("online", function () { pill.hidden = true; });
 
+    /* ---- pop-up notes: every page already writes its messages into a .msg box; mirror each one as a note that
+       slides in at the corner, and tuck the box away (screen readers still hear it, it stays in the page). ---- */
+    var shelf = document.createElement("div");
+    shelf.className = "toasts";
+    shelf.setAttribute("aria-hidden", "true");
+    document.body.appendChild(shelf);
+    var lastNote = "", lastAt = 0;
+    function toastFrom(box) {
+      if (!/\bshow\b/.test(box.className)) return;
+      var text = (box.textContent || "").trim();
+      if (!text || (text === lastNote && Date.now() - lastAt < 1500)) return;
+      lastNote = text; lastAt = Date.now();
+      box.classList.add("toasted");
+      var t = document.createElement("div");
+      t.className = "toast " + (/\bgood\b/.test(box.className) ? "good" : "bad");
+      t.innerHTML = '<span class="tx"></span><button type="button" aria-label="Close">\u00d7</button>';
+      t.querySelector(".tx").textContent = text;
+      function gone() { t.classList.add("out"); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 260); }
+      t.querySelector("button").addEventListener("click", gone);
+      shelf.appendChild(t);
+      while (shelf.children.length > 3) shelf.removeChild(shelf.firstChild);
+      setTimeout(gone, /good/.test(t.className) ? 4200 : 7000);
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".msg"), function (box) {
+      new MutationObserver(function () { toastFrom(box); })
+        .observe(box, { attributes: true, attributeFilter: ["class"], childList: true, characterData: true, subtree: true });
+    });
+
     /* ---- a soft glow that follows the mouse (desktop only) ---- */
     if (finePointer && !still) {
       var glow = document.createElement("div");
