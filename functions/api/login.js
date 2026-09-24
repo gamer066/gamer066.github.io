@@ -46,6 +46,9 @@ async function handle({ request, env }) {
   if (user && password) {
     const tried = await scramble(password, unb64(user.password_salt), user.iterations || 12000);
     good = same(tried, user.password_hash);
+  } else {
+    // The same scrambling work when the email is unknown, so how long the answer takes gives nothing away either.
+    await scramble(password || "-", new Uint8Array(16), 12000);
   }
 
   if (!good) {

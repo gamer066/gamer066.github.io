@@ -49,7 +49,7 @@ async function handle({ request, env, data }) {
     do {
       const page = await env.DOCS.list({ cursor: cursor, limit: 1000 });
       for (const k of page.keys) {
-        if (k.name.indexOf("avatar/") === 0) continue;   // profile photos live here too; they are not documents
+        if (isAvatar(k.name)) continue;   // profile photos live here too; they are not documents
         found.push(Object.assign({ id: k.name }, k.metadata || {}));
       }
       cursor = page.list_complete ? null : page.cursor;
@@ -60,6 +60,8 @@ async function handle({ request, env, data }) {
   if (request.method === "GET") {
     const id = url.searchParams.get("id") || "";
     if (!id) return json({ error: "Which file?" }, 400);
+    // Profile photos share this store but belong to /api/avatar, which only hands each person their own.
+    if (isAvatar(id)) return json({ error: "That file has not been uploaded yet." }, 404);
     const hit = await env.DOCS.getWithMetadata(id, { type: "stream" });
     if (!hit || !hit.value) return json({ error: "That file has not been uploaded yet." }, 404);
     const meta = hit.metadata || {};
@@ -93,6 +95,7 @@ async function handle({ request, env, data }) {
   if (request.method === "DELETE") {
     const id = url.searchParams.get("id") || "";
     if (!id) return json({ error: "Which file?" }, 400);
+    if (isAvatar(id)) return json({ error: "That file has not been uploaded yet." }, 404);
     await env.DOCS.delete(id);
     return json({ ok: true });
   }
@@ -103,6 +106,10 @@ async function handle({ request, env, data }) {
 /* The same recipe runs on the Studies page, so both sides agree on a file's id. */
 function makeId(unit, name, bytes) {
   return (unit || "doc").toLowerCase() + "/" + bytes + "/" + name.toLowerCase();
+}
+
+function isAvatar(id) {
+  return id.indexOf("avatar/") === 0;
 }
 
 function safeName(s) {

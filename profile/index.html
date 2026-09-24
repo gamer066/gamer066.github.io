@@ -53,6 +53,11 @@
   .sub{font-size:.83rem;color:var(--ink-3);font-weight:400}
   .dev{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--line-soft)}
   .dev:first-child{border-top:none}
+  /* The list sits in a .kv box, whose "every div is a row" rule would otherwise reach inside each device row,
+     boxing and squeezing the name and the date lines. Device rows lay themselves out instead. */
+  .kv .dev{justify-content:flex-start;align-items:center;padding:14px 16px}
+  .kv .dev div{display:block;padding:0;border-top:none}
+  .dev .dt{flex:1;min-width:0}
   .dev .di{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;
     background:var(--accent-soft);color:var(--accent)}
   .dev .di svg{width:18px;height:18px}
@@ -345,7 +350,7 @@
         var row = document.createElement("div");
         row.className = "dev";
         var mobile = /iPhone|iPad|Android/.test(d.label);
-        row.innerHTML = '<span class="di">' + (mobile ? PHONE : LAPTOP) + '</span><div><div class="dn"></div><div class="dm"></div></div>';
+        row.innerHTML = '<span class="di">' + (mobile ? PHONE : LAPTOP) + '</span><div class="dt"><div class="dn"></div><div class="dm"></div></div>';
         row.querySelector(".dn").textContent = d.label;
         row.querySelector(".dm").textContent = "Signed in " + pretty(d.since) + " \u00b7 last seen " + ago(d.seen);
         if (d.current) {
