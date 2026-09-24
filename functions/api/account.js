@@ -60,7 +60,43 @@ async function handle({ request, env, data }) {
     return json({ ok: true, removed: n });
   }
 
+  if (what === "devices") {
+    await addDeviceColumns(env);
+    const token = readCookie(request, COOKIE);
+    const mine = token ? await sha256Hex(token) : "";
+    const rows = await env.DB.prepare(
+      "SELECT token_hash, label, created_at, last_seen, expires_at FROM sessions WHERE user_id = ? AND expires_at > ? " +
+      "ORDER BY COALESCE(last_seen, created_at) DESC"
+    ).bind(user.id, new Date().toISOString()).all();
+    const list = (rows.results || []).map((r) => ({
+      id: r.token_hash.slice(0, 12),            // a short tag only; never the whole key
+      label: r.label || "A device",
+      since: r.created_at,
+      seen: r.last_seen || r.created_at,
+      current: r.token_hash === mine
+    }));
+    return json({ ok: true, devices: list });
+  }
+
+  if (what === "signout-device") {
+    const id = String(body.id || "").replace(/[^0-9a-f]/g, "").slice(0, 12);
+    if (id.length !== 12) return json({ error: "Which device?" }, 400);
+    const token = readCookie(request, COOKIE);
+    const mine = token ? await sha256Hex(token) : "";
+    if (mine.slice(0, 12) === id) return json({ error: "That is this device. Use Sign out instead." }, 400);
+    const res = await env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND substr(token_hash, 1, 12) = ?")
+      .bind(user.id, id).run();
+    return json({ ok: true, removed: (res.meta && res.meta.changes) || 0 });
+  }
+
   return json({ error: "Something went wrong. Try again." }, 400);
+}
+
+/* Older copies of the database have no device columns yet; add them the first time they are needed. */
+async function addDeviceColumns(env) {
+  for (const col of ["label TEXT", "last_seen TEXT"]) {
+    try { await env.DB.prepare("ALTER TABLE sessions ADD COLUMN " + col).run(); } catch (e) { /* already there */ }
+  }
 }
 
 /* ---- shared bits (kept in each file on purpose, so every route stands on its own) ---- */

@@ -18,7 +18,7 @@ export async function onRequest(context) {
   const url = new URL(request.url);
 
   // Work out who (if anyone) is signed in, and hand that to every page and api route.
-  data.user = await signedInUser(request, env);
+  data.user = await signedInUser(request, env, context.waitUntil ? context.waitUntil.bind(context) : null);
 
   // The /api/ routes each decide for themselves who is allowed to call them.
   if (url.pathname.startsWith("/api/")) return next();
@@ -42,12 +42,13 @@ export async function onRequest(context) {
 /* Reads the sign-in cookie and looks it up in the database.
    The cookie value itself is never stored - only a scrambled copy of it - so even a copy of the
    database cannot be used to pretend to be someone. */
-async function signedInUser(request, env) {
+async function signedInUser(request, env, later) {
   if (!env || !env.DB) return null;
 
   const token = readCookie(request, COOKIE);
   if (!token) return null;
 
+  const hash = await sha256Hex(token);
   let row = null;
   try {
     row = await env.DB.prepare(
@@ -55,14 +56,36 @@ async function signedInUser(request, env) {
          FROM sessions s
          JOIN users u ON u.id = s.user_id
         WHERE s.token_hash = ?`
-    ).bind(await sha256Hex(token)).first();
+    ).bind(hash).first();
   } catch (e) {
     return null;
   }
 
   if (!row) return null;
   if (Date.parse(row.expires_at) <= Date.now()) return null;
+  // For the "Your devices" list: note what this device is and when it was last used. At most one write
+  // every ten minutes per device, done after the answer is sent so nobody waits for it.
+  const note = touch(env, hash, request).catch(() => {});
+  if (later) later(note);
   return { id: row.id, email: row.email, name: row.name, created_at: row.created_at };
+}
+
+async function touch(env, hash, request) {
+  const now = new Date();
+  const cutoff = new Date(now.getTime() - 10 * 60000).toISOString();
+  await env.DB.prepare(
+    "UPDATE sessions SET label = COALESCE(label, ?), last_seen = ? " +
+    "WHERE token_hash = ? AND (last_seen IS NULL OR last_seen < ?)"
+  ).bind(deviceName(request.headers.get("User-Agent") || ""), now.toISOString(), hash, cutoff).run();
+}
+
+/* "Chrome on Windows", "Safari on iPhone" and so on - enough to recognise a device, nothing more. */
+function deviceName(ua) {
+  const browser = /Edg\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" : /SamsungBrowser/.test(ua) ? "Samsung Internet"
+    : /Firefox\//.test(ua) ? "Firefox" : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "A browser";
+  const system = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android"
+    : /Windows/.test(ua) ? "Windows" : /Mac OS X|Macintosh/.test(ua) ? "Mac" : /Linux/.test(ua) ? "Linux" : "a device";
+  return browser + " on " + system;
 }
 
 function readCookie(request, name) {

@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT    PRIMARY KEY,   -- scrambled copy of the sign-in cookie
   user_id    INTEGER NOT NULL,
   created_at TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
-  expires_at TEXT    NOT NULL
+  expires_at TEXT    NOT NULL,
+  label      TEXT,              -- e.g. "Chrome on Windows", for the Your devices list
+  last_seen  TEXT               -- roughly when this device last used the site
 );
 CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id);
 

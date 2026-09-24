@@ -43,6 +43,18 @@
   details.card2 .inner2{padding:4px 17px 18px;border-top:1px solid var(--line-soft)}
   details.card2 .inner2 form.auth{padding-top:14px}
   .sub{font-size:.83rem;color:var(--ink-3);font-weight:400}
+  .dev{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--line-soft)}
+  .dev:first-child{border-top:none}
+  .dev .di{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;
+    background:var(--accent-soft);color:var(--accent)}
+  .dev .di svg{width:18px;height:18px}
+  .dev .dn{font-weight:600;font-size:.92rem}
+  .dev .dm{font-size:.76rem;color:var(--ink-3);margin-top:2px}
+  .dev .here{margin-left:auto;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+    color:var(--up);background:var(--up-soft);padding:4px 8px;border-radius:6px;flex:none}
+  .dev button{margin-left:auto;flex:none;background:none;border:1px solid var(--line);color:var(--ink-2);border-radius:8px;
+    padding:7px 11px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer}
+  .dev button:hover{border-color:var(--down);color:var(--down)}
   /* On a narrow phone the little grey note makes the heading wrap badly, so it steps aside. */
   @media (max-width:520px){ .sub{display:none} }
 </style>
@@ -133,6 +145,11 @@
         </form>
       </div>
     </details>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Your devices</h2><span class="muted" id="devCount"></span></div>
+    <div class="kv" id="devices"><div class="dev"><span class="dm">Loading your devices&hellip;</span></div></div>
   </section>
 
   <section class="block">
@@ -281,6 +298,63 @@
                          : "Nothing else was signed in.";
     });
   });
+
+  /* ---- Your devices: every phone or computer signed in to this account, with a way to sign each one out ---- */
+  var PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>';
+  var LAPTOP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/></svg>';
+
+  function ago(stamp) {
+    var ms = Date.now() - Date.parse(stamp);
+    if (isNaN(ms)) return "";
+    var m = Math.round(ms / 60000);
+    if (m < 2) return "just now";
+    if (m < 60) return m + " min ago";
+    if (m < 1440) return Math.round(m / 60) + " hr ago";
+    return Math.round(m / 1440) + " d ago";
+  }
+
+  function loadDevices() {
+    var box = document.getElementById("devices");
+    fetch("/api/account", {
+      method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin",
+      body: JSON.stringify({ what: "devices" })
+    }).then(function (r) { return r.json(); }).then(function (out) {
+      if (!out || !out.ok) { box.innerHTML = '<div class="dev"><span class="dm"></span></div>';
+        box.querySelector(".dm").textContent = (out && out.error) || "Could not load your devices."; return; }
+      var list = out.devices || [];
+      document.getElementById("devCount").textContent = list.length + (list.length === 1 ? " device" : " devices");
+      box.innerHTML = "";
+      list.forEach(function (d) {
+        var row = document.createElement("div");
+        row.className = "dev";
+        var mobile = /iPhone|iPad|Android/.test(d.label);
+        row.innerHTML = '<span class="di">' + (mobile ? PHONE : LAPTOP) + '</span><div><div class="dn"></div><div class="dm"></div></div>';
+        row.querySelector(".dn").textContent = d.label;
+        row.querySelector(".dm").textContent = "Signed in " + pretty(d.since) + " \u00b7 last seen " + ago(d.seen);
+        if (d.current) {
+          var here = document.createElement("span"); here.className = "here"; here.textContent = "This device";
+          row.appendChild(here);
+        } else {
+          var b = document.createElement("button"); b.type = "button"; b.textContent = "Sign out";
+          b.addEventListener("click", function () {
+            b.disabled = true; b.textContent = "Signing out\u2026";
+            fetch("/api/account", {
+              method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin",
+              body: JSON.stringify({ what: "signout-device", id: d.id })
+            }).then(function (r) { return r.json(); }).then(function (res) {
+              if (res && res.ok) { say(d.label + " was signed out.", "good"); loadDevices(); }
+              else { say((res && res.error) || "That did not work. Try again."); b.disabled = false; b.textContent = "Sign out"; }
+            }).catch(function () { say("No connection. Try again."); b.disabled = false; b.textContent = "Sign out"; });
+          });
+          row.appendChild(b);
+        }
+        box.appendChild(row);
+      });
+    }).catch(function () {
+      box.innerHTML = '<div class="dev"><span class="dm">Could not load your devices. Try refreshing.</span></div>';
+    });
+  }
+  loadDevices();
 
   document.getElementById("out").addEventListener("click", function () {
     var b = this;
