@@ -145,20 +145,28 @@
       if (sock) { sock.onclose = null; try { sock.close(); } catch (e) {} }
     };
   }
-  /* at most one paint per `ms`, on an animation frame */
+  /* at most one paint per `ms` */
   function throttle(paint, ms) {
     var queued = false, last = 0;
     return function () {
       if (queued) return;
       queued = true;
       var wait = Math.max(0, ms - (Date.now() - last));
-      setTimeout(function () { requestAnimationFrame(function () { queued = false; last = Date.now(); try { paint(); } catch (e) {} }); }, wait);
+      // a plain timer, not an animation frame: frames are paused in background windows and would stall the panel
+      setTimeout(function () { queued = false; last = Date.now(); try { paint(); } catch (e) {} }, wait);
     };
   }
 
   /* ---------- watchlist ---------- */
+  var GOLDISH = { PAXGUSDT: "PAX Gold token", XAUTUSDT: "Tether Gold token" };
   function relatedFor(symbol) {
-    var list = RELATED[symbol] || [[symbol, symbol, "The bot's own market"]];
+    var list = RELATED[symbol];
+    if (!list && GOLDISH[symbol]) {
+      // a gold token bot: its own market first, then gold's usual neighbours
+      list = [[symbol, GOLDISH[symbol], "The bot's own market - a crypto token backed by real gold"]].concat(
+        RELATED.XAUUSDT.filter(function (r) { return r[0] !== symbol; }));
+    }
+    list = list || [[symbol, symbol, "The bot's own market"]];
     return list.map(function (r) { return { symbol: r[0], label: r[1], note: r[2] }; });
   }
   function sparkSVG(closes, up) {
@@ -334,8 +342,8 @@
     function ch(s) { return t[s] && t[s].chgPct !== null ? t[s].chgPct : null; }
     function word(v) { return v === null ? null : v > 0.15 ? "up" : v < -0.15 ? "down" : "flat"; }
     var out = [];
-    if (symbol === "XAUUSDT") {
-      var g = ch("XAUUSDT"), s = ch("XAGUSDT"), m = ch("GDXUSDT"), r = ch("TBTUSDT"), eq = ch("SPYUSDT");
+    if (symbol === "XAUUSDT" || GOLDISH[symbol]) {
+      var g = ch("XAUUSDT") !== null ? ch("XAUUSDT") : ch(symbol), s = ch("XAGUSDT"), m = ch("GDXUSDT"), r = ch("TBTUSDT"), eq = ch("SPYUSDT");
       if (g !== null) out.push("Gold is " + word(g) + " " + pctText(g) + " over 24 hours.");
       if (s !== null && g !== null) out.push("Silver is " + word(s) + " " + pctText(s) + (word(s) === word(g) ? ", moving with gold." : ", moving against gold."));
       if (m !== null) out.push("Gold miners are " + word(m) + " " + pctText(m) + (g !== null && Math.abs(m) > Math.abs(g) * 1.5 ? " - a stronger move than gold itself." : "."));

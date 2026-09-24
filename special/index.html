@@ -53,6 +53,13 @@
   .soon{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:8px;padding:22px;
     border-radius:var(--radius);border:1px dashed var(--line);color:var(--ink-2);font-size:.9rem;min-height:200px}
   .soon b{font-family:var(--serif);font-size:1.05rem;color:var(--ink)}
+  .allsum{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:10px 0 14px;border-radius:var(--radius);overflow:hidden;
+    background:var(--line);border:1px solid var(--line)}
+  .allsum[hidden]{display:none}
+  .allsum div{background:var(--surface);padding:12px 14px}
+  .allsum span{display:block;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+  .allsum b{display:block;font-family:var(--mono);font-size:1.02rem;font-weight:600;margin-top:4px}
+  @media (max-width:560px){.allsum{grid-template-columns:repeat(2,1fr)}}
 
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;
     white-space:nowrap;border:1px solid var(--line)}
@@ -95,6 +102,7 @@
 
   <section class="block">
     <div class="headrow"><h2>Bots</h2><span class="muted" id="upd"></span></div>
+    <div class="allsum" id="allsum" hidden></div>
     <div class="bots" id="bots">
       <div class="skel card"></div><div class="skel card"></div>
     </div>
@@ -167,6 +175,22 @@
   function paint(d) {
     bots = d.bots;
     document.getElementById("upd").textContent = d.updated ? "Numbers updated " + S.ago(d.updated) : "";
+    /* all special bots together */
+    var tot = { net: 0, n: 0, wins: 0, live: 0, open: 0 };
+    bots.forEach(function (b) {
+      var s = S.stats(b);
+      if (s.n) { tot.net += s.net; tot.n += s.n; tot.wins += s.wins; }
+      if (b.status === "live-practice") tot.live++;
+      if (b.open_position) tot.open++;
+    });
+    var sum = document.getElementById("allsum");
+    sum.hidden = !bots.length;
+    sum.innerHTML = [["Bots", bots.length + (tot.live ? " · " + tot.live + " live" : ""), ""],
+      ["Result, all bots", tot.n ? S.money(tot.net, true) : "—", S.tone(tot.net)],
+      ["Closed trades", String(tot.n), ""],
+      ["Win rate", tot.n ? S.pct(tot.wins / tot.n) : "—", ""]].map(function (c) {
+        return "<div><span>" + c[0] + "</span><b class='" + c[2] + "'>" + S.esc(c[1]) + "</b></div>";
+      }).join("");
     box.innerHTML = bots.map(card).join("") +
       '<div class="soon"><b>More special bots are on the way</b>Each new bot gets its own card and live chart here.</div>';
     live(); sparks();
