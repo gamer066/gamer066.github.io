@@ -59,6 +59,8 @@ async function handle({ request, env }) {
 
   await env.DB.prepare("DELETE FROM login_attempts WHERE who = ? OR at < ?")
     .bind(who, new Date(Date.now() - 86400000).toISOString()).run();
+  // Sign-ins that have run out are useless; clear them out now and then so the table does not grow for ever.
+  await env.DB.prepare("DELETE FROM sessions WHERE expires_at < ?").bind(new Date().toISOString()).run();
 
   const cookie = await startSession(env, user.id, body.remember !== false);
   return json({ ok: true, email: user.email, name: user.name }, 200, cookie);
