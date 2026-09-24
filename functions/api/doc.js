@@ -48,7 +48,10 @@ async function handle({ request, env, data }) {
     let cursor;
     do {
       const page = await env.DOCS.list({ cursor: cursor, limit: 1000 });
-      for (const k of page.keys) found.push(Object.assign({ id: k.name }, k.metadata || {}));
+      for (const k of page.keys) {
+        if (k.name.indexOf("avatar/") === 0) continue;   // profile photos live here too; they are not documents
+        found.push(Object.assign({ id: k.name }, k.metadata || {}));
+      }
       cursor = page.list_complete ? null : page.cursor;
     } while (cursor);
     return json({ files: found });

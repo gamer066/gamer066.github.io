@@ -386,3 +386,7 @@ html.palOpen{overflow:hidden}
 /* ---------- the browser's own scrollbars and form controls follow the chosen look ---------- */
 :root{color-scheme:dark}
 :root[data-theme="light"]{color-scheme:light}
+
+/* ---------- profile photo in the round account button ---------- */
+.chip .dot.pic{background:none;overflow:hidden}
+.chip .dot.pic img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}

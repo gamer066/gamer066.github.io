@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
-<link rel="stylesheet" href="/assets/style.css?v=815a66f4">
+<link rel="stylesheet" href="/assets/style.css?v=a2cd3e48">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <style>
   .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
@@ -26,6 +26,13 @@
     background:linear-gradient(145deg,var(--accent),var(--accent-2));color:var(--bg);
     font-family:var(--serif);font-weight:700;font-size:1.55rem}
   .who h1{font-size:clamp(1.5rem,6vw,2rem)}
+  .avatar{position:relative;overflow:hidden}
+  .avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .photoRow{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
+  .photoRow button{background:none;border:0;padding:0;color:var(--accent);font-family:var(--sans);font-size:.84rem;
+    font-weight:600;cursor:pointer}
+  .photoRow button:hover{text-decoration:underline}
+  .photoRow button[hidden]{display:none}
   .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
   .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
   .actions a.open{flex:1;min-width:170px;text-align:center;text-decoration:none;padding:13px 16px;
@@ -81,7 +88,14 @@
     <div class="eyebrow">Your account</div>
     <div class="who">
       <div class="avatar" id="initial">&nbsp;</div>
-      <h1 id="greeting">Welcome back</h1>
+      <div>
+        <h1 id="greeting">Welcome back</h1>
+        <div class="photoRow">
+          <button type="button" id="photoPick">Add a photo</button>
+          <button type="button" id="photoDrop" hidden>Remove photo</button>
+          <input type="file" id="photoFile" accept="image/png,image/jpeg,image/webp" hidden>
+        </div>
+      </div>
     </div>
     <div class="rule"></div>
   </header>
@@ -190,7 +204,9 @@
   function paint(u) {
     var shown = (u.name && u.name.trim()) ? u.name.trim() : (u.email || "You");
     document.getElementById("greeting").textContent = "Welcome back, " + shown.split(" ")[0];
-    document.getElementById("initial").textContent = shown.charAt(0).toUpperCase();
+    var av = document.getElementById("initial"), keepPic = av.querySelector("img");
+    av.textContent = shown.charAt(0).toUpperCase();
+    if (keepPic) av.appendChild(keepPic);
     document.getElementById("vName").textContent = (u.name && u.name.trim()) || "—";
     document.getElementById("vEmail").textContent = u.email || "—";
     document.getElementById("vSince").textContent = pretty(u.created_at);
@@ -357,6 +373,57 @@
   }
   loadDevices();
 
+  /* ---- profile photo: shrunk to 256x256 on this device before it is sent, so it is quick and tiny ---- */
+  var photoPick = document.getElementById("photoPick"), photoDrop = document.getElementById("photoDrop");
+  var photoFile = document.getElementById("photoFile"), avatarBox = document.getElementById("initial");
+
+  function showPhoto(v) {
+    var old = avatarBox.querySelector("img"); if (old) old.parentNode.removeChild(old);
+    if (!v) { photoPick.textContent = "Add a photo"; photoDrop.hidden = true; return; }
+    var img = new Image(); img.alt = "Your profile photo";
+    img.onload = function () { avatarBox.appendChild(img); };
+    img.src = "/api/avatar?v=" + encodeURIComponent(v);
+    photoPick.textContent = "Change photo"; photoDrop.hidden = false;
+  }
+  fetch("/api/avatar?check=1", { credentials: "same-origin" })
+    .then(function (r) { return r.json(); })
+    .then(function (a) { if (a && a.has) showPhoto(a.v); })
+    .catch(function () {});
+
+  photoPick.addEventListener("click", function () { photoFile.click(); });
+  photoFile.addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = "";
+    if (!f) return;
+    if (f.size > 15 * 1024 * 1024) { say("That picture is too big. Please pick a smaller one."); return; }
+    photoPick.disabled = true; photoPick.textContent = "Uploading\u2026";
+    var img = new Image(), url = URL.createObjectURL(f);
+    img.onload = function () {
+      var side = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement("canvas");
+      c.width = c.height = 256;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, 256, 256);
+      URL.revokeObjectURL(url);
+      c.toBlob(function (blob) {
+        fetch("/api/avatar", { method: "POST", credentials: "same-origin", headers: { "Content-Type": blob.type }, body: blob })
+          .then(function (r) { return r.json(); })
+          .then(function (out) {
+            photoPick.disabled = false;
+            if (out && out.ok) { showPhoto(out.v); say("Photo saved.", "good"); }
+            else { photoPick.textContent = "Add a photo"; say((out && out.error) || "That did not work. Try again."); }
+          })
+          .catch(function () { photoPick.disabled = false; photoPick.textContent = "Add a photo"; say("No connection. Try again."); });
+      }, "image/webp", 0.86);
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); photoPick.disabled = false; photoPick.textContent = "Add a photo"; say("That file is not a picture this browser can open."); };
+    img.src = url;
+  });
+  photoDrop.addEventListener("click", function () {
+    photoDrop.disabled = true;
+    fetch("/api/avatar", { method: "DELETE", credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (out) { photoDrop.disabled = false; if (out && out.ok) { showPhoto(""); say("Photo removed.", "good"); } })
+      .catch(function () { photoDrop.disabled = false; say("No connection. Try again."); });
+  });
+
   document.getElementById("out").addEventListener("click", function () {
     var b = this;
     b.disabled = true;
@@ -371,7 +438,7 @@
   });
 })();
 </script>
-<script src="/assets/account.js?v=379a43d3" defer></script>
+<script src="/assets/account.js?v=d3821b8b" defer></script>
 <script src="/assets/fx.js?v=c2f1c763" defer></script>
 <script src="/assets/theme.js?v=f44ce8f5" defer></script>
 </body>

@@ -36,6 +36,18 @@
 
     slot.parentNode.replaceChild(box, slot);
 
+    // swap the initial for the profile photo, if one has been uploaded
+    fetch("/api/avatar?check=1", { credentials: "same-origin" })
+      .then(function (r) { return r.json(); })
+      .then(function (a) {
+        if (!a || !a.has) return;
+        var img = new Image();
+        img.alt = "";
+        img.onload = function () { var dot = box.querySelector(".dot"); dot.textContent = ""; dot.appendChild(img); dot.classList.add("pic"); };
+        img.src = "/api/avatar?v=" + encodeURIComponent(a.v);
+      })
+      .catch(function () {});
+
     var chip = box.querySelector(".chip");
     var menu = box.querySelector(".menu");
 
