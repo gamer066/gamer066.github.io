@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
-<link rel="stylesheet" href="/assets/style.css?v=057d63d0">
+<link rel="stylesheet" href="/assets/style.css?v=815a66f4">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <script>document.documentElement.classList.add("js")</script>
 <style>
@@ -466,23 +466,44 @@
 
 </main>
 
-<script src="/assets/status.js?v=3cf5636a"></script>
+<script src="/assets/status.js?v=61042cdd"></script>
 <script src="/assets/account.js?v=379a43d3" defer></script>
 <script>
 (function () {
   /* ---- real numbers from the file the laptop writes on every publish ---- */
   var st = window.SITE_STATUS || {};
   function put(id, v) { var el = document.getElementById(id); if (el && v !== null && v !== undefined) el.textContent = v; }
-  put("sBots", st.bots); put("bBots", st.bots); put("aBots", st.bots);
-  put("sOpen", st.openTrades); put("bOpen", st.openTrades);
-  if (st.mode) put("sMode", st.mode + " only");
-  if (st.updated) {
-    var mins = Math.max(0, Math.round((Date.now() - Date.parse(st.updated)) / 60000));
-    var when = mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : mins < 1440 ? Math.round(mins / 60) + " hr ago" : Math.round(mins / 1440) + " d ago";
-    var short = mins < 1 ? "now" : mins < 60 ? mins + "m ago" : mins < 1440 ? Math.round(mins / 60) + "h ago" : Math.round(mins / 1440) + "d ago";
-    put("aWhen", when); put("sWhen", short);
-    var el = document.getElementById("sWhen"); if (el) el.title = new Date(st.updated).toLocaleString();
+  function fill() {
+    // on later refreshes the numbers simply change in place; the count-up only plays on first view
+    put("sBots", st.bots); put("bBots", st.bots); put("aBots", st.bots);
+    put("sOpen", st.openTrades); put("bOpen", st.openTrades);
+    if (st.mode) put("sMode", st.mode + " only");
+    if (st.updated) {
+      var mins = Math.max(0, Math.round((Date.now() - Date.parse(st.updated)) / 60000));
+      var when = mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : mins < 1440 ? Math.round(mins / 60) + " hr ago" : Math.round(mins / 1440) + " d ago";
+      var short = mins < 1 ? "now" : mins < 60 ? mins + "m ago" : mins < 1440 ? Math.round(mins / 60) + "h ago" : Math.round(mins / 1440) + "d ago";
+      put("aWhen", when); put("sWhen", short);
+      var el = document.getElementById("sWhen"); if (el) el.title = new Date(st.updated).toLocaleString();
+    }
   }
+  fill();
+
+  // Every minute the "updated ... ago" wording moves on; every five minutes the numbers themselves are re-read,
+  // so a page left open stays true. Nothing runs while the tab is hidden.
+  var ticks = 0;
+  setInterval(function () {
+    if (document.hidden) return;
+    ticks++;
+    if (ticks % 5) { fill(); return; }
+    fetch("/assets/status.js?v=61042cdd?live=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : ""; })
+      .then(function (text) {
+        var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");
+        if (m) { try { st = JSON.parse(m[1]); } catch (e) {} }
+        fill();
+      })
+      .catch(function () { fill(); });
+  }, 60000);
 
   /* ---- sections rise into view; a fallback shows them anyway if the watcher never fires ---- */
   var bits = document.querySelectorAll(".rise");
@@ -549,6 +570,6 @@
 })();
 </script>
 <script src="/assets/fx.js?v=c2f1c763" defer></script>
-<script src="/assets/theme.js?v=72413205" defer></script>
+<script src="/assets/theme.js?v=f44ce8f5" defer></script>
 </body>
 </html>

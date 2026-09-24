@@ -382,3 +382,7 @@ html.palOpen{overflow:hidden}
   clip:rect(0 0 0 0);white-space:nowrap;padding:0!important;border:0!important;margin:0!important}
 @media (max-width:640px){.toasts{left:16px;right:16px;width:auto;bottom:72px}}
 @media (prefers-reduced-motion:reduce){.toast,.toast.out{animation:none}}
+
+/* ---------- the browser's own scrollbars and form controls follow the chosen look ---------- */
+:root{color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}

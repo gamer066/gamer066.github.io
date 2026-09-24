@@ -231,14 +231,22 @@
           (r[1] ? ' <kbd>' + r[1] + '</kbd>' : '') + '</span></div>';
       }).join("") + '</div></div>';
     document.body.appendChild(box);
-    function close() { box.hidden = true; document.documentElement.classList.remove("palOpen"); }
+    var before = null;
+    box.setAttribute("tabindex", "-1");
+    function close() {
+      box.hidden = true; document.documentElement.classList.remove("palOpen");
+      if (before && before.focus) before.focus();
+    }
     box.addEventListener("click", function (e) { if (e.target === box) close(); });
     document.addEventListener("keydown", function (e) {
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "") || (e.target && e.target.isContentEditable);
       var anyOpen = Array.prototype.some.call(document.querySelectorAll(".palette"), function (p) { return !p.hidden; });
       if (e.key === "Escape" && !box.hidden) { close(); return; }
       if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key === "?" && !anyOpen) { e.preventDefault(); box.hidden = false; document.documentElement.classList.add("palOpen"); }
+      if (e.key === "?" && !anyOpen) {
+        e.preventDefault(); before = document.activeElement;
+        box.hidden = false; document.documentElement.classList.add("palOpen"); box.focus();
+      }
       else if ((e.key === "t" || e.key === "T") && !anyOpen) {
         var btn = document.querySelector(".themeBtn:not(.searchBtn)");
         if (btn) btn.click(); else apply(now() === "light" ? "dark" : "light");
@@ -246,7 +254,24 @@
     });
   }
 
-  function start() { build(); buildMenu(); buildPalette(); buildKeys(); }
+  /* Keeps Tab inside an open box, the way proper dialogs behave, so keyboard users never get lost behind it. */
+  function trapFocus(box) {
+    box.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" || box.hidden) return;
+      var stops = Array.prototype.filter.call(
+        box.querySelectorAll('input,button,a[href],[tabindex]:not([tabindex="-1"])'),
+        function (el) { return !el.disabled && el.offsetParent !== null; });
+      if (!stops.length) { e.preventDefault(); return; }
+      var first = stops[0], last = stops[stops.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+
+  function start() {
+    build(); buildMenu(); buildPalette(); buildKeys();
+    Array.prototype.forEach.call(document.querySelectorAll(".palette"), trapFocus);
+  }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
 })();
