@@ -185,7 +185,7 @@
     display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:28px}
   .foot .brand{margin-bottom:10px}
   .foot p{color:var(--ink-3);font-size:.84rem;max-width:34ch}
-  .foot h4{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:0 0 12px}
+  .foot h3{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:0 0 12px}
   .foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
   .foot ul a{color:var(--ink-2);text-decoration:none;font-size:.9rem}
   .foot ul a:hover{color:var(--ink)}
@@ -448,15 +448,15 @@
       <p>A private control room for my studies, my accounts and my trading bots.</p>
     </div>
     <div>
-      <h4>Rooms</h4>
+      <h3>Rooms</h3>
       <ul><li><a href="/trading/">Trading</a></li><li><a href="/study/">Studies</a></li><li><a href="/accounts/">Accounts</a></li></ul>
     </div>
     <div>
-      <h4>You</h4>
+      <h3>You</h3>
       <ul><li><a href="/login/">Sign in</a></li><li><a href="/profile/">Profile</a></li></ul>
     </div>
     <div>
-      <h4>Site</h4>
+      <h3>Site</h3>
       <ul><li><a href="/sitemap.xml">Sitemap</a></li><li><a href="https://github.com/gamer066/gamer066.github.io" rel="noopener" target="_blank">Source</a></li></ul>
     </div>
     <div class="fine">
@@ -467,7 +467,7 @@
 
 </main>
 
-<script src="/assets/status.js?v=86e8257d"></script>
+<script src="/assets/status.js?v=0b4ff1f0"></script>
 <script src="/assets/account.js?v=d3821b8b" defer></script>
 <script>
 (function () {
@@ -496,7 +496,7 @@
     if (document.hidden) return;
     ticks++;
     if (ticks % 5) { fill(); return; }
-    fetch("/assets/status.js?v=86e8257d?live=" + Date.now(), { cache: "no-store" })
+    fetch("/assets/status.js?v=0b4ff1f0?live=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.text() : ""; })
       .then(function (text) {
         var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");
