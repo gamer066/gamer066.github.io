@@ -3,6 +3,10 @@
 /*
   # Nobody may put this site inside a hidden frame on their own page to trick a visitor.
   X-Frame-Options: DENY
+  # Other sites cannot reach into this site's windows. "allow-popups" keeps Google's sign-in popup working.
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  # This site's files may only be pulled into pages on this site, not embedded by other websites.
+  Cross-Origin-Resource-Policy: same-origin
   # A file is treated as what it says it is, so a picture can never be run as code.
   X-Content-Type-Options: nosniff
   # Other sites are told which page a visitor came from, but never the full address of a private page.

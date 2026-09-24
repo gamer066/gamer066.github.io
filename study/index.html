@@ -90,6 +90,14 @@
   .doc .badge2.mine{background:var(--accent-soft);color:var(--accent)}
   .doc .badge2.final{background:var(--up-soft);color:var(--up)}
   .none{padding:26px 16px;text-align:center;color:var(--ink-3);font-size:.88rem}
+  .dropzone{position:relative;border-radius:var(--radius);transition:box-shadow .2s ease}
+  .dropzone.dropping{box-shadow:0 0 0 2px var(--accent),var(--glow)}
+  .dropzone.dropping::after{content:"Drop to upload";position:absolute;inset:0;display:grid;place-items:center;
+    border-radius:var(--radius);background:rgba(5,6,11,.72);color:var(--ink);font-family:var(--serif);font-size:1.4rem;
+    font-weight:600;letter-spacing:-.01em;pointer-events:none}
+  :root[data-theme="light"] .dropzone.dropping::after{background:rgba(246,247,254,.82)}
+  .dropHint{margin-top:-6px}
+  @media (pointer:coarse){.dropHint{display:none}}
   .doc .acts{grid-column:1/-1;display:flex;gap:14px;margin-top:4px;align-items:baseline}
   .doc .acts a{font-size:.8rem;font-weight:600;color:var(--accent);text-decoration:none}
   .doc .acts a:hover{text-decoration:underline}
@@ -153,8 +161,9 @@
       <div class="time" id="history"></div>
     </section>
 
-    <section class="block">
+    <section class="block dropzone" id="docsZone">
       <div class="headrow"><h2>Documents</h2><span class="muted" id="docCount"></span></div>
+      <p class="muted dropHint">Tip: drag files from your computer onto this list to upload them.</p>
       <div class="toolbar">
         <input type="search" id="find" placeholder="Search by name, kind or unit&hellip;" aria-label="Search documents">
         <button class="chip2" type="button" data-unit="" aria-pressed="true">All</button>
@@ -465,8 +474,12 @@
     document.getElementById("docsIn").click();
   });
   document.getElementById("docsIn").addEventListener("change", function () {
-    var files = Array.prototype.slice.call(this.files || []);
+    var picked = Array.prototype.slice.call(this.files || []);
     this.value = "";
+    uploadFiles(picked);
+  });
+
+  function uploadFiles(files) {
     if (!files.length) return;
     var total = files.length;
     var button = document.getElementById("pickDocs");
@@ -488,6 +501,7 @@
         button.disabled = false;
         note.textContent = "Uploaded " + done + " of " + total +
           (failed.length ? ". Could not upload: " + failed.join(", ") : ".");
+        say(note.textContent, failed.length ? "bad" : "good");
         loadStored();
         return;
       }
@@ -507,7 +521,21 @@
       });
     }
     next();
-  });
+  }
+
+  /* ---- drag files straight onto the documents list to upload them ---- */
+  (function () {
+    var zone = document.getElementById("docsZone"), depth = 0;
+    function hasFiles(e) { return e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types || [], "Files") >= 0; }
+    zone.addEventListener("dragenter", function (e) { if (!hasFiles(e)) return; e.preventDefault(); depth++; zone.classList.add("dropping"); });
+    zone.addEventListener("dragover", function (e) { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = "copy"; });
+    zone.addEventListener("dragleave", function () { depth = Math.max(0, depth - 1); if (!depth) zone.classList.remove("dropping"); });
+    zone.addEventListener("drop", function (e) {
+      if (!hasFiles(e)) return;
+      e.preventDefault(); depth = 0; zone.classList.remove("dropping");
+      uploadFiles(Array.prototype.slice.call(e.dataTransfer.files || []));
+    });
+  })();
 
   load();
   loadStored();
