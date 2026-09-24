@@ -1,7 +1,7 @@
 /* The futuristic layer, shared by every page of Salman.D.Life.
  *
  *  - a quiet backdrop: faint grid, two slow violet/cyan glows, and a live particle network
- *  - cards that tilt in 3D under the mouse (never on touch screens)
+ *  - a soft glow that follows the mouse, and cards that tilt in 3D under it (never on touch screens)
  *
  * It adds the backdrop itself if a page does not have one, so pages only need to load this file.
  * Everything stops for anyone whose device asks for less motion, and the particles pause whenever the
@@ -24,6 +24,27 @@
     // inner pages are for reading, so their network is thinner than the home page's
     var density = document.body.classList.contains("home") || document.querySelector(".hero .console") ? 1 : 0.55;
     particles(document.getElementById("stars"), density);
+
+    /* ---- a soft glow that follows the mouse (desktop only) ---- */
+    if (finePointer && !still) {
+      var glow = document.createElement("div");
+      glow.className = "cursorGlow";
+      glow.setAttribute("aria-hidden", "true");
+      document.body.appendChild(glow);
+      var gx = -9999, gy = -9999, queued = false;
+      addEventListener("pointermove", function (e) {
+        gx = e.clientX; gy = e.clientY;
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(function () {
+          glow.style.transform = "translate3d(" + gx + "px," + gy + "px,0)";
+          queued = false;
+        });
+      }, { passive: true });
+      document.documentElement.addEventListener("pointerleave", function () {
+        glow.style.transform = "translate3d(-9999px,-9999px,0)";
+      });
+    }
 
     /* ---- 3D tilt on cards (mouse only) ---- */
     if (finePointer && !still) {
