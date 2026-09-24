@@ -304,7 +304,13 @@
     .then(function (r) { return r.json(); })
     .then(function (out) {
       if (out && out.signedIn) location.replace(wanted);
-      else if (out && out.ready === false) say("The database is not connected yet, so signing in will not work.");
+      else if (out && out.ready === false) {
+        // A test copy of the site (a Cloudflare preview) has no sign-in database. Send people to the real site.
+        say("This is a test copy of the site without sign-in. Taking you to the real site…");
+        if (location.hostname !== "salmandlife.pages.dev") {
+          setTimeout(function () { location.replace("https://salmandlife.pages.dev" + location.pathname + location.search); }, 1200);
+        }
+      }
     })
     .catch(function () {});
 })();

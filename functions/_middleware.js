@@ -17,6 +17,12 @@ export async function onRequest(context) {
   const { request, env, next, data } = context;
   const url = new URL(request.url);
 
+  // A Cloudflare preview copy has no database, so nobody could sign in there (found 24 Sep 2026 on his phone).
+  // Its pages go to the real site instead of showing a sign-in that cannot work.
+  if (!env.DB && url.hostname.endsWith(".salmandlife.pages.dev") && !url.pathname.startsWith("/api/")) {
+    return Response.redirect("https://salmandlife.pages.dev" + url.pathname + url.search, 302);
+  }
+
   // Work out who (if anyone) is signed in, and hand that to every page and api route.
   data.user = await signedInUser(request, env, context.waitUntil ? context.waitUntil.bind(context) : null);
 

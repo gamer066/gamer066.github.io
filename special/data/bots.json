@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T10:50:44Z",
+ "updated": "2026-09-24T10:52:30Z",
  "bots": [
   {
    "id": "sunny-gold",
@@ -14,13 +14,13 @@
    "trades": [],
    "updated": "2026-09-24T10:35:11Z",
    "context": [
-    "Gold fell 1.2% in the last day, to $4,267.",
+    "Gold fell 1.2% in the last day, to $4,265.",
     "Gold is below its recent average - the trend is down.",
     "The US dollar got stronger today - that usually pushes gold down.",
     "US interest rates rose today - usually bad for gold.",
     "Next US interest-rate decision: 28 Oct.",
     "No big US news left this week.",
-    "News: Gold Price Forecast: gold Two-Week Plunge Puts August Breakout to the Test",
+    "News: Gold Two-Week Plunge Puts August Breakout to the Test",
     "News: Gold loses shine as rate hike bets foster a stronger dollar"
    ]
   },
@@ -35,16 +35,16 @@
    "balance": 1000.0,
    "open_position": null,
    "trades": [],
-   "updated": "2026-09-24T10:50:44Z",
+   "updated": "2026-09-24T10:52:30Z",
    "context": [
     "Checks gold every 5 minutes, day and night.",
-    "Gold fell 1.2% in the last day, to $4,267.",
+    "Gold fell 1.2% in the last day, to $4,265.",
     "Gold is below its recent average - the trend is down.",
     "The US dollar got stronger today - that usually pushes gold down.",
     "US interest rates rose today - usually bad for gold.",
     "Next US interest-rate decision: 28 Oct.",
     "No big US news left this week.",
-    "News: Gold Price Forecast: gold Two-Week Plunge Puts August Breakout to the Test"
+    "News: Gold Two-Week Plunge Puts August Breakout to the Test"
    ]
   }
  ]
