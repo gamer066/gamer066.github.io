@@ -24,11 +24,11 @@
       ["XAUUSDT", "Gold", "The bot's own market"],
       ["XAGUSDT", "Silver", "Gold's closest cousin - they usually move together"],
       ["XPTUSDT", "Platinum", "Another precious metal"],
-      ["GDXUSDT", "Gold miners (GDX)", "Mining shares - often lead or exaggerate gold's moves"],
+      ["GDXUSDT", "Gold miners (GDX)", "Shares of gold-mining companies - they move like gold, only bigger"],
       ["PAXGUSDT", "PAX Gold token", "A crypto token backed by real gold"],
-      ["TBTUSDT", "US rates (TBT)", "Rises when long-term US interest rates rise - usually a headwind for gold"],
-      ["SPYUSDT", "S&P 500 (SPY)", "US shares - shows the market's risk mood"],
-      ["CLUSDT", "Crude oil (WTI)", "Oil - feeds inflation worries"],
+      ["TBTUSDT", "US rates (TBT)", "Goes up when US interest rates go up - usually bad for gold"],
+      ["SPYUSDT", "S&P 500 (SPY)", "The 500 biggest US companies - shows if people feel brave or scared"],
+      ["CLUSDT", "Crude oil (WTI)", "Oil - when it gets pricier, prices of everything rise"],
       ["BTCUSDT", "Bitcoin", "Sometimes called digital gold"]
     ]
   };
@@ -183,7 +183,7 @@
     items = (items || []).filter(function (i) { return i && okSym(i.symbol); });
     var data = {}, sparks = {}, active = opts.active;
     el.classList.add("mk-watch");
-    el.innerHTML = '<div class="mk-wh"><span>Symbol</span><span>Last</span><span>Chg%</span></div>' + items.map(function (i) {
+    el.innerHTML = '<div class="mk-wh"><span>Market</span><span>Price</span><span>24h</span></div>' + items.map(function (i) {
       return '<button type="button" class="mk-wr" data-sym="' + esc(i.symbol) + '" title="' + esc(i.note || "") + '">' +
         '<span class="mk-wn"><b>' + esc(i.label) + '</b><small>' + esc(i.symbol) + '</small></span>' +
         '<span class="mk-sp"></span><span class="mk-wl">—</span><span class="mk-wc">—</span></button>';
@@ -232,9 +232,9 @@
     opts = opts || {};
     var sym = symbol, dp = opts.dp || 2, prem = null, tick = null, oi = null, stops = [];
     el.classList.add("mk-det");
-    var cells = [["mark", "Mark price"], ["index", "Index price"], ["fund", "Funding / 8h"], ["cd", "Next funding in"],
-      ["oi", "Open interest"], ["oiusd", "Open interest $"], ["hi", "24h high"], ["lo", "24h low"],
-      ["vol", "24h volume"], ["qvol", "24h turnover $"]];
+    var cells = [["mark", "Fair price"], ["index", "Price on big exchanges"], ["fund", "Holding fee / 8h"], ["cd", "Next fee in"],
+      ["oi", "Open bets"], ["oiusd", "Open bets in $"], ["hi", "Highest, 24h"], ["lo", "Lowest, 24h"],
+      ["vol", "Traded, 24h"], ["qvol", "Traded in $, 24h"]];
     el.innerHTML = cells.map(function (c) { return '<div><span>' + c[1] + '</span><b data-k="' + c[0] + '">—</b></div>'; }).join("");
     function set(k, text, tone) { var b = el.querySelector('[data-k="' + k + '"]'); if (b) { b.textContent = text; b.className = tone || ""; } }
     function paint() {
@@ -265,7 +265,7 @@
     var sym = symbol, dp = opts.dp || 2, rows = opts.rows || 10, book = null, stopWs = null, stopPoll = null;
     el.classList.add("mk-book");
     function build() {
-      var h = '<div class="mk-bh"><span>Price</span><span>Size</span><span>Total</span></div><div class="mk-asks">';
+      var h = '<div class="mk-bh"><span>Price</span><span>Amount</span><span>Running total</span></div><div class="mk-asks">';
       for (var i = 0; i < rows; i++) h += '<div class="mk-lvl ask"><span></span><span></span><span></span></div>';
       h += '</div><div class="mk-spread"><b class="mk-mid">—</b><span class="mk-sprd">spread —</span></div><div class="mk-bids">';
       for (var j = 0; j < rows; j++) h += '<div class="mk-lvl bid"><span></span><span></span><span></span></div>';
@@ -307,7 +307,7 @@
     opts = opts || {};
     var sym = symbol, dp = opts.dp || 2, max = opts.max || 40, list = [], sizes = [], stopWs = null, stopPoll = null, lastId = -1;
     el.classList.add("mk-tape");
-    el.innerHTML = '<div class="mk-th"><span>Price</span><span>Size</span><span>Time</span></div><div class="mk-tl"></div>';
+    el.innerHTML = '<div class="mk-th"><span>Price</span><span>Amount</span><span>Time</span></div><div class="mk-tl"></div>';
     var body = el.querySelector(".mk-tl");
     function add(t) {
       if (!t || t.id <= lastId) return;
@@ -347,10 +347,10 @@
       if (g !== null) out.push("Gold is " + word(g) + " " + pctText(g) + " over 24 hours.");
       if (s !== null && g !== null) out.push("Silver is " + word(s) + " " + pctText(s) + (word(s) === word(g) ? ", moving with gold." : ", moving against gold."));
       if (m !== null) out.push("Gold miners are " + word(m) + " " + pctText(m) + (g !== null && Math.abs(m) > Math.abs(g) * 1.5 ? " - a stronger move than gold itself." : "."));
-      if (r !== null) out.push(r > 0.15 ? "US interest rates look to be rising (TBT " + pctText(r) + ") - usually a headwind for gold."
-        : r < -0.15 ? "US interest rates look to be easing (TBT " + pctText(r) + ") - usually helpful for gold."
+      if (r !== null) out.push(r > 0.15 ? "US interest rates seem to be rising (TBT " + pctText(r) + ") - usually bad for gold."
+        : r < -0.15 ? "US interest rates seem to be falling (TBT " + pctText(r) + ") - usually good for gold."
         : "US interest rates look steady today (TBT " + pctText(r) + ").");
-      if (eq !== null) out.push("US shares are " + word(eq) + " " + pctText(eq) + (eq < -1 ? " - a nervous market can push buyers toward gold." : "."));
+      if (eq !== null) out.push("US shares are " + word(eq) + " " + pctText(eq) + (eq < -1 ? " - when shares fall, people often buy gold instead." : "."));
     } else {
       var own = ch(symbol);
       if (own !== null) out.push(symbol + " is " + word(own) + " " + pctText(own) + " over 24 hours.");

@@ -1,12 +1,12 @@
 {
- "updated": "2026-09-24T10:45:51Z",
+ "updated": "2026-09-24T10:50:44Z",
  "bots": [
   {
    "id": "sunny-gold",
    "name": "Sunny Gold",
    "symbol": "XAUUSDT",
    "status": "live-practice",
-   "strategy": "Follows gold's trend on 1-hour candles: buys when the 20-hour average crosses above the 50-hour average, sells short on the opposite cross, with a safety stop. Paper test on live gold prices since 2026-09-24; 2 more gold setups are tested alongside it, and the best one takes over.",
+   "strategy": "Watches gold every hour and follows the big trend: it buys when gold has risen over the last few months and bets on a drop when gold has fallen. A safety stop sells automatically if a trade goes wrong.",
    "timeframe": "1h",
    "start_balance": 2000.0,
    "balance": 2000.0,
@@ -14,14 +14,14 @@
    "trades": [],
    "updated": "2026-09-24T10:35:11Z",
    "context": [
-    "Gold $4,259: -1.4% in 24 hours; below its 50-hour average and below its 200-h...",
-    "US dollar +0.20% on the day (stronger dollar - usually weighs on gold).",
-    "US 10-year yield 5.11% (+0.15 on the day; rising yields usually weigh on gold).",
-    "Next Fed rate decision 28 Oct (34 days away).",
-    "No more high-impact US releases this week.",
-    "News 23 Sep 21:13 UTC: Gold price will hit $4,900/oz in 2026 on strong sovere...",
-    "News 24 Sep 06:24 UTC: Gold Price Forecast: XAU/USD Two-Week Plunge Puts Augu...",
-    "News 23 Sep 17:53 UTC: Gold loses shine as rate hike bets foster a stronger d..."
+    "Gold fell 1.2% in the last day, to $4,267.",
+    "Gold is below its recent average - the trend is down.",
+    "The US dollar got stronger today - that usually pushes gold down.",
+    "US interest rates rose today - usually bad for gold.",
+    "Next US interest-rate decision: 28 Oct.",
+    "No big US news left this week.",
+    "News: Gold Price Forecast: gold Two-Week Plunge Puts August Breakout to the Test",
+    "News: Gold loses shine as rate hike bets foster a stronger dollar"
    ]
   },
   {
@@ -29,22 +29,22 @@
    "name": "Sunny Gold Fast",
    "symbol": "PAXGUSDT",
    "status": "live-practice",
-   "strategy": "Checks gold every 5 minutes. Trades a 15-minute trend turn, but only in the same direction as gold's big 60-day trend, with a safety stop. An experiment on a separate $1,000 of practice money: in testing, trading this fast lost money, so watch it, don't trust it yet.",
+   "strategy": "Checks gold every 5 minutes and makes quick trades, but only in the direction gold has been moving for the last two months. A safety stop limits each loss. In testing this lost money - watch it, don't trust it yet.",
    "timeframe": "15m",
    "start_balance": 1000.0,
    "balance": 1000.0,
    "open_position": null,
    "trades": [],
-   "updated": "2026-09-24T10:45:51Z",
+   "updated": "2026-09-24T10:50:44Z",
    "context": [
-    "Checks the market every 5 minutes, trades 15-minute turns.",
-    "Gold $4,259: -1.4% in 24 hours; below its 50-hour average and below its 200-h...",
-    "US dollar +0.20% on the day (stronger dollar - usually weighs on gold).",
-    "US 10-year yield 5.11% (+0.15 on the day; rising yields usually weigh on gold).",
-    "Next Fed rate decision 28 Oct (34 days away).",
-    "No more high-impact US releases this week.",
-    "News 23 Sep 21:13 UTC: Gold price will hit $4,900/oz in 2026 on strong sovere...",
-    "News 24 Sep 06:24 UTC: Gold Price Forecast: XAU/USD Two-Week Plunge Puts Augu..."
+    "Checks gold every 5 minutes, day and night.",
+    "Gold fell 1.2% in the last day, to $4,267.",
+    "Gold is below its recent average - the trend is down.",
+    "The US dollar got stronger today - that usually pushes gold down.",
+    "US interest rates rose today - usually bad for gold.",
+    "Next US interest-rate decision: 28 Oct.",
+    "No big US news left this week.",
+    "News: Gold Price Forecast: gold Two-Week Plunge Puts August Breakout to the Test"
    ]
   }
  ]

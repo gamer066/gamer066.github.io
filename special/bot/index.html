@@ -250,7 +250,7 @@
         </select>
         <button class="tb" type="button" id="indBtn" aria-haspopup="true" aria-expanded="false" title="Indicators (Alt+I)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 5-7 4 5"/></svg>Indicators</button>
-        <select class="tsel" id="cmp" aria-label="Compare with another market"><option value="">Compare&hellip;</option></select>
+        <select class="tsel" id="cmp" aria-label="Compare with another market"><option value="">Compare with&hellip;</option></select>
         <span class="sep"></span>
         <button class="tb" type="button" id="logBtn" aria-pressed="false" title="Logarithmic price scale">Log</button>
         <button class="tb" type="button" id="magBtn" aria-pressed="false" title="Magnet crosshair: snaps to candle prices">Magnet</button>
@@ -283,16 +283,16 @@
           </div>
         </div>
         <aside class="side" aria-label="Market panels">
-          <div class="sbox"><div class="shead"><span>Watchlist</span><span>related markets</span></div><div id="watch"></div></div>
+          <div class="sbox"><div class="shead"><span>Related markets</span><span>tap one to view it</span></div><div id="watch"></div></div>
           <div class="sbox">
             <div class="stabs" role="tablist" aria-label="Market depth">
-              <button type="button" role="tab" id="tabBook" aria-selected="true" aria-controls="book">Order book</button>
-              <button type="button" role="tab" id="tabTape" aria-selected="false" aria-controls="tape">Trades</button>
+              <button type="button" role="tab" id="tabBook" aria-selected="true" aria-controls="book">Waiting orders</button>
+              <button type="button" role="tab" id="tabTape" aria-selected="false" aria-controls="tape">Latest trades</button>
             </div>
             <div class="spanel" id="book" role="tabpanel" aria-labelledby="tabBook"></div>
             <div class="spanel" id="tape" role="tabpanel" aria-labelledby="tabTape" hidden></div>
           </div>
-          <div class="sbox"><div class="shead"><span>Symbol details</span></div><div id="details"></div></div>
+          <div class="sbox"><div class="shead"><span>Market facts</span></div><div id="details"></div></div>
         </aside>
       </div>
       <div class="strip" id="strip"></div>
@@ -304,26 +304,26 @@
     </div>
 
     <section class="tcard" aria-labelledby="repTitle">
-      <div class="headrow"><h2 id="repTitle">Strategy report</h2><span class="muted" id="tradeCount"></span></div>
+      <div class="headrow"><h2 id="repTitle">Results report</h2><span class="muted" id="tradeCount"></span></div>
       <div class="rtabs" role="tablist" aria-label="Strategy report">
-        <button type="button" role="tab" data-rt="ov" aria-selected="true">Overview</button>
-        <button type="button" role="tab" data-rt="perf" aria-selected="false">Performance</button>
-        <button type="button" role="tab" data-rt="list" aria-selected="false">List of trades</button>
+        <button type="button" role="tab" data-rt="ov" aria-selected="true">Summary</button>
+        <button type="button" role="tab" data-rt="perf" aria-selected="false">When it wins and loses</button>
+        <button type="button" role="tab" data-rt="list" aria-selected="false">All trades</button>
       </div>
       <div class="rpanel" data-rp="ov"><div id="sum"></div><div class="eqChart" id="eqChart" hidden></div><p class="note" id="repNote"></p></div>
       <div class="rpanel" data-rp="perf" hidden>
         <div class="subh">Month by month</div><div id="monthly"></div>
         <div class="grid2" style="margin-top:16px">
-          <div><div class="subh">How big the results were</div><div id="hist"></div></div>
-          <div><div class="subh">Long vs short</div><div id="ls"></div></div>
+          <div><div class="subh">How big the wins and losses were</div><div id="hist"></div></div>
+          <div><div class="subh">Betting up vs betting down</div><div id="ls"></div></div>
         </div>
         <div class="subh" style="margin-top:16px">Best and worst hours and days</div><div id="hours"></div>
       </div>
       <div class="rpanel" data-rp="list" hidden>
         <div class="tfilter" role="group" aria-label="Filter trades">
           <button class="tb" type="button" data-f="all" aria-pressed="true">All</button>
-          <button class="tb" type="button" data-f="long" aria-pressed="false">Long</button>
-          <button class="tb" type="button" data-f="short" aria-pressed="false">Short</button>
+          <button class="tb" type="button" data-f="long" aria-pressed="false" title="Trades that win when the price goes up">Long (up)</button>
+          <button class="tb" type="button" data-f="short" aria-pressed="false" title="Trades that win when the price goes down">Short (down)</button>
           <button class="tb" type="button" data-f="win" aria-pressed="false">Wins</button>
           <button class="tb" type="button" data-f="loss" aria-pressed="false">Losses</button>
           <button class="tb dl" type="button" id="csvBtn">Download trades (CSV)</button>
@@ -343,8 +343,8 @@
 <script src="/assets/lwc-5.2.1.js"></script>
 <script src="/assets/special.js?v=da985bc8"></script>
 <script src="/assets/special-ind.js?v=be597379"></script>
-<script src="/assets/special-perf.js?v=79671eec"></script>
-<script src="/assets/special-market.js?v=4a4bc964"></script>
+<script src="/assets/special-perf.js?v=c6017e37"></script>
+<script src="/assets/special-market.js?v=769cf741"></script>
 <script>
 (function () {
   var S = window.SDLSpecial, LW = window.LightweightCharts, I = window.SDLInd, P = window.SDLPerf, M = window.SDLMarket;
@@ -371,18 +371,18 @@
 
   /* ================= indicators ================= */
   var IND = {
-    ema20: { label: "EMA 20", color: "#5B8CFF" },
-    ema50: { label: "EMA 50", color: "#F5B544" },
-    sma200: { label: "SMA 200", color: "#E040FB" },
-    bb: { label: "Bollinger Bands 20, 2", color: "#42A5F5" },
-    vwap: { label: "VWAP", color: "#26C6DA" },
-    st: { label: "Supertrend 10, 3", color: "#22AB94" },
-    dc: { label: "Donchian 20", color: "#9575CD" },
-    vol: { label: "Volume", color: "#8E919B" },
-    rsi: { label: "RSI 14", color: "#B388FF", pane: 1 },
-    macd: { label: "MACD 12, 26, 9", color: "#5B8CFF", pane: 1 },
-    srsi: { label: "Stoch RSI", color: "#5B8CFF", pane: 1 },
-    atr: { label: "ATR 14", color: "#FF8A65", pane: 1 }
+    ema20: { label: "EMA 20", color: "#5B8CFF", plain: "average price, last 20 candles" },
+    ema50: { label: "EMA 50", color: "#F5B544", plain: "average price, last 50 candles" },
+    sma200: { label: "SMA 200", color: "#E040FB", plain: "long-term average, 200 candles" },
+    bb: { label: "Bollinger Bands 20, 2", color: "#42A5F5", plain: "normal price range; outside = unusual" },
+    vwap: { label: "VWAP", color: "#26C6DA", plain: "today's average price paid" },
+    st: { label: "Supertrend 10, 3", color: "#22AB94", plain: "green = rising trend, red = falling" },
+    dc: { label: "Donchian 20", color: "#9575CD", plain: "highest and lowest of the last 20 candles" },
+    vol: { label: "Volume", color: "#8E919B", plain: "how much was traded" },
+    rsi: { label: "RSI 14", color: "#B388FF", pane: 1, plain: "over 70 = maybe too high, under 30 = maybe too low" },
+    macd: { label: "MACD 12, 26, 9", color: "#5B8CFF", pane: 1, plain: "trend speed; bars above 0 = pushing up" },
+    srsi: { label: "Stoch RSI", color: "#5B8CFF", pane: 1, plain: "fast version of RSI" },
+    atr: { label: "ATR 14", color: "#FF8A65", pane: 1, plain: "how much the price jumps around" }
   };
   function lineOpts(c, extra) {
     var o = { color: c, lineWidth: 1, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false };
@@ -469,9 +469,9 @@
     $("indPop").innerHTML = groups.map(function (g) {
       return "<h3>" + g[0] + "</h3>" + g[1].map(function (k) {
         return '<label><input type="checkbox" data-ind="' + k + '"' + (active.indexOf(k) >= 0 ? " checked" : "") + '><i style="background:' +
-          IND[k].color + '"></i>' + S.esc(IND[k].label) + "</label>";
+          IND[k].color + '"></i><span>' + S.esc(IND[k].label) + '<small style="display:block;font-size:.72rem;color:var(--tv-mute)">' + S.esc(IND[k].plain || "") + "</small></span></label>";
       }).join("");
-    }).join("") + '<p class="hint">Sunny Gold trades the EMA 20 / EMA 50 cross; the small amber dots mark each cross.<br>' +
+    }).join("") + '<p class="hint">EMA 20 and EMA 50 are the average price of the last 20 and 50 candles. When the fast one crosses the slow one, the trend may be turning; the small amber dots mark each cross.<br>' +
       "Keys: 1–7 candle size · Alt+I indicators · F full screen · S picture</p>";
   }
 
@@ -757,7 +757,7 @@
       ["Balance", S.money(st.balance), "", st.start !== null ? "started at " + S.money(st.start) : ""],
       ["Win rate", st.n ? S.pct(st.winRate) : "—", "", st.n ? st.wins + " of " + st.n + " won" : ""],
       ["Trades", String(st.n), "", bot.open_position ? "+ 1 open now" : "none open"],
-      ["Worst dip", st.n ? S.money(st.dip) : "—", st.dip ? "down" : "", st.dipPct ? S.pct(st.dipPct) + " from the top" : "biggest fall from a high"],
+      ["Biggest drop", st.n ? S.money(st.dip) : "—", st.dip ? "down" : "", st.dipPct ? S.pct(st.dipPct) + " below its best" : "largest fall from its best"],
       ["Best / worst", st.n ? S.money(st.best, true) : "—", "", st.n ? "worst " + S.money(st.worst, true) : ""]
     ];
     $("strip").innerHTML = cells.map(function (c) {
@@ -774,7 +774,7 @@
     }
     var long = p.side !== "short";
     $("pos").innerHTML = '<div class="kv2">' +
-      "<div><span>Side</span><b><span class='sidep " + (long ? "long" : "short") + "'>" + (long ? "LONG" : "SHORT") + "</span></b></div>" +
+      "<div><span>Side</span><b><span class='sidep " + (long ? "long" : "short") + "'>" + (long ? "LONG \u2191" : "SHORT \u2193") + "</span></b><small style='display:block;font-size:.72rem;color:var(--tv-mute);margin-top:3px'>" + (long ? "wins if the price goes up" : "wins if the price goes down") + "</small></div>" +
       "<div><span>Opened</span><b>" + S.esc(S.when(p.opened)) + "</b></div>" +
       "<div><span>Entry</span><b>" + S.price(p.entry, dp) + "</b></div>" +
       "<div><span>Now</span><b id='posNow'>—</b></div>" +
@@ -796,7 +796,7 @@
   function about() {
     $("strategy").textContent = bot.strategy || "No description yet.";
     var ctx = Array.isArray(bot.context) ? bot.context.filter(function (x) { return typeof x === "string" && x.trim(); }).slice(0, 8) : [];
-    $("context").innerHTML = ctx.length ? '<div class="ctxHead">What it is watching</div><div class="ctx">' +
+    $("context").innerHTML = ctx.length ? '<div class="ctxHead">What it keeps an eye on</div><div class="ctx">' +
       ctx.map(function (x) { return "<div>" + S.esc(x) + "</div>"; }).join("") + "</div>" : "";
   }
   var filter = "all", eqChart = null;

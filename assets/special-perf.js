@@ -31,8 +31,8 @@
     pillAlpha: 0.12, longInk: "#2DBFA6", shortInk: "#FF6B76"
   };
 
-  var NOTE = "Worked out from closed trades only; the open trade is not included. Drawdown is measured trade to trade. " +
-    "Sharpe and Sortino use each trade's % return (average \u00f7 spread) with no annualising and a 0% risk-free rate.";
+  var NOTE = "These numbers only count trades that are finished; a trade still open is not included yet. " +
+    "\"Biggest drop\" is the largest fall from the bot's best balance. The steadiness scores are rough guides: higher means smoother results.";
 
   /* ================================================================ helpers ================================ */
 
@@ -474,7 +474,7 @@
     var pfT = a.profitFactor === null ? "" : a.profitFactor > 1 ? "up" : a.profitFactor < 1 ? "down" : "";
     var st = a.streak || { kind: null, len: 0 };
     var hero = [
-      tile("Net profit", money(a.netProfit, true), tone(a.netProfit),
+      tile("Total result", money(a.netProfit, true), tone(a.netProfit),
         a.netPct !== null ? pct(a.netPct, true) + " of start" : "practice money", tone(a.netPct),
         "Everything the closed trades made, minus everything they lost. Practice money.", true),
       tile("Closed trades", intf(a.n), "",
@@ -482,29 +482,29 @@
         "How many trades have been opened and closed. A trade that is still open is not counted.", true),
       tile("Win rate", pct(a.winRate), "", intf(a.wins) + " of " + intf(a.n) + " made money", "",
         "The share of closed trades that made money.", true),
-      tile("Profit factor", ratio(a.profitFactor), pfT,
+      tile("$ won per $1 lost", ratio(a.profitFactor), pfT,
         a.profitFactor === Infinity ? "no losing trades yet" : a.profitFactor === null ? "no wins or losses yet" :
           money(a.profitFactor, false) + " won per $1 lost", "",
         "Dollars won for every dollar lost. Above 1 means the bot makes more than it loses.", true),
-      tile("Max drawdown", a.maxDrawdown > 0 ? money(-a.maxDrawdown) : "$0.00", a.maxDrawdown > 0 ? "down" : "",
+      tile("Biggest drop", a.maxDrawdown > 0 ? money(-a.maxDrawdown) : "$0.00", a.maxDrawdown > 0 ? "down" : "",
         a.maxDrawdownPct !== null ? pct(a.maxDrawdownPct) + " below its high" : "biggest fall from a high", "",
         "The biggest fall in the balance from a high point, measured from one closed trade to the next.", true),
-      tile("Avg trade", money(a.expectancy, true), tone(a.expectancy),
+      tile("Average per trade", money(a.expectancy, true), tone(a.expectancy),
         a.avgTradePct !== null ? pct(a.avgTradePct, true, 3) + " per trade" : "expectancy", tone(a.avgTradePct),
         "The average result per trade (expectancy): what one more trade has been worth so far.", true)
     ];
     var grid = [
-      tile("Gross profit", money(a.grossProfit), a.grossProfit > 0 ? "up" : "", "from " + plural(a.wins, "win", "wins"), "",
+      tile("All wins added up", money(a.grossProfit), a.grossProfit > 0 ? "up" : "", "from " + plural(a.wins, "win", "wins"), "",
         "All the winning trades added together."),
-      tile("Gross loss", money(a.grossLoss), a.grossLoss < 0 ? "down" : "", "from " + plural(a.losses, "loss", "losses"), "",
+      tile("All losses added up", money(a.grossLoss), a.grossLoss < 0 ? "down" : "", "from " + plural(a.losses, "loss", "losses"), "",
         "All the losing trades added together."),
-      tile("Avg win", money(a.avgWin, true), a.avgWin !== null ? "up" : "", "per winning trade", "",
+      tile("Average win", money(a.avgWin, true), a.avgWin !== null ? "up" : "", "per winning trade", "",
         "The average size of a winning trade."),
-      tile("Avg loss", money(a.avgLoss, true), a.avgLoss !== null ? "down" : "", "per losing trade", "",
+      tile("Average loss", money(a.avgLoss, true), a.avgLoss !== null ? "down" : "", "per losing trade", "",
         "The average size of a losing trade."),
-      tile("Payoff ratio", ratio(a.payoffRatio), "", "avg win \u00f7 avg loss", "",
+      tile("Win size vs loss size", ratio(a.payoffRatio), "", "how big wins are next to losses", "",
         "Average win divided by average loss. Above 1 means the wins are bigger than the losses."),
-      tile("Median trade", money(a.median, true), tone(a.median), "the middle result", "",
+      tile("Typical trade", money(a.median, true), tone(a.median), "the middle result", "",
         "Half the trades did better than this and half did worse. Less swayed by one big trade than the average."),
       tile("Largest win", money(a.largestWin, true), a.largestWin !== null ? "up" : "",
         a.largestWinShare !== null ? pct(a.largestWinShare, false, 1) + " of gross profit" : "", "",
@@ -520,24 +520,24 @@
         st.kind === "win" ? "wins" : st.kind === "loss" ? "losses" : "even") : DASH,
         st.kind === "win" ? "up" : st.kind === "loss" ? "down" : "", "latest trades", "",
         "How the most recent trades have gone, counted back from the latest one."),
-      tile("Recovery factor", ratio(a.recoveryFactor), tone(a.recoveryFactor), "net profit \u00f7 max drawdown", "",
+      tile("Profit vs biggest drop", ratio(a.recoveryFactor), tone(a.recoveryFactor), "how well it earns back its drops", "",
         "Net profit divided by the biggest drawdown. Higher means the gains outweigh the worst dip."),
-      tile("Sharpe ratio", ratio(a.sharpe), tone(a.sharpe), "per trade, not yearly", "",
+      tile("Steadiness score", ratio(a.sharpe), tone(a.sharpe), "higher = smoother results", "",
         "Average % return per trade divided by how much the returns swing. Higher means steadier gains. Worked out per trade, not per year."),
-      tile("Sortino ratio", ratio(a.sortino), tone(a.sortino), "per trade, not yearly", "",
+      tile("Steadiness on losses", ratio(a.sortino), tone(a.sortino), "higher = smoother results", "",
         "Like Sharpe, but only the swings of losing trades count as risk. Worked out per trade, not per year."),
-      tile("SQN", ratio(a.sqn), tone(a.sqn), a.n < 30 ? "needs 30+ trades to mean much" : "system quality number", "",
+      tile("Overall quality score", ratio(a.sqn), tone(a.sqn), a.n < 30 ? "needs 30+ trades to mean much" : "higher = more reliable", "",
         "System Quality Number: average trade divided by its spread, times the square root of the number of trades (up to 100)."),
-      tile("Avg time in trade", dur(a.avgHoldMs), "",
+      tile("Average time in a trade", dur(a.avgHoldMs), "",
         "wins " + dur(a.avgWinHoldMs) + DOT + "losses " + dur(a.avgLossHoldMs), "",
         "How long a trade stays open on average, from entry to exit."),
-      tile("Time in market", pct(a.exposurePct, false, 1), "", "share of time with a trade open", "",
+      tile("Time with a trade open", pct(a.exposurePct, false, 1), "", "share of time with a trade open", "",
         "From the first entry to the last exit, the share of time the bot had at least one trade open."),
-      tile("Max run-up", money(a.maxRunup, true), a.maxRunup > 0 ? "up" : "", "biggest climb from a low", "",
+      tile("Biggest climb", money(a.maxRunup, true), a.maxRunup > 0 ? "up" : "", "biggest climb from a low", "",
         "The biggest rise in the balance from a low point, trade to trade."),
-      tile("Longest drawdown", dur(a.maxDrawdownDurationMs), "", a.inDrawdown ? "still below its high" : "time below a previous high", "",
+      tile("Longest time below its best", dur(a.maxDrawdownDurationMs), "", a.inDrawdown ? "still below its high" : "time below a previous high", "",
         "The longest stretch the balance spent below an earlier high before getting back to it."),
-      tile("Ending balance", money(a.endBalance), a.endBalance !== null ? tone(a.endBalance - a.start) : "",
+      tile("Balance now", money(a.endBalance), a.endBalance !== null ? tone(a.endBalance - a.start) : "",
         a.start !== null ? "started at " + money(a.start) : "no starting balance given", "",
         "The starting balance plus the net result of all closed trades. Practice money.")
     ];
