@@ -28,7 +28,9 @@
   .backrow{margin-top:2px}
   .gwrap{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
   .gwrap[hidden]{display:none}
-  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #gbtn{display:flex;justify-content:center;min-height:44px;
+    /* Google draws its button in its own light-mode frame; matching it stops the browser painting a white band behind it */
+    color-scheme:normal}
   .or{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:.7rem;letter-spacing:.16em;
     text-transform:uppercase;font-weight:700}
   .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
