@@ -257,7 +257,9 @@
   function daysLeft(stamp) {
     var d = new Date(String(stamp).replace(" ", "T"));
     if (isNaN(d)) return null;
-    return Math.ceil((d - Date.now()) / 86400000);
+    // a deadline that passed even a minute ago counts as passed (-1), never as "today"
+    var ms = d - Date.now();
+    return ms < 0 ? Math.floor(ms / 86400000) : Math.ceil(ms / 86400000);
   }
 
   /* ---------- "Add to calendar": a small calendar file made on this device, with reminders a day and 3 hours before ---------- */
