@@ -5,7 +5,7 @@ Studies, Accounts and Profile sit behind an invite-only sign-in.
 
 **This repository is public and every file in it is served as part of the website.** Nothing private goes here: no
 keys, no invite codes, no personal data, no logs, no local test configs. Secrets and data live only in Cloudflare:
-D1 database `DB`, KV store `DOCS`, variables `INVITE_CODE`, `RESET_CODE`, optional `GOOGLE_CLIENT_ID`.
+D1 database `DB`, KV store `DOCS`, variables `INVITE_CODE`, `RESET_CODE`, optional `GOOGLE_CLIENT_ID` and `OWNER_EMAIL`.
 
 Write for Salman in plain words. Code comments here are written the same way: say what a thing does and why.
 
@@ -56,6 +56,9 @@ phone width in both themes: no script errors and no sideways scrolling.
 ## Rules
 
 - The first account ever made is the owner; the invite code must never reset it (`functions/api/reset.js`).
+- Salman's own data is owner-only, not just signed-in-only: `/api/study`, `/api/accounts` and `/api/doc` refuse
+  everyone else (OWNER-1). The owner is `OWNER_EMAIL` if set, else the first account. Anyone with the invite code
+  can make an account, so "signed in" never means "Salman".
 - Error messages never reveal whether an email has an account, in wording or in timing.
 - `/api/doc` must never serve or delete `avatar/` keys; photos belong to `/api/avatar`, one person each.
 - Keep `_headers` strict (CSP, HSTS, frame-ancestors none). A new outside host needs a CSP entry and a reason.

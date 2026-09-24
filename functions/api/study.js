@@ -6,7 +6,7 @@
  *
  * GET   returns what is stored.
  * POST  replaces it with what his laptop just produced.
- * Both refuse anyone who is not signed in.
+ * Both refuse anyone who is not signed in, and anyone who is not the site owner (OWNER-1).
  */
 
 const KEY = "study";
@@ -23,6 +23,7 @@ export async function onRequest(context) {
 async function handle({ request, env, data }) {
   if (!env.DB) return json({ error: "The database is not connected yet." }, 503);
   if (!data || !data.user) return json({ error: "You are not signed in. Please sign in again." }, 401);
+  if (!(await isOwner(env, data.user))) return json({ error: "This part of the site is only for its owner." }, 403);
 
   await env.DB.prepare(
     `CREATE TABLE IF NOT EXISTS store (
@@ -65,6 +66,18 @@ async function handle({ request, env, data }) {
   }
 
   return json({ error: "Something went wrong. Try again." }, 405);
+}
+
+
+/* OWNER-1 (24 Sep 2026): this is Salman's own data. Anyone he gives the invite code to can make an account and
+   sign in, so "signed in" is not enough: only the site owner may read or change it. The owner is the first
+   account ever made (the same rule /api/reset uses), or OWNER_EMAIL if that is set in Cloudflare's settings.
+   If the owner cannot be worked out, the answer is no. */
+async function isOwner(env, user) {
+  if (env.OWNER_EMAIL) return String(user.email || "").toLowerCase() === String(env.OWNER_EMAIL).trim().toLowerCase();
+  if (!env.DB) return false;
+  const first = await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
+  return !!first && first.id === user.id;
 }
 
 function json(obj, status) {

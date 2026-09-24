@@ -1,7 +1,7 @@
 /* Stores and hands back Salman's own documents, so any of them opens from his phone.
  *
  * The files sit in Cloudflare's key-value storage (bound to this site as DOCS), never in this public
- * repository. Every request needs a signed-in visitor.
+ * repository. Every request needs the site owner to be signed in (OWNER-1); other invited people get a polite no.
  *
  *   GET  /api/doc?list=1          what has been uploaded (name, unit, size, when)
  *   GET  /api/doc?id=<id>         the file itself, opened in the browser where it can be
@@ -39,6 +39,7 @@ export async function onRequest(context) {
 
 async function handle({ request, env, data }) {
   if (!data || !data.user) return json({ error: "You are not signed in. Please sign in again." }, 401);
+  if (!(await isOwner(env, data.user))) return json({ error: "This part of the site is only for its owner." }, 403);
   if (!env.DOCS) return json({ error: "The document store is not connected yet." }, 503);
 
   const url = new URL(request.url);
@@ -119,6 +120,18 @@ function safeName(s) {
 function typeFor(name) {
   const ext = (name.split(".").pop() || "").toLowerCase();
   return TYPES[ext] || "application/octet-stream";
+}
+
+
+/* OWNER-1 (24 Sep 2026): this is Salman's own data. Anyone he gives the invite code to can make an account and
+   sign in, so "signed in" is not enough: only the site owner may read or change it. The owner is the first
+   account ever made (the same rule /api/reset uses), or OWNER_EMAIL if that is set in Cloudflare's settings.
+   If the owner cannot be worked out, the answer is no. */
+async function isOwner(env, user) {
+  if (env.OWNER_EMAIL) return String(user.email || "").toLowerCase() === String(env.OWNER_EMAIL).trim().toLowerCase();
+  if (!env.DB) return false;
+  const first = await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
+  return !!first && first.id === user.id;
 }
 
 function json(obj, status) {
