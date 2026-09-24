@@ -150,7 +150,7 @@
       'aria-label="Search" aria-controls="palList" autocomplete="off" spellcheck="false"><kbd>Esc</kbd></div>' +
       '<div class="palList" id="palList" role="listbox"></div>' +
       '<div class="palFoot"><span><kbd>\u2191</kbd><kbd>\u2193</kbd> move</span><span><kbd>Enter</kbd> open</span>' +
-      '<span><kbd>Ctrl</kbd><kbd>K</kbd> anywhere</span></div></div>';
+      '<span><kbd>Ctrl</kbd><kbd>K</kbd> anywhere</span><span><kbd>?</kbd> all shortcuts</span></div></div>';
     document.body.appendChild(box);
 
     var input = box.querySelector("input"), list = box.querySelector(".palList");
@@ -214,7 +214,39 @@
     }
   }
 
-  function start() { build(); buildMenu(); buildPalette(); }
+  /* ---- "?" lists the keyboard shortcuts; "T" switches between dark and daylight ---- */
+  function buildKeys() {
+    if (document.querySelector(".keysBox")) return;
+    var rows = [["Ctrl", "K", "Quick jump to any page, unit, document or account"], ["/", "", "Quick jump, too"],
+                ["T", "", "Switch between dark and daylight"], ["?", "", "Show this list"], ["Esc", "", "Close any open box"]];
+    var box = document.createElement("div");
+    box.className = "palette keysBox";
+    box.hidden = true;
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
+    box.setAttribute("aria-label", "Keyboard shortcuts");
+    box.innerHTML = '<div class="pal"><div class="palHead"><span class="keysTitle">Keyboard shortcuts</span><kbd>Esc</kbd></div>' +
+      '<div class="palList">' + rows.map(function (r) {
+        return '<div class="palItem"><span class="pl">' + r[2] + '</span><span class="ph"><kbd>' + r[0] + '</kbd>' +
+          (r[1] ? ' <kbd>' + r[1] + '</kbd>' : '') + '</span></div>';
+      }).join("") + '</div></div>';
+    document.body.appendChild(box);
+    function close() { box.hidden = true; document.documentElement.classList.remove("palOpen"); }
+    box.addEventListener("click", function (e) { if (e.target === box) close(); });
+    document.addEventListener("keydown", function (e) {
+      var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "") || (e.target && e.target.isContentEditable);
+      var anyOpen = Array.prototype.some.call(document.querySelectorAll(".palette"), function (p) { return !p.hidden; });
+      if (e.key === "Escape" && !box.hidden) { close(); return; }
+      if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === "?" && !anyOpen) { e.preventDefault(); box.hidden = false; document.documentElement.classList.add("palOpen"); }
+      else if ((e.key === "t" || e.key === "T") && !anyOpen) {
+        var btn = document.querySelector(".themeBtn:not(.searchBtn)");
+        if (btn) btn.click(); else apply(now() === "light" ? "dark" : "light");
+      }
+    });
+  }
+
+  function start() { build(); buildMenu(); buildPalette(); buildKeys(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

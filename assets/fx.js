@@ -25,6 +25,17 @@
     var density = document.body.classList.contains("home") || document.querySelector(".hero .console") ? 1 : 0.55;
     particles(document.getElementById("stars"), density);
 
+    /* ---- offline notice: says so plainly when the connection drops (the saved copy keeps the site readable) ---- */
+    var pill = document.createElement("div");
+    pill.className = "offline";
+    pill.setAttribute("role", "status");
+    pill.setAttribute("aria-live", "polite");
+    pill.textContent = "You're offline \u2014 showing the saved copy";
+    pill.hidden = navigator.onLine !== false;
+    document.body.appendChild(pill);
+    addEventListener("offline", function () { pill.hidden = false; });
+    addEventListener("online", function () { pill.hidden = true; });
+
     /* ---- a soft glow that follows the mouse (desktop only) ---- */
     if (finePointer && !still) {
       var glow = document.createElement("div");

@@ -350,3 +350,16 @@ html.palOpen{overflow:hidden}
 .palFoot span{display:inline-flex;align-items:center;gap:5px}
 @media (max-width:640px){.palFoot{display:none}.palette{padding-top:9vh}}
 @media (prefers-reduced-motion:reduce){.pal{animation:none}}
+
+/* ---------- offline notice ---------- */
+.offline{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:90;display:flex;align-items:center;gap:9px;
+  padding:10px 16px;border-radius:999px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);
+  color:var(--ink);font-size:.84rem;font-weight:600;white-space:nowrap}
+.offline[hidden]{display:none}
+.offline::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--down);box-shadow:0 0 10px var(--down)}
+
+/* ---------- keyboard shortcuts list ---------- */
+.keysBox .keysTitle{flex:1;font-family:var(--serif);font-weight:600;color:var(--ink)}
+.keysBox .palItem{cursor:default}
+.keysBox .palItem:hover{background:none}
+.keysBox .ph{letter-spacing:0;text-transform:none}

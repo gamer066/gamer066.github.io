@@ -37,8 +37,19 @@ async function handle({ request, env, data }) {
       .bind(user.id).first();
     if (!row) return json({ error: "Your account could not be found." }, 404);
 
+    // Someone holding a stolen session must not be able to sit here guessing the real password.
+    const who = "pwchange|" + user.id;
+    const since = new Date(Date.now() - 15 * 60000).toISOString();
+    const recent = await env.DB.prepare("SELECT COUNT(*) AS n FROM login_attempts WHERE who = ? AND at > ?")
+      .bind(who, since).first();
+    if (recent && recent.n >= 10) return json({ error: "Too many tries. Please wait fifteen minutes and try again." }, 429);
+
     const tried = await scramble(current, unb64(row.password_salt), row.iterations || ROUNDS);
-    if (!same(tried, row.password_hash)) return json({ error: "Your current password is not right." }, 403);
+    if (!same(tried, row.password_hash)) {
+      await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
+      return json({ error: "Your current password is not right." }, 403);
+    }
+    await env.DB.prepare("DELETE FROM login_attempts WHERE who = ?").bind(who).run();
 
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const hash = await scramble(next, salt, ROUNDS);
