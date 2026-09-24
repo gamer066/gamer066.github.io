@@ -299,3 +299,18 @@ button.quiet:hover{background:var(--surface-2);color:var(--ink)}
   .neon{animation:none}
   ::view-transition-old(root),::view-transition-new(root){animation:none}
 }
+
+/* ---------- loading shimmer: grey placeholders with a light sweeping across, shown until real data arrives ---------- */
+.skelGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:34px}
+.skel{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(167,139,250,.12),transparent);animation:skelSweep 1.3s ease-in-out infinite}
+.skel.card{height:200px}
+.skel.wide{grid-column:1/-1;height:64px}
+@keyframes skelSweep{to{transform:translateX(100%)}}
+
+/* ---------- inner pages: the headline carries the signature gradient, like the home page ---------- */
+.wrap .hero h1,.narrow .hero h1{background:linear-gradient(95deg,var(--ink) 0%,var(--ink) 30%,var(--accent) 70%,var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+@media (prefers-reduced-motion:reduce){.skel::after{animation:none}}

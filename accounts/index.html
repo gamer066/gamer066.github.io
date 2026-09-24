@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/style.css?v=b5b889c6">
+<link rel="stylesheet" href="/assets/style.css?v=65964a3b">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <style>
   .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
@@ -103,6 +103,11 @@
   </div>
 
   <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:16px"></div>
+
+  <div id="skeleton" class="skelGrid" aria-hidden="true">
+    <div class="skel card"></div><div class="skel card"></div><div class="skel card"></div>
+    <div class="skel wide"></div><div class="skel wide"></div>
+  </div>
 
   <div id="body" hidden>
 
@@ -271,6 +276,7 @@
     fetch("/api/accounts", { credentials: "same-origin" })
       .then(function (r) { return r.json(); })
       .then(function (out) {
+        var sk = document.getElementById("skeleton"); if (sk) sk.remove();
         if (out && out.error) { say(out.error); return; }
         if (!out || out.empty) {
           document.getElementById("sub").textContent =
@@ -281,7 +287,7 @@
         paint(out.data || {});
         document.getElementById("savedAt").textContent = "Last updated " + day(out.savedAt) + ".";
       })
-      .catch(function () { say("Could not load your accounts. Try refreshing the page."); });
+      .catch(function () { var sk = document.getElementById("skeleton"); if (sk) sk.remove(); say("Could not load your accounts. Try refreshing the page."); });
   }
 
   document.getElementById("pick").addEventListener("click", function () { document.getElementById("file").click(); });
