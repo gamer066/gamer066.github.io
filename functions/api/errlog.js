@@ -5,7 +5,7 @@
  * 200 rows, and anything else is quietly ignored (the answer is always "204 No Content" so pages never complain).
  *
  *   POST /api/errlog   { msg, where, page }   record one error
- *   GET  /api/errlog                          the newest 50 (signed-in only)
+ *   GET  /api/errlog                          the newest 50 (site owner only)
  *
  * To read it from the Cloudflare database console:  SELECT * FROM errlog ORDER BY id DESC LIMIT 20;
  */
@@ -34,6 +34,8 @@ async function handle({ request, env, data }) {
   ).run();
 
   if (request.method === "GET") {
+    // Anyone signed in may report an error, but only the site owner may read them back.
+    if (!(await isOwner(env, data.user))) return new Response(null, { status: 204 });
     const rows = await env.DB.prepare("SELECT at, page, msg, place, agent FROM errlog ORDER BY id DESC LIMIT 50").all();
     return new Response(JSON.stringify({ errors: rows.results || [] }), {
       headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
@@ -50,4 +52,12 @@ async function handle({ request, env, data }) {
     await env.DB.prepare("DELETE FROM errlog WHERE id NOT IN (SELECT id FROM errlog ORDER BY id DESC LIMIT 200)").run();
   }
   return new Response(null, { status: 204 });
+}
+
+/* The owner: OWNER_EMAIL if that is set in Cloudflare's settings, otherwise the first account ever made
+   (the same rule /api/reset uses). If the owner cannot be worked out, the answer is no. */
+async function isOwner(env, user) {
+  if (env.OWNER_EMAIL) return String(user.email || "").toLowerCase() === String(env.OWNER_EMAIL).trim().toLowerCase();
+  const first = await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
+  return !!first && first.id === user.id;
 }
