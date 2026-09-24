@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Special bots &middot; Salman.D.Life</title>
+<meta name="description" content="Hand-picked trading bots, each with its own live chart. Practice money only.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060B">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23A78BFA'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%2305060B'>S</text></svg>">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=49e72e1f">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=f65be539">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Salman.D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fapi.binance.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/style.css?v=55769afe">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
+<style>
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
+  .hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem)}
+  .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
+  .practice{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;padding:6px 11px;border-radius:999px;
+    font-size:.74rem;font-weight:700;letter-spacing:.04em;background:var(--accent-soft);color:var(--ink);border:1px solid var(--line)}
+  .practice svg{width:14px;height:14px;color:var(--accent)}
+
+  .bots{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:8px}
+  .bcard{position:relative;display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:var(--radius);
+    background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);color:var(--ink);text-decoration:none;
+    transition:border-color .18s ease,transform .18s ease}
+  .bcard:hover{border-color:var(--accent)}
+  .bcard:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .bc-top{display:flex;align-items:center;gap:11px}
+  .bc-top h3{font-family:var(--serif);font-size:1.12rem;font-weight:600;line-height:1.2}
+  .bc-top small{display:block;font-size:.76rem;color:var(--ink-3);margin-top:2px}
+  .bc-top .pill{margin-left:auto}
+  .coin{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--mono);
+    font-size:.7rem;font-weight:700;color:#1b1400;background:radial-gradient(circle at 30% 30%,#ffe7a3,#f5b544 55%,#b7791f)}
+  .bc-px{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .bc-px .px{font-family:var(--mono);font-size:1.45rem;font-weight:600;letter-spacing:-.01em}
+  .chg{font-family:var(--mono);font-size:.84rem;font-weight:600}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .spark{width:100%;height:64px;display:block}
+  .bc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:12px;border-top:1px solid var(--line-soft)}
+  .bc-stats span{display:block;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+  .bc-stats b{display:block;font-family:var(--mono);font-size:.95rem;font-weight:600;margin-top:3px}
+  .bc-foot{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--ink-3)}
+  .bc-foot .open{color:var(--accent);font-weight:700}
+  .soon{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:8px;padding:22px;
+    border-radius:var(--radius);border:1px dashed var(--line);color:var(--ink-2);font-size:.9rem;min-height:200px}
+  .soon b{font-family:var(--serif);font-size:1.05rem;color:var(--ink)}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;
+    white-space:nowrap;border:1px solid var(--line)}
+  .pill i{width:7px;height:7px;border-radius:50%;background:currentColor}
+  .pill.amber{color:#8A5A0F;background:rgba(245,181,68,.14)}
+  :root:not([data-theme="light"]) .pill.amber{color:#F5B544}
+  .pill.green{color:var(--up);background:var(--up-soft)}
+  .pill.grey{color:var(--ink-3)}
+  .pill.green i{animation:beat 1.6s ease-in-out infinite}
+  @keyframes beat{50%{opacity:.35}}
+  @media (prefers-reduced-motion:reduce){.pill.green i{animation:none}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/trading/">Trading</a>
+    <a href="/special/" class="on">Special bots</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="wrap" id="main">
+
+  <header class="hero">
+    <div class="eyebrow">Special bot trades</div>
+    <h1>Special bots</h1>
+    <p class="lede">Hand-picked bots, each with its own live chart, its trades marked on the candles, and its results
+      worked out as it goes. More will be added here over time.</p>
+    <span class="practice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6Z"/></svg>Practice money only &mdash; no real money is used</span>
+    <div class="rule"></div>
+  </header>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:16px"></div>
+
+  <section class="block">
+    <div class="headrow"><h2>Bots</h2><span class="muted" id="upd"></span></div>
+    <div class="bots" id="bots">
+      <div class="skel card"></div><div class="skel card"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. Prices come live from Binance's public futures feed.</div>
+    <div>Charts by TradingView Lightweight Charts&trade;.</div>
+  </footer>
+
+</div>
+
+<script src="/assets/special.js?v=575cfa53"></script>
+<script>
+(function () {
+  var S = window.SDLSpecial, box = document.getElementById("bots"), msg = document.getElementById("msg");
+  var bots = [], timers = [];
+  function say(t, k) { msg.textContent = t; msg.className = "msg show " + (k || "bad"); }
+
+  function card(b) {
+    var st = S.stats(b), sym = b.symbol, short = sym.replace(/USDT$|USDC$|USD$/, "").slice(0, 4);
+    var sub = (sym === "XAUUSDT" ? "Gold" : sym) + " · Binance futures";
+    return '<a class="bcard" href="/special/bot/?id=' + encodeURIComponent(b.id) + '" data-sym="' + S.esc(sym) + '">' +
+      '<div class="bc-top"><span class="coin">' + S.esc(short) + '</span><div><h3>' + S.esc(b.name || b.id) + '</h3>' +
+      '<small>' + S.esc(sub) + '</small></div>' + S.statusPill(b.status) + '</div>' +
+      '<div class="bc-px"><span class="px" data-px>—</span><span class="chg" data-chg></span></div>' +
+      '<svg class="spark" data-spark viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true"></svg>' +
+      '<div class="bc-stats">' +
+        '<div><span>Result</span><b class="' + S.tone(st.net) + '">' + (st.n ? S.money(st.net, true) : "—") + '</b></div>' +
+        '<div><span>Win rate</span><b>' + (st.n ? S.pct(st.winRate) : "—") + '</b></div>' +
+        '<div><span>Trades</span><b>' + st.n + '</b></div>' +
+      '</div>' +
+      '<div class="bc-foot"><span>' + (st.n ? "Updated " + S.ago(b.updated) : (b.status === "testing" ? "Testing — no trades yet" : "No trades yet")) +
+      '</span><span class="open">Open chart &rarr;</span></div></a>';
+  }
+
+  function spark(svg, rows) {
+    if (!rows || rows.length < 2) return;
+    var c = rows.map(function (k) { return +k[4]; }), lo = Math.min.apply(null, c), hi = Math.max.apply(null, c);
+    var span = hi - lo || 1, pts = c.map(function (v, i) {
+      return (i / (c.length - 1) * 300).toFixed(1) + "," + (4 + (1 - (v - lo) / span) * 56).toFixed(1);
+    });
+    var up = c[c.length - 1] >= c[0], col = up ? "var(--up)" : "var(--down)";
+    var id = "g" + Math.random().toString(36).slice(2, 8);
+    svg.innerHTML = '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col +
+      '" stop-opacity=".28"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>' +
+      '<polygon points="0,64 ' + pts.join(" ") + ' 300,64" fill="url(#' + id + ')"/>' +
+      '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + col + '" stroke-width="1.6" vector-effect="non-scaling-stroke"/>';
+  }
+
+  function live() {
+    Array.prototype.forEach.call(box.querySelectorAll(".bcard"), function (a) {
+      var sym = a.getAttribute("data-sym");
+      S.ticker(sym).then(function (t) {
+        var last = +t.lastPrice, ch = +t.priceChangePercent / 100;
+        var dp = (String(t.lastPrice).split(".")[1] || "").replace(/0+$/, "").length;
+        a.querySelector("[data-px]").textContent = S.price(last, Math.max(2, Math.min(dp, 6)));
+        var c = a.querySelector("[data-chg]");
+        c.textContent = S.pct(ch, true) + " 24h"; c.className = "chg " + S.tone(ch);
+      }).catch(function () {});
+    });
+  }
+  function sparks() {
+    Array.prototype.forEach.call(box.querySelectorAll(".bcard"), function (a) {
+      S.klines(a.getAttribute("data-sym"), "1h", 48).then(function (rows) { spark(a.querySelector("[data-spark]"), rows); })
+        .catch(function () {});
+    });
+  }
+
+  function paint(d) {
+    bots = d.bots;
+    document.getElementById("upd").textContent = d.updated ? "Numbers updated " + S.ago(d.updated) : "";
+    box.innerHTML = bots.map(card).join("") +
+      '<div class="soon"><b>More special bots are on the way</b>Each new bot gets its own card and live chart here.</div>';
+    live(); sparks();
+  }
+
+  function start() {
+    timers.forEach(clearInterval);
+    timers = [setInterval(function () { if (!document.hidden) live(); }, 15000),
+              setInterval(function () { if (!document.hidden) sparks(); }, 120000),
+              setInterval(function () { if (!document.hidden) S.load().then(paint).catch(function () {}); }, 300000)];
+  }
+
+  S.load().then(function (d) { paint(d); start(); })
+    .catch(function () { box.innerHTML = ""; say("Could not load the bots. Try refreshing the page."); });
+})();
+</script>
+<script src="/assets/account.js?v=d3821b8b" defer></script>
+<script src="/assets/fx.js?v=0a20b269" defer></script>
+<script src="/assets/theme.js?v=935f0294" defer></script>
+</body>
+</html>

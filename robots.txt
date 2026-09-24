@@ -2,6 +2,7 @@
 User-agent: *
 Allow: /$
 Disallow: /trading
+Disallow: /special
 Disallow: /profile
 Disallow: /study
 Disallow: /accounts

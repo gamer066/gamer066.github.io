@@ -9,7 +9,9 @@
     "/study",
     "/study/*",
     "/accounts",
-    "/accounts/*"
+    "/accounts/*",
+    "/special",
+    "/special/*"
   ],
   "exclude": []
 }

@@ -9,6 +9,8 @@
 
 # The site needs this one small file, so it is allowed through the rule above.
 !_routes.json
+# The special bots' practice numbers (written by the trading session's publish step; numbers only, never keys).
+!special/data/*.json
 
 # Build notes for me, not for the website.
 LOGIN_BUILD.md

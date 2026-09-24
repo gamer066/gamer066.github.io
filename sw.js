@@ -30,7 +30,7 @@ self.addEventListener("activate", (e) => {
 
 function isPrivate(url) {
   const p = url.pathname;
-  return p.startsWith("/api/") || p.startsWith("/trading") || p.startsWith("/profile") || p.startsWith("/login");
+  return p.startsWith("/api/") || p.startsWith("/trading") || p.startsWith("/special") || p.startsWith("/profile") || p.startsWith("/login");
 }
 
 self.addEventListener("fetch", (e) => {

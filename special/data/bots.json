@@ -1,0 +1,28 @@
+{
+ "updated": "2026-09-24T05:57:20Z",
+ "bots": [
+  {
+   "id": "sunny-gold",
+   "name": "Sunny Gold",
+   "symbol": "XAUUSDT",
+   "status": "testing",
+   "strategy": "Follows gold's trend on 1-hour candles: buys when the 20-hour average crosses above the 50-hour average, sells short on the opposite cross, with a safety stop. Paper test on live gold prices since 2026-09-24; 2 more gold setups are tested alongside it, and the best one takes over.",
+   "timeframe": "1h",
+   "start_balance": 10000.0,
+   "balance": 10000.0,
+   "open_position": null,
+   "trades": [],
+   "updated": "2026-09-24T05:51:49Z",
+   "context": [
+    "Gold $4,282: -1.3% in 24 hours; below its 50-hour average and below its 200-h...",
+    "US dollar +0.02% on the day (stronger dollar - usually weighs on gold).",
+    "US 10-year yield 5.11% (+0.15 on the day; rising yields usually weigh on gold).",
+    "Next Fed rate decision 28 Oct (34 days away).",
+    "No more high-impact US releases this week.",
+    "News 23 Sep 17:21 UTC: Gold price will hit $4,900/oz in 2026 on strong sovere...",
+    "News 23 Sep 22:37 UTC: Top Wall Street firm resets gold price target for 2030...",
+    "News 23 Sep 18:25 UTC: Gold Price Forecast: XAU/USD Two-Week Plunge Puts Augu..."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Special bot &middot; Salman.D.Life</title>
+<meta name="description" content="A special bot's live chart, trades and results. Practice money only.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060B">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23A78BFA'/><text x='16' y='23' font-size='19' font-family='Georgia,serif' font-weight='600' text-anchor='middle' fill='%2305060B'>S</text></svg>">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=49e72e1f">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=f65be539">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Salman.D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fapi.binance.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/style.css?v=55769afe">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
+<style>
+  /* The trading terminal keeps a dark, TradingView-like look in both themes; the page around it follows the theme. */
+  .tv{--tv-bg:#131722;--tv-panel:#1E222D;--tv-line:#2A2E39;--tv-ink:#D1D4DC;--tv-ink2:#B2B5BE;--tv-mute:#8E919B;
+    --tv-up:#22AB94;--tv-down:#F7525F;--tv-amber:#F5B544;--tv-blue:#5B8CFF;color:var(--tv-ink)}
+  .xwrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:0 72px}
+  .crumbs{padding-top:26px;font-size:.85rem}
+  .crumbs a{color:var(--ink-2);text-decoration:none;font-weight:600}
+  .crumbs a:hover{color:var(--ink)}
+  .bothead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:12px 0 18px}
+  .bothead h1{font-size:clamp(1.8rem,5.5vw,2.5rem)}
+  .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .practice{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.72rem;
+    font-weight:700;background:var(--accent-soft);border:1px solid var(--line);color:var(--ink)}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;
+    white-space:nowrap;border:1px solid var(--line)}
+  .pill i{width:7px;height:7px;border-radius:50%;background:currentColor}
+  .pill.amber{color:#8A5A0F;background:rgba(245,181,68,.14)}
+  :root:not([data-theme="light"]) .pill.amber{color:#F5B544}
+  .pill.green{color:var(--up);background:var(--up-soft)}
+  .pill.grey{color:var(--ink-3)}
+
+  /* ---- terminal ---- */
+  .term{background:var(--tv-bg);border:1px solid var(--tv-line);border-radius:14px;overflow:hidden;
+    box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
+  .tbar{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--tv-line)}
+  .sym{display:flex;align-items:center;gap:10px;min-width:0}
+  .sym b{display:block;font-size:.98rem;font-weight:700;color:#fff;letter-spacing:.01em}
+  .sym small{display:block;font-size:.74rem;color:var(--tv-mute)}
+  .coin{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--mono);
+    font-size:.64rem;font-weight:700;color:#1b1400;background:radial-gradient(circle at 30% 30%,#ffe7a3,#f5b544 55%,#b7791f)}
+  .last{display:flex;align-items:baseline;gap:10px}
+  .last .px{font-family:var(--mono);font-size:1.35rem;font-weight:600;color:#fff;transition:color .5s ease}
+  .last .px.fu{color:var(--tv-up);transition:none} .last .px.fd{color:var(--tv-down);transition:none}
+  .chg{font-family:var(--mono);font-size:.84rem;font-weight:600}
+  .tv .up{color:var(--tv-up)} .tv .down{color:var(--tv-down)}
+  .tfs{display:flex;gap:2px;margin-left:auto;background:var(--tv-panel);border:1px solid var(--tv-line);border-radius:8px;padding:3px}
+  .tfs button{padding:6px 10px;border:0;border-radius:6px;background:transparent;color:var(--tv-ink2);font-family:var(--mono);
+    font-size:.78rem;font-weight:600;cursor:pointer}
+  .tfs button:hover{background:var(--tv-line);color:#fff}
+  .tfs button[aria-pressed="true"]{background:var(--tv-line);color:var(--tv-blue)}
+  .tfs button:focus-visible{outline:2px solid var(--tv-blue);outline-offset:1px}
+  .conn{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;color:var(--tv-mute)}
+  .conn i{width:7px;height:7px;border-radius:50%;background:var(--tv-mute)}
+  .conn.live{color:var(--tv-up)} .conn.live i{background:var(--tv-up);animation:beat 1.6s ease-in-out infinite}
+  .conn.delayed{color:var(--tv-amber)} .conn.delayed i{background:var(--tv-amber)}
+  @keyframes beat{50%{opacity:.3}}
+
+  .chartBox{position:relative;height:clamp(340px,58vh,600px)}
+  .chart{position:absolute;inset:0}
+  .legend{position:absolute;left:12px;top:10px;z-index:3;pointer-events:none;font-family:var(--mono);font-size:.74rem;
+    color:var(--tv-ink2);display:flex;gap:4px 12px;flex-wrap:wrap;max-width:calc(100% - 90px)}
+  .legend b{color:#fff;font-weight:600}
+  .legend em{font-style:normal;color:var(--tv-mute);margin-right:3px}
+  .chartMsg{position:absolute;inset:0;z-index:4;display:grid;place-items:center;text-align:center;padding:20px;
+    color:var(--tv-ink2);background:rgba(19,23,34,.82);font-size:.92rem}
+  .chartMsg[hidden]{display:none}
+
+  .strip{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--tv-line)}
+  .strip div{padding:12px 14px;border-left:1px solid var(--tv-line)}
+  .strip div:first-child{border-left:0}
+  .strip span{display:block;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tv-mute);font-weight:700}
+  .strip b{display:block;font-family:var(--mono);font-size:1.02rem;font-weight:600;color:#fff;margin-top:4px}
+  .strip small{display:block;font-size:.72rem;color:var(--tv-mute);margin-top:2px}
+  @media (max-width:860px){.strip{grid-template-columns:repeat(3,1fr)}.strip div:nth-child(4){border-left:0}
+    .strip div:nth-child(n+4){border-top:1px solid var(--tv-line)}}
+  @media (max-width:520px){.tfs{margin-left:0;width:100%;justify-content:space-between}.tfs button{flex:1}
+    .strip{grid-template-columns:repeat(2,1fr)}.strip div:nth-child(odd){border-left:0}.strip div:nth-child(4){border-left:1px solid var(--tv-line)}
+    .strip div:nth-child(n+3){border-top:1px solid var(--tv-line)}}
+
+  /* ---- panels below ---- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media (max-width:760px){.duo{grid-template-columns:1fr}}
+  .tcard{background:var(--tv-bg);border:1px solid var(--tv-line);border-radius:14px;padding:16px 18px;margin-top:14px}
+  .duo .tcard{margin-top:0}
+  .tcard h2{font-family:var(--serif);font-size:1.02rem;font-weight:600;color:#fff}
+  .tcard .headrow .muted{color:var(--tv-mute)}
+  .tcard p{color:var(--tv-ink2);font-size:.9rem;line-height:1.55;margin-top:8px}
+  .empty{margin-top:10px;padding:18px;border-radius:10px;border:1px dashed var(--tv-line);color:var(--tv-ink2);font-size:.88rem}
+  .empty b{color:var(--tv-amber)}
+  .kv2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-top:12px}
+  .kv2 span{display:block;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tv-mute);font-weight:700}
+  .kv2 b{display:block;font-family:var(--mono);font-size:.98rem;font-weight:600;color:#fff;margin-top:3px}
+  .side{display:inline-block;padding:2px 8px;border-radius:5px;font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.04em}
+  .side.long{background:rgba(34,171,148,.16);color:var(--tv-up)} .side.short{background:rgba(247,82,95,.16);color:var(--tv-down)}
+  .ctx{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+  .ctx div{display:flex;gap:9px;font-size:.87rem;color:var(--tv-ink2)}
+  .ctx div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;margin-top:7px;background:var(--tv-amber)}
+  .ctxHead{margin-top:14px;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tv-mute);font-weight:700}
+  .curve{height:220px;margin-top:10px;position:relative}
+
+  .tscroll{overflow-x:auto;margin-top:10px;-webkit-overflow-scrolling:touch}
+  table.tt{width:100%;border-collapse:collapse;font-size:.84rem;min-width:560px}
+  .tt th{text-align:left;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tv-mute);font-weight:700;
+    padding:8px 10px;border-bottom:1px solid var(--tv-line)}
+  .tt td{padding:10px;border-bottom:1px solid rgba(42,46,57,.6);font-family:var(--mono);color:var(--tv-ink)}
+  .tt tr:last-child td{border-bottom:0}
+  .tt td.num,.tt th.num{text-align:right}
+  .tt tbody tr:hover td{background:rgba(42,46,57,.35)}
+
+  @media (prefers-reduced-motion:reduce){.conn.live i{animation:none}.last .px{transition:none}}
+  @media print{.term,.tcard{background:#fff!important;border-color:#bbb!important}.tv{color:#000}
+    .chartBox{height:360px}.tfs,.conn{display:none!important}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/trading/">Trading</a>
+    <a href="/special/" class="on">Special bots</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="xwrap" id="main">
+
+  <div class="crumbs"><a href="/special/">&larr; All special bots</a></div>
+
+  <header class="bothead">
+    <div>
+      <div class="eyebrow">Special bot</div>
+      <h1 id="botName">Loading&hellip;</h1>
+      <div class="meta"><span id="botStatus"></span><span class="practice">Practice money</span>
+        <span class="muted" id="botUpdated"></span></div>
+    </div>
+  </header>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-bottom:14px"></div>
+
+  <div class="tv">
+    <section class="term" aria-label="Live price chart">
+      <div class="tbar">
+        <div class="sym"><span class="coin" id="coin">&middot;</span>
+          <div><b id="symName">&mdash;</b><small id="symSub">Binance USD-M perpetual</small></div></div>
+        <div class="last"><span class="px" id="lastPx">&mdash;</span><span class="chg" id="chg"></span></div>
+        <div class="tfs" id="tfs" role="group" aria-label="Candle size">
+          <button type="button" data-tf="5m" aria-pressed="false">5m</button>
+          <button type="button" data-tf="15m" aria-pressed="false">15m</button>
+          <button type="button" data-tf="30m" aria-pressed="false">30m</button>
+          <button type="button" data-tf="1h" aria-pressed="false">1H</button>
+          <button type="button" data-tf="4h" aria-pressed="false">4H</button>
+        </div>
+        <span class="conn" id="conn"><i></i>Connecting</span>
+      </div>
+      <div class="chartBox">
+        <div class="legend" id="legend" aria-hidden="true"></div>
+        <div class="chart" id="chart"></div>
+        <div class="chartMsg" id="chartMsg" hidden></div>
+      </div>
+      <div class="strip" id="strip"></div>
+    </section>
+
+    <div class="duo">
+      <section class="tcard"><h2>Open position</h2><div id="pos"></div></section>
+      <section class="tcard"><h2>How it trades</h2><p id="strategy"></p><div id="context"></div></section>
+    </div>
+
+    <section class="tcard" id="curveCard" hidden>
+      <div class="headrow"><h2>Balance over time</h2><span class="muted">practice money</span></div>
+      <div class="curve" id="curve"></div>
+    </section>
+
+    <section class="tcard">
+      <div class="headrow"><h2>Trades</h2><span class="muted" id="tradeCount"></span></div>
+      <div id="trades"></div>
+    </section>
+  </div>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. Practice money only. Prices come live from Binance's public futures feed.</div>
+    <div>Charts by TradingView Lightweight Charts&trade;.</div>
+  </footer>
+
+</div>
+
+<script src="/assets/lwc-5.2.1.js"></script>
+<script src="/assets/special.js?v=575cfa53"></script>
+<script>
+(function () {
+  var S = window.SDLSpecial, LW = window.LightweightCharts;
+  var msg = document.getElementById("msg");
+  function say(t, k) { msg.textContent = t; msg.className = "msg show " + (k || "bad"); }
+  function $(id) { return document.getElementById(id); }
+
+  var id = new URLSearchParams(location.search).get("id") || "";
+  var TZ = -new Date().getTimezoneOffset() * 60;   // candles are drawn in the visitor's own clock time
+  var bot = null, st = null, frame = "1h", dp = 2, stopStream = null, lastPx = null, open24 = null;
+  var chart = null, candles = null, vol = null, marks = null, lines = [], firstT = 0, lastT = 0, lastBar = null;
+
+  function remembered() { try { return localStorage.getItem("sdl-tf-" + id); } catch (e) { return null; } }
+  function remember(tf) { try { localStorage.setItem("sdl-tf-" + id, tf); } catch (e) {} }
+  function chartMsg(t) { var m = $("chartMsg"); m.textContent = t || ""; m.hidden = !t; }
+
+  /* ---------- the chart ---------- */
+  function makeChart() {
+    if (!LW) { chartMsg("The chart could not load. Try refreshing the page."); return false; }
+    chart = LW.createChart($("chart"), {
+      autoSize: true,
+      layout: { background: { type: "solid", color: "#131722" }, textColor: "#B2B5BE", fontSize: 12,
+        fontFamily: "Inter, 'Segoe UI', system-ui, sans-serif", attributionLogo: true },
+      grid: { vertLines: { color: "rgba(42,46,57,0.55)" }, horzLines: { color: "rgba(42,46,57,0.55)" } },
+      crosshair: { mode: LW.CrosshairMode.Normal,
+        vertLine: { color: "#758696", labelBackgroundColor: "#2A2E39" },
+        horzLine: { color: "#758696", labelBackgroundColor: "#2A2E39" } },
+      rightPriceScale: { borderColor: "#2A2E39", scaleMargins: { top: 0.1, bottom: 0.22 } },
+      timeScale: { borderColor: "#2A2E39", timeVisible: true, secondsVisible: false, rightOffset: 6, barSpacing: 8 }
+    });
+    candles = chart.addSeries(LW.CandlestickSeries, {
+      upColor: "#089981", downColor: "#F23645", borderVisible: false, wickUpColor: "#089981", wickDownColor: "#F23645"
+    });
+    vol = chart.addSeries(LW.HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "",
+      lastValueVisible: false, priceLineVisible: false });
+    vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+    marks = LW.createSeriesMarkers(candles, []);
+    chart.subscribeCrosshairMove(function (p) {
+      var d = p && p.seriesData ? p.seriesData.get(candles) : null;
+      var v = p && p.seriesData ? p.seriesData.get(vol) : null;
+      legend(d || lastBar, v ? v.value : (lastBar && lastBar.v));
+    });
+    return true;
+  }
+
+  function bar(k) { return { time: Math.floor(k.t / 1000) + TZ, open: k.o, high: k.h, low: k.l, close: k.c, v: k.v }; }
+  function volBar(b) { return { time: b.time, value: b.v, color: b.close >= b.open ? "rgba(8,153,129,.45)" : "rgba(242,54,69,.45)" }; }
+
+  function legend(b, v) {
+    if (!b) { $("legend").innerHTML = ""; return; }
+    var ch = b.open ? (b.close - b.open) / b.open : 0, t = ch >= 0 ? "up" : "down";
+    $("legend").innerHTML = "<b>" + S.esc(bot.symbol) + " · " + S.esc(frame.toUpperCase()) + "</b>" +
+      "<span><em>O</em><span class='" + t + "'>" + S.price(b.open, dp) + "</span></span>" +
+      "<span><em>H</em><span class='" + t + "'>" + S.price(b.high, dp) + "</span></span>" +
+      "<span><em>L</em><span class='" + t + "'>" + S.price(b.low, dp) + "</span></span>" +
+      "<span><em>C</em><span class='" + t + "'>" + S.price(b.close, dp) + "</span></span>" +
+      "<span class='" + t + "'>" + S.pct(ch, true) + "</span>" +
+      (v != null ? "<span><em>Vol</em>" + Math.round(v).toLocaleString() + "</span>" : "");
+  }
+
+  var gen = 0;   // each chart load gets a number, so late answers from an older load are ignored
+  function load(tf) {
+    var my = ++gen;
+    frame = tf;
+    Array.prototype.forEach.call(document.querySelectorAll("#tfs button"), function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-tf") === tf));
+    });
+    if (stopStream) { stopStream(); stopStream = null; }
+    chartMsg("");
+    return S.klines(bot.symbol, tf, 500).then(function (rows) {
+      if (my !== gen) return;
+      if (!rows.length) throw new Error("no candles");
+      dp = Math.max(2, Math.min(6, (String(rows[rows.length - 1][4]).split(".")[1] || "").length));
+      candles.applyOptions({ priceFormat: { type: "price", precision: dp, minMove: Math.pow(10, -dp) } });
+      var bars = rows.map(function (k) { return bar({ t: k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[5] }); });
+      candles.setData(bars.map(function (b) { return { time: b.time, open: b.open, high: b.high, low: b.low, close: b.close }; }));
+      vol.setData(bars.map(volBar));
+      firstT = bars[0].time; lastT = bars[bars.length - 1].time; lastBar = bars[bars.length - 1];
+      var n = bars.length;
+      chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, n - 130), to: n + 6 });
+      tick(lastBar.close);
+      legend(lastBar, lastBar.v);
+      drawTrades();
+      stopStream = S.stream(bot.symbol, tf, function (k) { if (my === gen) onCandle(k); }, function (state) {
+        if (my !== gen) return;
+        var c = $("conn"); c.className = "conn " + state;
+        c.lastChild.textContent = state === "live" ? "Live" : "Delayed";
+      });
+    }).catch(function () {
+      if (my !== gen) return;
+      chartMsg("Live prices could not load right now. Trying again in 30 seconds…");
+      setTimeout(function () { if (bot && my === gen) load(tf); }, 30000);
+    });
+  }
+
+  function onCandle(k) {
+    var b = bar(k);
+    if (b.time < lastT) return;
+    try {
+      candles.update({ time: b.time, open: b.open, high: b.high, low: b.low, close: b.close });
+      vol.update(volBar(b));
+    } catch (e) { return; }
+    lastT = b.time; lastBar = b;
+    tick(b.close);
+  }
+
+  /* the big price, today's change and the open trade's live result all follow each tick */
+  function tick(px) {
+    var el = $("lastPx");
+    if (lastPx !== null && px !== lastPx) {
+      el.classList.remove("fu", "fd"); void el.offsetWidth; el.classList.add(px > lastPx ? "fu" : "fd");
+      setTimeout(function () { el.classList.remove("fu", "fd"); }, 400);
+    }
+    lastPx = px;
+    el.textContent = S.price(px, dp);
+    if (open24) {
+      var ch = (px - open24) / open24, c = $("chg");
+      c.textContent = S.pct(ch, true) + " 24h"; c.className = "chg " + S.tone(ch);
+    }
+    livePosition();
+  }
+
+  /* ---------- the bot's trades on the chart ---------- */
+  function bucket(iso) {
+    var secs = S.FRAMES[frame], t = Date.parse(iso);
+    if (isNaN(t)) return null;
+    return Math.floor(t / 1000 / secs) * secs + TZ;
+  }
+  function drawTrades() {
+    if (!marks) return;
+    var list = [];
+    st.trades.forEach(function (t) {
+      var long = t.side !== "short", a = bucket(t.opened), z = bucket(t.closed);
+      if (a !== null) list.push({ time: a, position: long ? "belowBar" : "aboveBar", color: long ? "#089981" : "#F23645",
+        shape: long ? "arrowUp" : "arrowDown", text: long ? "Buy" : "Sell" });
+      if (z !== null) list.push({ time: z, position: long ? "aboveBar" : "belowBar",
+        color: t.result_usd >= 0 ? "#22AB94" : "#F7525F", shape: "circle", text: S.money(t.result_usd, true) });
+    });
+    var p = bot.open_position;
+    if (p && S.num(p.entry) !== null) {
+      var long = p.side !== "short", at = bucket(p.opened);
+      if (at !== null) list.push({ time: at, position: long ? "belowBar" : "aboveBar", color: "#F5B544",
+        shape: long ? "arrowUp" : "arrowDown", text: (long ? "Buy" : "Sell") + " (open)" });
+    }
+    list = list.filter(function (m) { return m.time >= firstT && m.time <= lastT + S.FRAMES[frame]; })
+      .sort(function (a, b) { return a.time - b.time; });
+    marks.setMarkers(list);
+
+    lines.forEach(function (l) { candles.removePriceLine(l); });
+    lines = [];
+    if (p && S.num(p.entry) !== null) {
+      lines.push(candles.createPriceLine({ price: p.entry, color: "#F5B544", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "Entry" }));
+      if (S.num(p.stop) !== null) lines.push(candles.createPriceLine({ price: p.stop, color: "#F23645", lineWidth: 1, lineStyle: 1, axisLabelVisible: true, title: "Stop" }));
+      if (S.num(p.target) !== null) lines.push(candles.createPriceLine({ price: p.target, color: "#089981", lineWidth: 1, lineStyle: 1, axisLabelVisible: true, title: "Target" }));
+    }
+  }
+
+  /* ---------- numbers ---------- */
+  function strip() {
+    var cells = [
+      ["Result", st.n ? S.money(st.net, true) : "—", S.tone(st.net), st.ret !== null ? S.pct(st.ret, true) + " of start" : "no closed trades yet"],
+      ["Balance", S.money(st.balance), "", st.start !== null ? "started at " + S.money(st.start) : ""],
+      ["Win rate", st.n ? S.pct(st.winRate) : "—", "", st.n ? st.wins + " of " + st.n + " won" : ""],
+      ["Trades", String(st.n), "", bot.open_position ? "+ 1 open now" : "none open"],
+      ["Worst dip", st.n ? S.money(st.dip) : "—", st.dip ? "down" : "", st.dipPct ? S.pct(st.dipPct) + " from the top" : "biggest fall from a high"],
+      ["Best / worst", st.n ? S.money(st.best, true) : "—", "", st.n ? "worst " + S.money(st.worst, true) : ""]
+    ];
+    $("strip").innerHTML = cells.map(function (c) {
+      return "<div><span>" + S.esc(c[0]) + "</span><b class='" + c[2] + "'>" + S.esc(c[1]) + "</b><small>" + S.esc(c[3]) + "</small></div>";
+    }).join("");
+  }
+
+  function position() {
+    var p = bot.open_position;
+    if (!p || S.num(p.entry) === null) {
+      $("pos").innerHTML = '<div class="empty">' + (st.n || bot.status !== "testing"
+        ? "No trade open right now. The bot is waiting for its next setup."
+        : "<b>Testing — no trades yet.</b> The chart above is live. Trades will appear here and on the candles as soon as the bot starts.") + "</div>";
+      return;
+    }
+    var long = p.side !== "short";
+    $("pos").innerHTML = '<div class="kv2">' +
+      "<div><span>Side</span><b><span class='side " + (long ? "long" : "short") + "'>" + (long ? "LONG" : "SHORT") + "</span></b></div>" +
+      "<div><span>Opened</span><b>" + S.esc(S.when(p.opened)) + "</b></div>" +
+      "<div><span>Entry</span><b>" + S.price(p.entry, dp) + "</b></div>" +
+      "<div><span>Now</span><b id='posNow'>—</b></div>" +
+      "<div><span>Size</span><b>" + (S.num(p.qty) !== null ? S.esc(String(p.qty)) : "—") + "</b></div>" +
+      "<div><span>Live result</span><b id='posPnl'>—</b></div>" +
+      (S.num(p.stop) !== null ? "<div><span>Stop</span><b class='down'>" + S.price(p.stop, dp) + "</b></div>" : "") +
+      (S.num(p.target) !== null ? "<div><span>Target</span><b class='up'>" + S.price(p.target, dp) + "</b></div>" : "") +
+      "</div>";
+    livePosition();
+  }
+  function livePosition() {
+    var p = bot && bot.open_position, now = $("posNow"), pnl = $("posPnl");
+    if (!p || !now || lastPx === null) return;
+    now.textContent = S.price(lastPx, dp);
+    if (S.num(p.qty) === null) return;
+    var r = (p.side === "short" ? p.entry - lastPx : lastPx - p.entry) * p.qty;
+    pnl.textContent = S.money(r, true) + "  (" + S.pct((lastPx - p.entry) / p.entry * (p.side === "short" ? -1 : 1), true) + ")";
+    pnl.className = S.tone(r);
+  }
+
+  function about() {
+    $("strategy").textContent = bot.strategy || "No description yet.";
+    var ctx = Array.isArray(bot.context) ? bot.context.filter(function (x) { return typeof x === "string" && x.trim(); }).slice(0, 8) : [];
+    $("context").innerHTML = ctx.length ? '<div class="ctxHead">What it is watching</div><div class="ctx">' +
+      ctx.map(function (x) { return "<div>" + S.esc(x) + "</div>"; }).join("") + "</div>" : "";
+  }
+
+  function tradesTable() {
+    $("tradeCount").textContent = st.n ? st.n + (st.n === 1 ? " closed trade" : " closed trades") : "";
+    if (!st.n) {
+      $("trades").innerHTML = '<div class="empty">' + (bot.status === "testing"
+        ? "<b>Testing — no trades yet.</b> Every closed trade will be listed here, newest first."
+        : "No closed trades yet.") + "</div>";
+      return;
+    }
+    $("trades").innerHTML = '<div class="tscroll"><table class="tt"><thead><tr><th>Closed</th><th>Side</th>' +
+      '<th class="num">Entry</th><th class="num">Exit</th><th class="num">Size</th><th class="num">Result</th></tr></thead><tbody>' +
+      st.trades.slice().reverse().map(function (t) {
+        var long = t.side !== "short";
+        return "<tr><td>" + S.esc(S.when(t.closed)) + "</td><td><span class='side " + (long ? "long" : "short") + "'>" +
+          (long ? "LONG" : "SHORT") + "</span></td><td class='num'>" + S.price(t.entry, dp) + "</td><td class='num'>" +
+          S.price(t.exit, dp) + "</td><td class='num'>" + (S.num(t.qty) !== null ? S.esc(String(t.qty)) : "—") +
+          "</td><td class='num " + S.tone(t.result_usd) + "'>" + S.money(t.result_usd, true) + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+  }
+
+  var curveChart = null;
+  function curve() {
+    if (!LW || st.curve.length < 1) { $("curveCard").hidden = true; return; }
+    $("curveCard").hidden = false;
+    if (!curveChart) {
+      curveChart = LW.createChart($("curve"), { autoSize: true,
+        layout: { background: { type: "solid", color: "#131722" }, textColor: "#B2B5BE", fontSize: 11, attributionLogo: false },
+        grid: { vertLines: { visible: false }, horzLines: { color: "rgba(42,46,57,0.55)" } },
+        rightPriceScale: { borderColor: "#2A2E39" }, timeScale: { borderColor: "#2A2E39", timeVisible: true },
+        handleScroll: false, handleScale: false });
+      curveChart.series = curveChart.addSeries(LW.AreaSeries, { lineColor: "#F5B544", topColor: "rgba(245,181,68,.28)",
+        bottomColor: "rgba(245,181,68,0)", lineWidth: 2, priceFormat: { type: "price", precision: 2, minMove: 0.01 } });
+    }
+    var pts = [], seen = 0;
+    var first = st.trades[0] && Date.parse(st.trades[0].opened);
+    if (st.start !== null && first) { seen = Math.floor(first / 1000) + TZ; pts.push({ time: seen, value: st.start }); }
+    st.curve.forEach(function (c) {
+      var t = Math.floor(c.at / 1000) + TZ;
+      if (t <= seen) t = seen + 1;
+      seen = t; pts.push({ time: t, value: +c.bal.toFixed(2) });
+    });
+    curveChart.series.setData(pts);
+    curveChart.timeScale().fitContent();
+  }
+
+  function paint() {
+    st = S.stats(bot);
+    document.title = (bot.name || bot.id) + " · Special bots · Salman.D.Life";
+    $("botName").textContent = bot.name || bot.id;
+    $("botStatus").innerHTML = S.statusPill(bot.status);
+    $("botUpdated").textContent = bot.updated ? "Numbers updated " + S.ago(bot.updated) : "";
+    $("symName").textContent = bot.symbol;
+    $("symSub").textContent = (bot.symbol === "XAUUSDT" ? "Gold · " : "") + "Binance USD-M perpetual";
+    $("coin").textContent = bot.symbol.replace(/USDT$|USDC$|USD$/, "").slice(0, 4);
+    strip(); position(); about(); tradesTable(); curve();
+    if (chart && lastT) drawTrades();
+  }
+
+  function refreshData() {
+    S.load().then(function (d) {
+      var b = d.bots.filter(function (x) { return x.id === id; })[0];
+      if (b) { bot = b; paint(); }
+    }).catch(function () {});
+  }
+
+  function day24() {
+    S.ticker(bot.symbol).then(function (t) { open24 = +t.openPrice || null; if (lastPx !== null) tick(lastPx); }).catch(function () {});
+  }
+
+  /* ---------- start ---------- */
+  if (!S.okId(id)) { $("botName").textContent = "Bot not found"; say("That bot address is not right. Go back to the list of special bots."); return; }
+  S.load().then(function (d) {
+    bot = d.bots.filter(function (x) { return x.id === id; })[0];
+    if (!bot) { $("botName").textContent = "Bot not found"; say("There is no special bot with that name yet."); return; }
+    paint();
+    if (!makeChart()) return;
+    var pick = remembered();
+    load(S.FRAMES[pick] ? pick : (S.FRAMES[bot.timeframe] ? bot.timeframe : "1h"));
+    day24();
+    $("tfs").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-tf]");
+      if (!b || b.getAttribute("data-tf") === frame) return;
+      remember(b.getAttribute("data-tf"));
+      load(b.getAttribute("data-tf"));
+    });
+    setInterval(function () { if (!document.hidden) refreshData(); }, 300000);
+    setInterval(function () { if (!document.hidden) day24(); }, 600000);
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { if (stopStream) { stopStream(); stopStream = null; } }
+      else if (bot && chart) { load(frame); day24(); }
+    });
+  }).catch(function () { $("botName").textContent = "Special bot"; say("Could not load the bot's numbers. Try refreshing the page."); });
+})();
+</script>
+<script src="/assets/account.js?v=d3821b8b" defer></script>
+<script src="/assets/fx.js?v=0a20b269" defer></script>
+<script src="/assets/theme.js?v=935f0294" defer></script>
+</body>
+</html>

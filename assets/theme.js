@@ -104,7 +104,7 @@
       seen[key] = 1;
       items.push({ label: label, hint: hint, go: go });
     }
-    [["Home", "/"], ["Studies", "/study/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"],
+    [["Home", "/"], ["Studies", "/study/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"], ["Special bots", "/special/"],
      ["Your profile", "/profile/"], ["Sign in", "/login/"]].forEach(function (p) {
       add(p[0], "Page", function () { location.href = p[1]; });
     });

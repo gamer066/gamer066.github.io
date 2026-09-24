@@ -11,7 +11,7 @@
  */
 
 const COOKIE = "sdl_session";
-const PRIVATE = ["/trading", "/profile", "/study", "/accounts"];
+const PRIVATE = ["/trading", "/profile", "/study", "/accounts", "/special"];
 
 export async function onRequest(context) {
   const { request, env, next, data } = context;
