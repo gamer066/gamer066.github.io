@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fapi.binance.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
-<link rel="stylesheet" href="/assets/style.css?v=fb992309">
+<link rel="stylesheet" href="/assets/style.css?v=1c22b4a3">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <style>
   /* The trading terminal keeps a dark, TradingView-like look in both themes; the page around it follows the theme. */
@@ -86,8 +86,8 @@
   .pop{position:absolute;z-index:30;min-width:250px;max-width:calc(100% - 16px);padding:12px;border-radius:10px;background:var(--tv-panel);
     border:1px solid var(--tv-line);box-shadow:0 18px 50px -10px rgba(0,0,0,.8);color:var(--tv-ink)}
   .pop[hidden]{display:none}
-  .pop h3{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tv-mute);font-weight:700;margin:6px 0 6px}
-  .pop h3:first-child{margin-top:0}
+  .pop h2,.pop h3{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tv-mute);font-weight:700;margin:6px 0 6px}
+  .pop h2:first-child,.pop h3:first-child{margin-top:0}
   .pop label{display:flex;align-items:center;gap:9px;padding:6px 4px;border-radius:6px;font-size:.84rem;cursor:pointer}
   .pop label:hover{background:var(--tv-line)}
   .pop label i{width:12px;height:3px;border-radius:2px;flex:none}
@@ -270,7 +270,7 @@
 
       <div class="pop" id="indPop" hidden role="dialog" aria-label="Indicators"></div>
       <div class="pop" id="alertPop" hidden role="dialog" aria-label="Price alerts">
-        <h3>Alert me when the price reaches</h3>
+        <h2>Alert me when the price reaches</h2>
         <div class="row"><input type="number" id="alertIn" step="any" aria-label="Alert price"><button class="go2" type="button" id="alertAdd">Add</button></div>
         <div class="alist" id="alertList"></div>
         <button class="ghost" type="button" id="notifBtn">Allow notifications</button>
@@ -471,7 +471,7 @@
   function indMenu() {
     var groups = [["On the price", ["ema20", "ema50", "sma200", "bb", "vwap", "st", "dc", "vol"]], ["Below the chart", ["rsi", "macd", "srsi", "atr"]]];
     $("indPop").innerHTML = groups.map(function (g) {
-      return "<h3>" + g[0] + "</h3>" + g[1].map(function (k) {
+      return "<h2>" + g[0] + "</h2>" + g[1].map(function (k) {
         return '<label><input type="checkbox" data-ind="' + k + '"' + (active.indexOf(k) >= 0 ? " checked" : "") + '><i style="background:' +
           IND[k].color + '"></i><span>' + S.esc(IND[k].label) + '<small style="display:block;font-size:.72rem;color:var(--tv-mute)">' + S.esc(IND[k].plain || "") + "</small></span></label>";
       }).join("");
