@@ -4,10 +4,32 @@
  *  - a soft glow that follows the mouse, and cards that tilt in 3D under it (never on touch screens)
  *
  * It adds the backdrop itself if a page does not have one, so pages only need to load this file.
+ * It also quietly records any page error while he is signed in (see functions/api/errlog.js).
  * Everything stops for anyone whose device asks for less motion, and the particles pause whenever the
  * tab is hidden, so it costs nothing in the background.
  */
 (function () {
+  /* ---- quiet error log: if anything on a page breaks while he is signed in, note it for fixing (at most 5 per page) ---- */
+  var reported = 0, seenErr = {};
+  function report(msg, where) {
+    msg = String(msg || "unknown error").slice(0, 500);
+    if (reported >= 5 || seenErr[msg]) return;
+    seenErr[msg] = 1; reported++;
+    try {
+      fetch("/api/errlog", { method: "POST", credentials: "same-origin", keepalive: true,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ msg: msg, where: String(where || "").slice(0, 300), page: location.pathname }) })
+        .catch(function () {});
+    } catch (e) { /* never let the reporter itself cause trouble */ }
+  }
+  addEventListener("error", function (e) {
+    if (e && e.message) report(e.message, (e.filename || "") + ":" + (e.lineno || 0) + ":" + (e.colno || 0));
+  });
+  addEventListener("unhandledrejection", function (e) {
+    var r = e && e.reason;
+    report("Unhandled promise: " + (r && r.message ? r.message : r), r && r.stack ? String(r.stack).split("\n")[1] : "");
+  });
+
   var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var finePointer = window.matchMedia && matchMedia("(pointer: fine)").matches;
 
