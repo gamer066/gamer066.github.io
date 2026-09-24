@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T08:03:31Z",
+ "updated": "2026-09-24T10:37:08Z",
  "bots": [
   {
    "id": "sunny-gold",
@@ -12,16 +12,39 @@
    "balance": 2000.0,
    "open_position": null,
    "trades": [],
-   "updated": "2026-09-24T07:49:41Z",
+   "updated": "2026-09-24T10:35:11Z",
    "context": [
-    "Gold $4,284: -0.9% in 24 hours; below its 50-hour average and below its 200-h...",
-    "US dollar -0.02% on the day (weaker dollar - usually helps gold).",
+    "Gold $4,259: -1.4% in 24 hours; below its 50-hour average and below its 200-h...",
+    "US dollar +0.20% on the day (stronger dollar - usually weighs on gold).",
     "US 10-year yield 5.11% (+0.15 on the day; rising yields usually weigh on gold).",
     "Next Fed rate decision 28 Oct (34 days away).",
     "No more high-impact US releases this week.",
-    "News 23 Sep 17:21 UTC: Gold price will hit $4,900/oz in 2026 on strong sovere...",
-    "News 23 Sep 22:37 UTC: Top Wall Street firm resets gold price target for 2030...",
-    "News 24 Sep 06:31 UTC: Gold prices edge lower as higher oil, yields keep pres..."
+    "News 23 Sep 21:13 UTC: Gold price will hit $4,900/oz in 2026 on strong sovere...",
+    "News 24 Sep 06:24 UTC: Gold Price Forecast: XAU/USD Two-Week Plunge Puts Augu...",
+    "News 23 Sep 17:53 UTC: Gold loses shine as rate hike bets foster a stronger d..."
+   ]
+  },
+  {
+   "id": "sunny-gold-fast",
+   "name": "Sunny Gold Fast",
+   "symbol": "PAXGUSDT",
+   "status": "live-practice",
+   "strategy": "Checks gold every 5 minutes. Trades a 15-minute trend turn, but only in the same direction as gold's big 60-day trend, with a safety stop. An experiment on a separate $1,000 of practice money: in testing, trading this fast lost money, so watch it, don't trust it yet.",
+   "timeframe": "15m",
+   "start_balance": 1000.0,
+   "balance": 1000.0,
+   "open_position": null,
+   "trades": [],
+   "updated": "2026-09-24T10:37:08Z",
+   "context": [
+    "Checks the market every 5 minutes, trades 15-minute turns.",
+    "Gold $4,259: -1.4% in 24 hours; below its 50-hour average and below its 200-h...",
+    "US dollar +0.20% on the day (stronger dollar - usually weighs on gold).",
+    "US 10-year yield 5.11% (+0.15 on the day; rising yields usually weigh on gold).",
+    "Next Fed rate decision 28 Oct (34 days away).",
+    "No more high-impact US releases this week.",
+    "News 23 Sep 21:13 UTC: Gold price will hit $4,900/oz in 2026 on strong sovere...",
+    "News 24 Sep 06:24 UTC: Gold Price Forecast: XAU/USD Two-Week Plunge Puts Augu..."
    ]
   }
  ]
