@@ -5,7 +5,7 @@
  * /api/, /trading/, /profile/ and /login/ are all skipped. That is the important part - a saved copy
  * of a private page could otherwise be read by the next person on the same device.
  */
-const VERSION = "sdl-v2";
+const VERSION = "sdl-v3";
 const SHELL = [
   "/",
   "/404.html",
@@ -17,7 +17,8 @@ const SHELL = [
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: "reload" }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (e) => {
@@ -41,8 +42,10 @@ self.addEventListener("fetch", (e) => {
   if (url.origin !== self.location.origin) return;   // fonts and prices go straight out
   if (isPrivate(url)) return;                         // never stored, never served from a copy
 
-  // Pictures never change once drawn, so the saved copy is served straight away.
-  if (/\.(png|jpg|jpeg|gif|webp|svg|ico|woff2?)$/i.test(url.pathname)) {
+  // Pictures never change once drawn, and shared files carry a fingerprint (?v=...) or a versioned name,
+  // so the saved copy is served straight away (speed fix, 24 Sep 2026).
+  if (/\.(png|jpg|jpeg|gif|webp|svg|ico|woff2?)$/i.test(url.pathname) ||
+      (url.pathname.startsWith("/assets/") && (/[?&]v=[0-9a-f]+/.test(url.search) || /-\d+\.\d+\.\d+\.js$/.test(url.pathname)))) {
     e.respondWith(
       caches.match(req).then((hit) => hit || fetch(req).then((res) => {
         if (res && res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); }

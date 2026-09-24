@@ -134,14 +134,14 @@
       colours = [cs.getPropertyValue("--accent").trim() || "#A78BFA", cs.getPropertyValue("--accent-2").trim() || "#22D3EE"];
     }
     function size() {
-      var ratio = Math.min(2, window.devicePixelRatio || 1);
+      var ratio = Math.min(finePointer ? 2 : 1.5, window.devicePixelRatio || 1);   // phones: a lighter canvas
       var hadNoRoom = !w || !h;
       w = canvas.clientWidth; h = canvas.clientHeight;
       // dots made while the page had no size all sit in one corner; spread them out once it has room
       if (hadNoRoom && w && h) dots.forEach(function (d) { d.x = Math.random() * w; d.y = Math.random() * h; });
       canvas.width = Math.round(w * ratio); canvas.height = Math.round(h * ratio);
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      var want = Math.round(Math.max(18, Math.min(72, (w * h) / 22000)) * density);
+      var want = Math.round(Math.max(18, Math.min(72, (w * h) / 22000)) * density * (w < 700 ? 0.7 : 1));
       while (dots.length < want) dots.push({ x: Math.random() * w, y: Math.random() * h,
         vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r: Math.random() * 1.4 + 0.6,
         c: Math.random() < 0.5 ? 0 : 1 });
@@ -152,7 +152,10 @@
       if (s.length !== 6) return "rgba(167,139,250," + a + ")";
       return "rgba(" + parseInt(s.slice(0, 2), 16) + "," + parseInt(s.slice(2, 4), 16) + "," + parseInt(s.slice(4, 6), 16) + "," + a + ")";
     }
-    function frame() {
+    var lastDraw = 0;
+    function frame(now) {
+      if (!still && now && now - lastDraw < 32) { if (!document.hidden) requestAnimationFrame(frame); else running = false; return; }
+      lastDraw = now || 0;
       ctx.clearRect(0, 0, w, h);
       var link = 130;
       for (var i = 0; i < dots.length; i++) {

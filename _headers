@@ -23,12 +23,13 @@
 /assets/*.png
   Cache-Control: public, max-age=31536000, immutable
 
-# The shared look and the small scripts change whenever the site does, so the browser must always
-# ask whether its copy is still the newest. The answer is a few bytes when nothing has changed.
+# The shared look and scripts: every page asks for them with a fingerprint (?v=...) that changes whenever the
+# file does (publish_site.py stamps it), so the browser can keep each copy and never has to ask again.
+# Speed fix 24 Sep 2026 - asking again on every page was costing a round trip per file on phones.
 /assets/*.css
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=31536000, immutable
 /assets/*.js
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=31536000, immutable
 
 # Anything private must never be kept in a shared cache.
 /profile/*

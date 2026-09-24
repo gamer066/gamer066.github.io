@@ -73,7 +73,7 @@ img{max-width:100%}
 
 /* ---------- top bar ---------- */
 .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(5,6,11,.66);
-  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border-bottom:1px solid var(--line-soft)}
+  backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%);border-bottom:1px solid var(--line-soft)}
 .topbar .inner{max-width:900px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:18px}
 .brand{font-family:var(--serif);font-weight:600;font-size:1.02rem;letter-spacing:-.01em;color:var(--ink);
   text-decoration:none;display:flex;align-items:center;gap:9px;white-space:nowrap}
@@ -264,17 +264,18 @@ button.quiet:hover{background:var(--surface-2);color:var(--ink)}
   -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
           mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
   opacity:.55}
-.backdrop .glow{position:absolute;border-radius:50%;filter:blur(100px)}
-.backdrop .g1{width:62vw;height:42vw;left:19vw;top:-22vw;background:rgba(167,139,250,.20);animation:float1 24s ease-in-out infinite}
-.backdrop .g2{width:30vw;height:30vw;right:-8vw;top:28vh;background:rgba(52,211,153,.07);animation:float2 30s ease-in-out infinite}
+/* soft gradients instead of a 100px blur filter: the same glow for a fraction of the drawing work (24 Sep 2026) */
+.backdrop .glow{position:absolute;border-radius:50%;will-change:transform}
+.backdrop .g1{width:86vw;height:66vw;left:7vw;top:-34vw;background:radial-gradient(closest-side,rgba(167,139,250,.24),rgba(167,139,250,.09) 55%,transparent);animation:float1 24s ease-in-out infinite}
+.backdrop .g2{width:54vw;height:54vw;right:-20vw;top:calc(28vh - 12vw);background:radial-gradient(closest-side,rgba(52,211,153,.09),transparent);animation:float2 30s ease-in-out infinite}
 @keyframes float1{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-3vw,3vh,0) scale(1.06)}}
 @keyframes float2{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-4vw,-4vh,0)}}
-:root[data-theme="light"] .backdrop .g1{background:rgba(109,40,217,.14)}
+:root[data-theme="light"] .backdrop .g1{background:radial-gradient(closest-side,rgba(109,40,217,.16),rgba(109,40,217,.06) 55%,transparent)}
 :root[data-theme="light"] .backdrop .grid{opacity:.8}
 
 @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
 
-.backdrop .g2{background:rgba(34,211,238,.10)}
+.backdrop .g2{background:radial-gradient(closest-side,rgba(34,211,238,.13),transparent)}
 .backdrop .grid{background-image:linear-gradient(rgba(167,139,250,.08) 1px,transparent 1px),
   linear-gradient(90deg,rgba(167,139,250,.08) 1px,transparent 1px)}
 :root[data-theme="light"] .backdrop .grid{background-image:linear-gradient(rgba(109,40,217,.07) 1px,transparent 1px),
