@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T05:03:23Z",
+ "updated": "2026-09-25T08:03:28Z",
  "bots": [
   {
    "id": "sunny-gold",
@@ -33,7 +33,12 @@
    "timeframe": "15m",
    "start_balance": 1000.0,
    "balance": 983.68,
-   "open_position": null,
+   "open_position": {
+    "side": "long",
+    "entry": 4271.13,
+    "qty": 0.006,
+    "opened": "2026-09-25T07:16:09Z"
+   },
    "trades": [
     {
      "opened": "2026-09-24T23:16:09Z",
@@ -54,7 +59,7 @@
      "result_usd": -4.21
     }
    ],
-   "updated": "2026-09-25T05:03:23Z",
+   "updated": "2026-09-25T08:03:28Z",
    "context": [
     "Checks gold every 5 minutes, day and night.",
     "Gold fell 0.3% in the last day, to $4,274.",
