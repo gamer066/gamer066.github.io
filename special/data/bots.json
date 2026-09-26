@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T23:03:25Z",
+ "updated": "2026-09-26T02:03:25Z",
  "bots": [
   {
    "id": "sunny-gold",
@@ -32,13 +32,8 @@
    "strategy": "Checks gold every 5 minutes and makes quick trades, but only in the direction gold has been moving for the last two months. A safety stop limits each loss. In testing this lost money - watch it, don't trust it yet.",
    "timeframe": "15m",
    "start_balance": 1000.0,
-   "balance": 978.82,
-   "open_position": {
-    "side": "long",
-    "entry": 4283.58,
-    "qty": 0.008,
-    "opened": "2026-09-25T16:16:10Z"
-   },
+   "balance": 974.73,
+   "open_position": null,
    "trades": [
     {
      "opened": "2026-09-24T23:16:09Z",
@@ -66,9 +61,18 @@
      "exit": 4266.86,
      "qty": 0.006,
      "result_usd": -4.85
+    },
+    {
+     "opened": "2026-09-25T16:16:10Z",
+     "closed": "2026-09-26T01:31:07Z",
+     "side": "long",
+     "entry": 4283.58,
+     "exit": 4276.31,
+     "qty": 0.008,
+     "result_usd": -4.09
     }
    ],
-   "updated": "2026-09-25T23:03:25Z",
+   "updated": "2026-09-26T02:03:25Z",
    "context": [
     "Checks gold every 5 minutes, day and night.",
     "Gold fell 0.3% in the last day, to $4,274.",
