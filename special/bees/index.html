@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Bees &middot; Salman.D.Life</title>
+<meta name="description" content="Three trading bees and their Jev twins racing for 30 days. Practice money only.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060B">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=49e72e1f">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=f65be539">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fapi.binance.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/style.css?v=1c22b4a3">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
+<style>
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
+  .hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem)}
+  .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
+  .practice{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;padding:6px 11px;border-radius:999px;
+    font-size:.74rem;font-weight:700;letter-spacing:.04em;background:var(--accent-soft);color:var(--ink);border:1px solid var(--line)}
+  .back{font-size:.85rem;color:var(--ink-3);text-decoration:none;align-self:flex-start}
+  .back:hover{color:var(--accent)}
+  .up{color:var(--up)} .down{color:var(--down)}
+
+  .board{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .row{display:grid;grid-template-columns:34px 44px 1fr auto;gap:12px;align-items:center;padding:12px 14px;
+    border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .rank{font-family:var(--mono);font-size:1.05rem;font-weight:700;color:var(--ink-3);text-align:center}
+  .row.first .rank{color:#F5B544}
+  .row.last{border-color:rgba(255,90,90,.35)}
+  .bee{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.35rem;position:relative}
+  .bee .j{position:absolute;right:-4px;bottom:-4px;font-family:var(--mono);font-size:.56rem;font-weight:700;
+    padding:2px 5px;border-radius:999px;background:var(--ink);color:var(--bg)}
+  .who h3{font-family:var(--serif);font-size:1.05rem;font-weight:600;line-height:1.2}
+  .who small{display:block;font-size:.78rem;color:var(--ink-3);margin-top:3px;line-height:1.35}
+  .money{text-align:right}
+  .money b{display:block;font-family:var(--mono);font-size:1.12rem;font-weight:600}
+  .money span{font-family:var(--mono);font-size:.8rem;font-weight:600}
+  .tag{display:inline-block;margin-left:6px;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 6px;border-radius:999px;vertical-align:2px}
+  .tag.die{color:var(--down);background:rgba(255,90,90,.12)}
+  .tag.win{color:#8A5A0F;background:rgba(245,181,68,.16)}
+  :root:not([data-theme="light"]) .tag.win{color:#F5B544}
+
+  .pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:8px}
+  .pair{padding:16px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
+  .pair h4{font-family:var(--serif);font-size:1rem;font-weight:600;margin-bottom:10px}
+  .vs{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:.9rem}
+  .vs div span{display:block;font-family:var(--sans,inherit);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:3px}
+  .verdict{margin-top:10px;font-size:.84rem;color:var(--ink-2)}
+
+  .chartbox{padding:14px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);margin-top:8px}
+  .chartbox svg{width:100%;height:220px;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:.78rem;color:var(--ink-2)}
+  .legend i{display:inline-block;width:18px;height:0;border-top:2.5px solid;vertical-align:middle;margin-right:5px}
+  .legend i.d{border-top-style:dashed}
+
+  .feed{display:flex;flex-direction:column;margin-top:8px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line)}
+  .feed div{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:10px 14px;background:var(--surface);
+    border-bottom:1px solid var(--line-soft);font-size:.85rem;align-items:baseline}
+  .feed div:last-child{border-bottom:0}
+  .feed time{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);white-space:nowrap}
+  .feed em{font-style:normal;color:var(--ink-3)}
+  .feed b{font-family:var(--mono);font-weight:600;white-space:nowrap}
+  .empty{padding:16px;color:var(--ink-3);font-size:.88rem;background:var(--surface)}
+  @media (max-width:520px){.row{grid-template-columns:26px 40px 1fr;}.money{grid-column:3;text-align:left;display:flex;gap:10px;align-items:baseline}
+    .bee{width:40px;height:40px}.feed div{grid-template-columns:1fr auto}.feed time{grid-column:1/-1}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/trading/">Trading</a>
+    <a href="/special/" class="on">Special bots</a>
+    <a href="/study/">Studies</a>
+    <a href="/accounts/">Accounts</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="wrap" id="main">
+
+  <header class="hero">
+    <a class="back" href="/special/">&larr; Special bots</a>
+    <div class="eyebrow">30-day race</div>
+    <h1>The Bees 🐝</h1>
+    <p class="lede">Three trading bees, each with $333 and its own way of trading. Next to each one races a twin that
+      lets the Jev AI make its choices. After 30 days the bottom bee dies. <span id="day"></span></p>
+    <span class="practice">Practice money only &mdash; no real money is used</span>
+    <div class="rule"></div>
+  </header>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:16px"></div>
+
+  <section class="block">
+    <div class="headrow"><h2>Leaderboard</h2><span class="muted" id="upd"></span></div>
+    <div class="board" id="board"><div class="skel card"></div><div class="skel card"></div></div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Does Jev help?</h2></div>
+    <p class="muted" style="font-size:.88rem">Each bee against its twin. Same rules, same money. The only difference is Jev's calls.</p>
+    <div class="pairs" id="pairs"></div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Money over time</h2></div>
+    <div class="chartbox"><svg id="chart" viewBox="0 0 600 220" preserveAspectRatio="none" aria-label="Each bee's money over time"></svg>
+      <div class="legend" id="legend"></div></div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Latest moves</h2></div>
+    <div class="feed" id="trades"></div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Jev's calls</h2></div>
+    <p class="muted" style="font-size:.88rem">Every time a twin asked Jev, and whether Jev agreed with the bee's own rule.</p>
+    <div class="feed" id="jev"></div>
+  </section>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. Bee numbers refresh every few hours; open trades move live with Binance prices.</div>
+    <div>Bees based on Creator Magic's open-source BeeBots.</div>
+  </footer>
+</div>
+
+<script src="/assets/special.js?v=04d85692"></script>
+<script>
+(function () {
+  var S = window.SDLSpecial, D = null, live = {};
+  var LOOK = { Bizzy: ["🐝", "#F5B544", "the grinder: one breakout a day"],
+               Breezy: ["🌬️", "#34D3C4", "the calm one: follows the big trend"],
+               Boozy: ["🍺", "#F472B6", "the degen: backs the week's hottest coin"] };
+  function base(n) { return n.split("+")[0]; }
+  function esc(s) { return S.esc(String(s == null ? "" : s)); }
+  function usd(v, sign) { return (sign && v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toFixed(2); }
+  function say(t) { var m = document.getElementById("msg"); m.textContent = t; m.className = "msg show bad"; }
+
+  function equity(b) {
+    var p = b.pos; if (!p) return b.cash;
+    var last = live[p.sym]; if (!last) last = p.entry;
+    return b.cash + (p.side === "long" ? 1 : -1) * (last - p.entry) * p.qty;
+  }
+  function holding(b) {
+    var p = b.pos; if (!p) return "";
+    var last = live[p.sym] || p.entry, g = (p.side === "long" ? 1 : -1) * (last / p.entry - 1) * 100;
+    return (p.side === "long" ? "Bought " : "Bet down on ") + p.sym.replace(/USDT$/, "") + " (" + (g >= 0 ? "+" : "") + g.toFixed(1) + "%)";
+  }
+  function plain(s) {
+    return String(s || "").replace(/^waiting: /, "Waiting: ").replace(/score ([+-]\d)/, "trend $1 of 9")
+      .replace(/^APED /, "Just bought ").replace(/^OPENED /, "Just opened ").replace(/^riding /, "Holding ")
+      .replace(/^long /, "Holding ").replace(/^short /, "Betting down on ");
+  }
+
+  function paintBoard() {
+    var list = D.bees.map(function (b) { return { b: b, eq: equity(b) }; }).sort(function (x, y) { return y.eq - x.eq; });
+    document.getElementById("board").innerHTML = list.map(function (x, i) {
+      var b = x.b, L = LOOK[base(b.name)], ch = x.eq - D.start_usd, pc = ch / D.start_usd * 100;
+      var tag = i === 0 ? '<span class="tag win">leading</span>' : i === list.length - 1 ? '<span class="tag die">last · dies</span>' : "";
+      var line = holding(b) || plain(b.status);
+      return '<div class="row' + (i === 0 ? " first" : "") + (i === list.length - 1 ? " last" : "") + '">' +
+        '<div class="rank">#' + (i + 1) + '</div>' +
+        '<div class="bee" style="background:' + L[1] + '22">' + L[0] + (b.jev ? '<span class="j">JEV</span>' : "") + '</div>' +
+        '<div class="who"><h3>' + esc(b.name.replace("+Jev", " + Jev")) + tag + '</h3><small>' + esc(line) +
+          '<br>' + esc(L[2]) + (b.jev ? " · asked Jev " + b.jev_calls + "×" : "") + '</small></div>' +
+        '<div class="money"><b>$' + x.eq.toFixed(2) + '</b><span class="' + S.tone(ch) + '">' + usd(ch, true) +
+          " (" + (pc >= 0 ? "+" : "") + pc.toFixed(1) + '%)</span></div></div>';
+    }).join("");
+
+    document.getElementById("pairs").innerHTML = ["Bizzy", "Breezy", "Boozy"].map(function (n) {
+      var a = D.bees.filter(function (b) { return b.name === n; })[0], j = D.bees.filter(function (b) { return b.name === n + "+Jev"; })[0];
+      if (!a || !j) return "";
+      var ea = equity(a), ej = equity(j), d = ej - ea;
+      var v = Math.abs(d) < 0.5 ? "Neck and neck so far." : d > 0 ? "Jev is ahead by " + usd(d) + "." : "The plain rules are ahead by " + usd(-d) + ".";
+      return '<div class="pair"><h4>' + LOOK[n][0] + " " + n + '</h4><div class="vs">' +
+        '<div><span>Rules only</span>$' + ea.toFixed(2) + '</div><div style="text-align:right"><span>With Jev</span>$' + ej.toFixed(2) + '</div></div>' +
+        '<div class="verdict">' + v + '</div></div>';
+    }).join("");
+  }
+
+  function paintChart() {
+    var svg = document.getElementById("chart"), c = D.curve || [], names = D.bees.map(function (b) { return b.name; });
+    if (c.length < 2) { svg.innerHTML = '<text x="300" y="115" text-anchor="middle" fill="currentColor" opacity=".5" font-size="14">The chart fills in as the race goes on</text>'; }
+    else {
+      var lo = Infinity, hi = -Infinity;
+      c.forEach(function (r) { names.forEach(function (n) { if (r[n] != null) { lo = Math.min(lo, r[n]); hi = Math.max(hi, r[n]); } }); });
+      lo = Math.min(lo, D.start_usd); hi = Math.max(hi, D.start_usd);
+      var pad = (hi - lo) * 0.1 || 2; lo -= pad; hi += pad;
+      function y(v) { return (8 + (1 - (v - lo) / (hi - lo)) * 204).toFixed(1); }
+      var out = '<line x1="0" x2="600" y1="' + y(D.start_usd) + '" y2="' + y(D.start_usd) + '" stroke="currentColor" opacity=".18" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>';
+      names.forEach(function (n) {
+        var pts = [];
+        c.forEach(function (r, i) { if (r[n] != null) pts.push((i / (c.length - 1) * 600).toFixed(1) + "," + y(r[n])); });
+        if (pts.length > 1) out += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + LOOK[base(n)][1] +
+          '" stroke-width="2" vector-effect="non-scaling-stroke"' + (n.indexOf("+Jev") > 0 ? ' stroke-dasharray="6 4"' : "") + '/>';
+      });
+      svg.innerHTML = out;
+    }
+    document.getElementById("legend").innerHTML = names.map(function (n) {
+      return '<span><i' + (n.indexOf("+Jev") > 0 ? ' class="d"' : "") + ' style="border-color:' + LOOK[base(n)][1] + '"></i>' +
+        esc(n.replace("+Jev", " + Jev")) + '</span>';
+    }).join("") + '<span style="opacity:.6">dotted grey = the $333 start</span>';
+  }
+
+  function paintFeeds() {
+    var t = (D.trades || []).slice().reverse();
+    document.getElementById("trades").innerHTML = t.length ? t.map(function (r) {
+      var res = r.result_usd ? '<b class="' + S.tone(+r.result_usd) + '">' + usd(+r.result_usd, true) + '</b>' : "<b></b>";
+      var act = r.action.replace("OPEN LONG", "bought").replace("OPEN SHORT", "bet down on").replace("CLOSE", "sold")
+        .replace("DOUBLE DOWN", "added more").replace("TRIM HALF", "sold half");
+      return '<div><time>' + esc(S.ago(r.time)) + '</time><span><strong>' + esc(r.bee.replace("+Jev", " + Jev")) + '</strong> ' +
+        esc(act) + " " + esc(r.coin.replace(/USDT$/, "")) + ' <em>— ' + esc(r.why) + '</em></span>' + res + '</div>';
+    }).join("") : '<div class="empty">No moves yet.</div>';
+
+    var j = (D.jev || []).slice().reverse();
+    document.getElementById("jev").innerHTML = j.length ? j.map(function (r) {
+      var same = r.rule_move === r.jev_move;
+      return '<div><time>' + esc(S.ago(r.time)) + '</time><span><strong>' + esc(r.bee.replace("+Jev", " + Jev")) + '</strong> — Jev said <b>' +
+        esc(r.jev_move) + '</b> (' + Math.round(+r.jev_prob * 100) + '% sure) <em>' + (same ? "· agreed with the rule" : "· the rule said " + esc(r.rule_move)) +
+        '</em></span><b class="' + (same ? "" : "up") + '">' + (same ? "same" : "different") + '</b></div>';
+    }).join("") : '<div class="empty">Jev hasn\'t been asked yet.</div>';
+  }
+
+  function prices() {
+    var syms = {};
+    D.bees.forEach(function (b) { if (b.pos) syms[b.pos.sym] = 1; });
+    return Promise.all(Object.keys(syms).map(function (s) {
+      return S.ticker(s).then(function (t) { live[s] = +t.lastPrice; }).catch(function () {});
+    })).then(paintBoard);
+  }
+
+  function load() {
+    return fetch("/special/data/bees.json?t=" + Date.now(), { credentials: "same-origin", cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) {
+        D = d;
+        var day = Math.floor((Date.now() - Date.parse(d.started)) / 864e5) + 1;
+        document.getElementById("day").textContent = "Day " + Math.min(day, 30) + " of 30.";
+        document.getElementById("upd").textContent = "Bee numbers from " + S.ago(d.last_tick || d.updated);
+        paintBoard(); paintChart(); paintFeeds(); prices();
+      });
+  }
+
+  load().catch(function () { document.getElementById("board").innerHTML = ""; say("Could not load the bees. Try refreshing the page."); });
+  setInterval(function () { if (!document.hidden && D) prices(); }, 15000);
+  setInterval(function () { if (!document.hidden) load().catch(function () {}); }, 300000);
+})();
+</script>
+<script src="/assets/account.js?v=d3821b8b" defer></script>
+<script src="/assets/fx.js?v=9dee16d4" defer></script>
+<script src="/assets/theme.js?v=935f0294" defer></script>
+</body>
+</html>

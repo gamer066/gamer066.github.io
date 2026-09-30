@@ -55,12 +55,20 @@
   }
 
   /* ---- the bots' file ---- */
+  function getJSON(url) {
+    return fetch(url, { credentials: "same-origin", cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  }
+  /* Two copies exist: the laptop's file and the cloud's (/api/special, sent after every cloud run).
+     Whichever was updated last wins, so the page stays current even with the laptop off (30 Sep 2026). */
   function load() {
-    return fetch("/special/data/bots.json?t=" + Date.now(), { credentials: "same-origin", cache: "no-store" })
-      .then(function (r) {
-        if (r.status === 404) return { bots: [] };
-        if (!r.ok) throw new Error("status " + r.status);
-        return r.json();
+    return Promise.all([getJSON("/special/data/bots.json?t=" + Date.now()), getJSON("/api/special")])
+      .then(function (both) {
+        var a = both[0], b = both[1];
+        function t(x) { return x && Array.isArray(x.bots) && x.bots.length ? Date.parse(x.updated) || 0 : -1; }
+        var d = t(b) > t(a) ? b : a;
+        if (!d) throw new Error("no data");
+        return d;
       })
       .then(function (d) {
         var bots = (d && Array.isArray(d.bots) ? d.bots : []).filter(function (b) {

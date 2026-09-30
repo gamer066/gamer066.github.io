@@ -1,0 +1,166 @@
+{
+ "updated": "2026-09-30T06:28:38Z",
+ "started": "2026-09-30T06:15:09+00:00",
+ "last_tick": "2026-09-30T06:28:34+00:00",
+ "start_usd": 333.33,
+ "bees": [
+  {
+   "name": "Bizzy",
+   "jev": false,
+   "cash": 333.33,
+   "fees": 0.0,
+   "trades": 0,
+   "jev_calls": 0,
+   "status": "waiting: BTC is 1.71% from breakout",
+   "pos": null
+  },
+  {
+   "name": "Breezy",
+   "jev": false,
+   "cash": 333.17,
+   "fees": 0.17,
+   "trades": 0,
+   "jev_calls": 0,
+   "status": "long BTC, score +4",
+   "pos": {
+    "sym": "BTCUSDT",
+    "side": "long",
+    "qty": 0.004011188005585178,
+    "entry": 83100.9,
+    "stop": 81172.328571
+   }
+  },
+  {
+   "name": "Boozy",
+   "jev": false,
+   "cash": 333.17,
+   "fees": 0.17,
+   "trades": 0,
+   "jev_calls": 0,
+   "status": "riding QNT (+1.2%), held 0h",
+   "pos": {
+    "sym": "QNTUSDT",
+    "side": "long",
+    "qty": 1.1543212014175064,
+    "entry": 288.77,
+    "stop": 242.300714
+   }
+  },
+  {
+   "name": "Bizzy+Jev",
+   "jev": true,
+   "cash": 333.33,
+   "fees": 0.0,
+   "trades": 0,
+   "jev_calls": 0,
+   "status": "waiting: BTC is 1.71% from breakout",
+   "pos": null
+  },
+  {
+   "name": "Breezy+Jev",
+   "jev": true,
+   "cash": 333.17,
+   "fees": 0.17,
+   "trades": 0,
+   "jev_calls": 1,
+   "status": "long BTC, score +4",
+   "pos": {
+    "sym": "BTCUSDT",
+    "side": "long",
+    "qty": 0.00401473407405177,
+    "entry": 83027.5,
+    "stop": 81098.928571
+   }
+  },
+  {
+   "name": "Boozy+Jev",
+   "jev": true,
+   "cash": 333.17,
+   "fees": 0.17,
+   "trades": 0,
+   "jev_calls": 1,
+   "status": "riding QNT (-0.1%), held 0h",
+   "pos": {
+    "sym": "QNTUSDT",
+    "side": "long",
+    "qty": 1.1401858502935978,
+    "entry": 292.35,
+    "stop": 241.240714
+   }
+  }
+ ],
+ "curve": [
+  {
+   "t": "2026-09-30T06:15:20+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.17,
+   "Boozy": 333.17
+  },
+  {
+   "t": "2026-09-30T06:15:22+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.2,
+   "Boozy": 332.13
+  },
+  {
+   "t": "2026-09-30T06:15:35+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.24,
+   "Boozy": 331.4
+  }
+ ],
+ "trades": [
+  {
+   "time": "2026-09-30T06:15:11+00:00",
+   "bee": "Breezy",
+   "coin": "BTCUSDT",
+   "action": "OPEN LONG",
+   "price": "83100.9",
+   "result_usd": "",
+   "why": "ensemble score +4 of 9"
+  },
+  {
+   "time": "2026-09-30T06:15:20+00:00",
+   "bee": "Boozy",
+   "coin": "QNTUSDT",
+   "action": "OPEN LONG",
+   "price": "288.77",
+   "result_usd": "",
+   "why": "the week's hottest coin (#1 on 7-day momentum)"
+  },
+  {
+   "time": "2026-09-30T06:27:01+00:00",
+   "bee": "Breezy+Jev",
+   "coin": "BTCUSDT",
+   "action": "OPEN LONG",
+   "price": "83027.5",
+   "result_usd": "",
+   "why": "ensemble score +4 of 9"
+  },
+  {
+   "time": "2026-09-30T06:27:05+00:00",
+   "bee": "Boozy+Jev",
+   "coin": "QNTUSDT",
+   "action": "OPEN LONG",
+   "price": "292.35",
+   "result_usd": "",
+   "why": "#1 on 7-day momentum"
+  }
+ ],
+ "jev": [
+  {
+   "time": "2026-09-30T06:27:01+00:00",
+   "bee": "Breezy+Jev",
+   "rule_move": "LONG_BTC",
+   "jev_move": "LONG_BTC",
+   "jev_prob": "0.88"
+  },
+  {
+   "time": "2026-09-30T06:27:05+00:00",
+   "bee": "Boozy+Jev",
+   "rule_move": "APE_QNT",
+   "jev_move": "APE_QNT",
+   "jev_prob": "0.9"
+  }
+ ]
+}
