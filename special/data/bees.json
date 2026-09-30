@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-30T06:28:38Z",
+ "updated": "2026-09-30T09:56:20Z",
  "started": "2026-09-30T06:15:09+00:00",
- "last_tick": "2026-09-30T06:28:34+00:00",
+ "last_tick": "2026-09-30T09:55:34+00:00",
  "start_usd": 333.33,
  "bees": [
   {
@@ -11,7 +11,7 @@
    "fees": 0.0,
    "trades": 0,
    "jev_calls": 0,
-   "status": "waiting: BTC is 1.71% from breakout",
+   "status": "waiting: BTC is 1.12% from breakout",
    "pos": null
   },
   {
@@ -37,13 +37,13 @@
    "fees": 0.17,
    "trades": 0,
    "jev_calls": 0,
-   "status": "riding QNT (+1.2%), held 0h",
+   "status": "riding QNT (-1.7%), held 4h",
    "pos": {
     "sym": "QNTUSDT",
     "side": "long",
     "qty": 1.1543212014175064,
     "entry": 288.77,
-    "stop": 242.300714
+    "stop": 244.320714
    }
   },
   {
@@ -53,7 +53,7 @@
    "fees": 0.0,
    "trades": 0,
    "jev_calls": 0,
-   "status": "waiting: BTC is 1.71% from breakout",
+   "status": "waiting: BTC is 1.12% from breakout",
    "pos": null
   },
   {
@@ -79,13 +79,13 @@
    "fees": 0.17,
    "trades": 0,
    "jev_calls": 1,
-   "status": "riding QNT (-0.1%), held 0h",
+   "status": "riding QNT (-2.9%), held 3h",
    "pos": {
     "sym": "QNTUSDT",
     "side": "long",
     "qty": 1.1401858502935978,
     "entry": 292.35,
-    "stop": 241.240714
+    "stop": 244.320714
    }
   }
  ],
@@ -107,6 +107,132 @@
    "Bizzy": 333.33,
    "Breezy": 333.24,
    "Boozy": 331.4
+  },
+  {
+   "t": "2026-09-30T06:30:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.16,
+   "Boozy": 338.71,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.45,
+   "Boozy+Jev": 334.56
+  },
+  {
+   "t": "2026-09-30T06:45:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 332.71,
+   "Boozy": 339.58,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.0,
+   "Boozy+Jev": 335.42
+  },
+  {
+   "t": "2026-09-30T07:00:42+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 332.57,
+   "Boozy": 327.52,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 332.87,
+   "Boozy+Jev": 323.51
+  },
+  {
+   "t": "2026-09-30T07:15:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 332.82,
+   "Boozy": 326.81,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.12,
+   "Boozy+Jev": 322.8
+  },
+  {
+   "t": "2026-09-30T07:30:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.69,
+   "Boozy": 325.59,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.98,
+   "Boozy+Jev": 321.61
+  },
+  {
+   "t": "2026-09-30T07:45:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 334.32,
+   "Boozy": 324.57,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 334.62,
+   "Boozy+Jev": 320.59
+  },
+  {
+   "t": "2026-09-30T08:00:43+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.76,
+   "Boozy": 330.0,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 334.06,
+   "Boozy+Jev": 325.96
+  },
+  {
+   "t": "2026-09-30T08:15:33+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.06,
+   "Boozy": 335.64,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.36,
+   "Boozy+Jev": 331.52
+  },
+  {
+   "t": "2026-09-30T08:30:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.04,
+   "Boozy": 335.65,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.34,
+   "Boozy+Jev": 331.54
+  },
+  {
+   "t": "2026-09-30T08:45:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 332.92,
+   "Boozy": 327.45,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.21,
+   "Boozy+Jev": 323.44
+  },
+  {
+   "t": "2026-09-30T09:00:43+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 332.87,
+   "Boozy": 327.81,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.16,
+   "Boozy+Jev": 323.79
+  },
+  {
+   "t": "2026-09-30T09:15:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.76,
+   "Boozy": 326.34,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 334.06,
+   "Boozy+Jev": 322.35
+  },
+  {
+   "t": "2026-09-30T09:30:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 334.61,
+   "Boozy": 325.34,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 334.9,
+   "Boozy+Jev": 321.35
+  },
+  {
+   "t": "2026-09-30T09:45:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 334.93,
+   "Boozy": 325.25,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 335.23,
+   "Boozy+Jev": 321.26
   }
  ],
  "trades": [
