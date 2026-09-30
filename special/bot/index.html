@@ -224,6 +224,10 @@
       <h1 id="botName">Loading&hellip;</h1>
       <div class="meta"><span id="botStatus"></span><span class="practice">Practice money</span>
         <span class="muted" id="botUpdated"></span></div>
+      <div class="aiExplain" id="aiBotExplain" hidden data-q="Explain how this bot is doing right now, in simple words.">
+        <button type="button" class="aiExplainBtn">Explain in plain words</button>
+        <div class="aiExplainOut" hidden></div>
+      </div>
     </div>
   </header>
 
@@ -896,6 +900,7 @@
     $("botName").textContent = bot.name || bot.id;
     $("botStatus").innerHTML = S.statusPill(bot.status);
     $("botUpdated").textContent = bot.updated ? "Numbers updated " + S.ago(bot.updated) : "";
+    var aiBox = $("aiBotExplain"); if (aiBox) aiBox.setAttribute("data-q", "Explain how " + (bot.name || bot.id) + " is doing right now, in simple words.");
     var stale = S.staleNote(bot.updated); if (stale) say(stale);
     strip(); position(); about(); report();
     if (chart && bars.length) drawMarkers();

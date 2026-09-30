@@ -1,9 +1,17 @@
 /* The "Ask" helper (AI-1, 30 Sep 2026): a small round button on every private page that opens a chat box.
+ * Extended (AI-2, 1 Oct 2026) with inline "Explain in plain words" buttons a page can drop in anywhere.
  *
  * It only appears for the site's owner (the server checks that too - this file is just the look). It sends the
  * question to /api/assistant and shows the answer in words. The helper is READ-ONLY: it cannot press a button or change
  * anything. If it suggests a Control button, Salman taps it himself on the Control page.
  * Works on a phone (sits above the tab bar) and in both looks. Nothing is stored in the browser.
+ *
+ * AI-2: any page can add   <div class="aiExplain" hidden data-q="plain question for the helper">
+ *         <button type="button" class="aiExplainBtn">Explain in plain words</button>
+ *         <div class="aiExplainOut" hidden></div></div>
+ * and this file wires it up once it has confirmed the visitor is the signed-in owner (same check as the chat box),
+ * removing "hidden" so a signed-out visitor or a second invited account never even sees the button.
+ * It shares the chat's own daily question limit, so nothing can run away with the free allowance.
  */
 (function () {
   var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg>';
@@ -127,6 +135,45 @@
       });
   }
 
+  /* ---- AI-2: inline "Explain in plain words" buttons anywhere on the page ---- */
+  function wireExplainers(state) {
+    var left = state && typeof state.left === "number" ? state.left : null;
+    Array.prototype.forEach.call(document.querySelectorAll(".aiExplain[data-q]"), function (box2) {
+      box2.hidden = false;
+      var btn = box2.querySelector(".aiExplainBtn"), out = box2.querySelector(".aiExplainOut");
+      if (!btn || !out || btn.dataset.wired) return;
+      btn.dataset.wired = "1";
+      if (left === 0) { btn.disabled = true; btn.title = "No questions left today"; }
+      btn.addEventListener("click", function () {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        out.hidden = false;
+        out.className = "aiExplainOut wait";
+        out.textContent = "";
+        var dots = el("span", "aiDots"); dots.innerHTML = "<i></i><i></i><i></i>";
+        out.appendChild(el("span", "", "Thinking"));
+        out.appendChild(dots);
+        fetch("/api/assistant", {
+          method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: box2.getAttribute("data-q") })
+        })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (x) {
+            out.className = x.ok && x.j.answer ? "aiExplainOut in" : "aiExplainOut bad";
+            out.textContent = x.ok && x.j.answer ? x.j.answer : (x.j && x.j.error) || "The helper did not answer. Please try again.";
+            // free to ask again - an error can be retried, an answer can be refreshed - unless today's questions ran out
+            if (x.j && x.j.left === 0) { btn.disabled = true; btn.title = "No questions left today"; }
+            else btn.disabled = false;
+          })
+          .catch(function () {
+            out.className = "aiExplainOut bad";
+            out.textContent = "Could not reach the site. Check your connection and try again.";
+            btn.disabled = false;
+          });
+      });
+    });
+  }
+
   function start() {
     if (/^\/(login|404)/.test(location.pathname)) return;
     fetch("/api/me", { credentials: "same-origin" })
@@ -135,7 +182,7 @@
         if (!me || !me.signedIn) return null;
         return fetch("/api/assistant", { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; });
       })
-      .then(function (state) { if (state) build(state); })
+      .then(function (state) { if (state) { build(state); wireExplainers(state); } })
       .catch(function () {});
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
