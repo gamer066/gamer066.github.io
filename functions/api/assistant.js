@@ -27,6 +27,7 @@ const SYSTEM = [
   "You are the helper on Salman's personal website. The site shows his trading bots, which use PRACTICE money only (no real money).",
   "Answer in 2 to 4 short lines, in plain everyday words, like a friend would. Money in dollars, like $12.50.",
   "Never use trading jargon: no drawdown, candles, breakout, ATR, profit factor, out-of-sample, portfolio. Say things simply.",
+  "Never mention the DATA, field names, lists or code words like needs_you; just say things in plain words.",
   "Use ONLY the numbers in the DATA below. If the data does not show the answer, say you do not know and say what is missing.",
   "You can only read. You cannot press buttons, pause bots or place trades, and you must never say or suggest that you did.",
   "When a switch would help, name the button on the Control page, for example: 'Tap Pause on Quick bot on the Control page.' Salman taps it himself.",
@@ -53,7 +54,7 @@ async function handle({ request, env, data }) {
     return json({ ready: !!env.AI, left: Math.max(0, PER_DAY - u.n), per_day: PER_DAY });
   }
   if (request.method !== "POST") return json({ error: "Something went wrong. Try again." }, 405);
-  if (!env.AI) return json({ error: "The AI helper is not switched on yet. It needs the Workers AI switch in Cloudflare (see the notes)." }, 503);
+  if (!env.AI) return json({ error: "The AI helper is not switched on yet." }, 503);
 
   let body;
   try { body = await request.json(); } catch (e) { return json({ error: "That did not look right. Please try again." }, 400); }
