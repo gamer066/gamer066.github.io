@@ -36,7 +36,8 @@ export async function onRequest(context) {
   try {
     return await handle(context);
   } catch (e) {
-    return json({ error: "The helper had a problem. Please try again in a moment." }, 500);
+    // detail is only ever seen by the owner (every other caller is turned away before anything can fail)
+    return json({ error: "The helper had a problem. Please try again in a moment.", detail: String(e && e.message || e).slice(0, 240) }, 500);
   }
 }
 
