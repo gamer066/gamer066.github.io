@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-30T09:56:20Z",
+ "updated": "2026-09-30T09:58:37Z",
  "started": "2026-09-30T06:15:09+00:00",
- "last_tick": "2026-09-30T09:55:34+00:00",
+ "last_tick": "2026-09-30T09:58:36+00:00",
  "start_usd": 333.33,
  "bees": [
   {
@@ -37,7 +37,7 @@
    "fees": 0.17,
    "trades": 0,
    "jev_calls": 0,
-   "status": "riding QNT (-1.7%), held 4h",
+   "status": "riding QNT (-1.4%), held 4h",
    "pos": {
     "sym": "QNTUSDT",
     "side": "long",
@@ -79,7 +79,7 @@
    "fees": 0.17,
    "trades": 0,
    "jev_calls": 1,
-   "status": "riding QNT (-2.9%), held 3h",
+   "status": "riding QNT (-2.6%), held 4h",
    "pos": {
     "sym": "QNTUSDT",
     "side": "long",
