@@ -96,6 +96,7 @@
     <h1>The Bees 🐝</h1>
     <p class="lede">Three trading bees, each with $333 and its own way of trading. Next to each one races a twin that
       lets the Jev AI make its choices. After 30 days the bottom bee dies. <span id="day"></span></p>
+    <p class="lede" style="font-size:.9rem">Rules upgraded on 30 Sep after testing each bee on six years of real prices: the originals lost money, these versions made money in both the old and the recent years.</p>
     <span class="practice">Practice money only &mdash; no real money is used</span>
     <div class="rule"></div>
   </header>
@@ -140,20 +141,28 @@
 <script>
 (function () {
   var S = window.SDLSpecial, D = null, live = {};
-  var LOOK = { Bizzy: ["🐝", "#F5B544", "the grinder: one breakout a day"],
-               Breezy: ["🌬️", "#34D3C4", "the calm one: follows the big trend"],
-               Boozy: ["🍺", "#F472B6", "the degen: backs the week's hottest coin"] };
+  var LOOK = { Bizzy: ["🐝", "#F5B544", "buys big breakouts on BTC/ETH and keeps the winners"],
+               Breezy: ["🌬️", "#34D3C4", "rides BTC/ETH up-trends, cash when they fall"],
+               Boozy: ["🍺", "#F472B6", "holds the month's 5 hottest coins, reshuffles weekly"] };
   function base(n) { return n.split("+")[0]; }
   function esc(s) { return S.esc(String(s == null ? "" : s)); }
   function usd(v, sign) { return (sign && v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toFixed(2); }
   function say(t) { var m = document.getElementById("msg"); m.textContent = t; m.className = "msg show bad"; }
 
   function equity(b) {
-    var p = b.pos; if (!p) return b.cash;
+    var base = b.cash;
+    (b.basket || []).forEach(function (h) { base += h.qty * (live[h.sym] || h.cost); });
+    var p = b.pos; if (!p) return base;
     var last = live[p.sym]; if (!last) last = p.entry;
-    return b.cash + (p.side === "long" ? 1 : -1) * (last - p.entry) * p.qty;
+    return base + (p.side === "long" ? 1 : -1) * (last - p.entry) * p.qty;
   }
   function holding(b) {
+    if (b.basket && b.basket.length) {
+      var v = 0, c = 0;
+      b.basket.forEach(function (h) { v += h.qty * (live[h.sym] || h.cost); c += h.qty * h.cost; });
+      return "Holding " + b.basket.map(function (h) { return h.sym.replace(/USDT$/, ""); }).join(", ") +
+        " (" + (v >= c ? "+" : "") + ((v / c - 1) * 100).toFixed(1) + "%)";
+    }
     var p = b.pos; if (!p) return "";
     var last = live[p.sym] || p.entry, g = (p.side === "long" ? 1 : -1) * (last / p.entry - 1) * 100;
     return (p.side === "long" ? "Bought " : "Bet down on ") + p.sym.replace(/USDT$/, "") + " (" + (g >= 0 ? "+" : "") + g.toFixed(1) + "%)";
@@ -219,7 +228,7 @@
     document.getElementById("trades").innerHTML = t.length ? t.map(function (r) {
       var res = r.result_usd ? '<b class="' + S.tone(+r.result_usd) + '">' + usd(+r.result_usd, true) + '</b>' : "<b></b>";
       var act = r.action.replace("OPEN LONG", "bought").replace("OPEN SHORT", "bet down on").replace("CLOSE", "sold")
-        .replace("DOUBLE DOWN", "added more").replace("TRIM HALF", "sold half");
+        .replace("DOUBLE DOWN", "added more").replace("TRIM HALF", "sold half").replace("TRIM", "sold some").replace("ADD", "added to");
       return '<div><time>' + esc(S.ago(r.time)) + '</time><span><strong>' + esc(r.bee.replace("+Jev", " + Jev")) + '</strong> ' +
         esc(act) + " " + esc(r.coin.replace(/USDT$/, "")) + ' <em>— ' + esc(r.why) + '</em></span>' + res + '</div>';
     }).join("") : '<div class="empty">No moves yet.</div>';
@@ -235,7 +244,7 @@
 
   function prices() {
     var syms = {};
-    D.bees.forEach(function (b) { if (b.pos) syms[b.pos.sym] = 1; });
+    D.bees.forEach(function (b) { if (b.pos) syms[b.pos.sym] = 1; (b.basket || []).forEach(function (h) { syms[h.sym] = 1; }); });
     return Promise.all(Object.keys(syms).map(function (s) {
       return S.ticker(s).then(function (t) { live[s] = +t.lastPrice; }).catch(function () {});
     })).then(paintBoard);
