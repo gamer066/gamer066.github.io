@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Control &middot; Salman.D.Life</title>
+<meta name="description" content="Pause a bot, stop all new trades, or restart the Bee race. Practice money only.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060B">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=49e72e1f">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=f65be539">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/style.css?v=b4942ba0">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
+<script>document.documentElement.classList.add("js")</script>
+<style>
+  /* CTRL-1 (30 Sep 2026): the control room. Everything here is built from the shared pieces in assets/style.css. */
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
+  .hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem)}
+  .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
+  .practice{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;padding:6px 11px;border-radius:999px;
+    font-size:.74rem;font-weight:700;letter-spacing:.04em;background:var(--accent-soft);color:var(--ink);border:1px solid var(--line)}
+
+  .stopCard{display:flex;flex-direction:column;gap:var(--s3);border-color:rgba(251,113,133,.35)}
+  .stopCard.on{background:linear-gradient(180deg,var(--down-soft),var(--surface));border-color:var(--down)}
+  .stopCard .state{font-family:var(--serif);font-weight:600;font-size:var(--t-xl);letter-spacing:-.01em}
+  .stopCard.on .state{color:var(--down)}
+
+  .botList{display:flex;flex-direction:column;gap:var(--s2)}
+  .botRow{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s3);align-items:center;padding:var(--s3) var(--s4);
+    border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+  .botRow.isPaused{border-color:var(--warn)}
+  .botRow h3{font-family:var(--serif);font-size:1rem;font-weight:600;line-height:1.2}
+  .botRow small{display:block;color:var(--ink-3);font-size:var(--t-sm);margin-top:2px;line-height:1.35}
+  .botRow .right{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+  .botRow .stateTxt{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--up)}
+  .botRow.isPaused .stateTxt{color:var(--warn)}
+
+  .hist{display:flex;flex-direction:column;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
+  .hist div{display:grid;grid-template-columns:auto 1fr;gap:var(--s3);padding:10px var(--s4);background:var(--surface);
+    border-bottom:1px solid var(--line-soft);font-size:var(--t-md);align-items:baseline}
+  .hist div:last-child{border-bottom:0}
+  .hist time{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);white-space:nowrap}
+  @media (max-width:420px){.hist div{grid-template-columns:1fr}}
+  .saved{padding:11px 14px;border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--up-soft);border-left:3px solid var(--up);font-size:var(--t-md)}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" id="prog"></div>
+<div class="backdrop" aria-hidden="true"><canvas id="stars"></canvas><div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/trading/">Trading</a>
+    <a href="/special/">Special bots</a>
+    <a href="/control/" class="on">Control</a>
+    <a href="/study/">Studies</a>
+    <a href="/accounts/">Accounts</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="wrap" id="main">
+
+  <header class="hero">
+    <div class="eyebrow">Control room</div>
+    <h1>Control</h1>
+    <p class="lede">Pause a bot, stop every new trade, or restart the Bee race. Only you can press these buttons.
+      The bots read them at the start of each hourly run.</p>
+    <span class="practice">Practice money only &mdash; no real money is used</span>
+    <div class="rule"></div>
+  </header>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:16px"></div>
+  <div id="saved" class="saved" role="status" aria-live="polite" style="margin-top:16px" hidden></div>
+
+  <section class="block">
+    <div id="stop" class="u-card stopCard">
+      <div class="u-eyebrow">Emergency button</div>
+      <div class="state" id="stopState">Loading&hellip;</div>
+      <p class="u-note" id="stopNote">Every bot keeps looking after the trades it already has. Their safety stops keep working.</p>
+      <button type="button" class="u-btn big danger" id="stopBtn" disabled>Stop all new trades</button>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Each bot</h2><span class="muted" id="hbNote"></span></div>
+    <div class="botList" id="list"><div class="skel u-load"></div><div class="skel u-load"></div><div class="skel u-load"></div></div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Bee race</h2></div>
+    <div class="u-card u-stack">
+      <p class="u-note">Restart the race: today's race is saved and closed, and all six bees start again with $333.33 of practice money.</p>
+      <button type="button" class="u-btn" id="resetBees" disabled>Restart the Bee race</button>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>What you pressed</h2></div>
+    <div class="hist" id="hist"><div><span></span><span>Loading&hellip;</span></div></div>
+  </section>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. A pause or stop reaches the bots at their next hourly run.</div>
+    <div>A paused bot opens no new trades. Open trades keep their safety stops.</div>
+  </footer>
+</div>
+
+<div class="u-veil" id="veil" hidden>
+  <div class="u-dlg" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <h3 id="dTitle">Are you sure?</h3>
+    <p id="dText"></p>
+    <div class="u-row">
+      <button type="button" class="u-btn ghost" id="dNo">Cancel</button>
+      <button type="button" class="u-btn primary" id="dYes">Yes, do it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* The plain-words list of bots. "key" is the short name the cloud code and /api/control use. */
+  var BOTS = [
+    ["money", "Money bot", "Trend bot. Looks 3 times a day."],
+    ["learn", "Learning bot", "Tiny test trades every hour."],
+    ["quick", "Quick bot", "Shorter trades, sold after 5 days."],
+    ["ten", "$10 plan bot", "One trade at a time, whole $10 budget."],
+    ["m55", "Turtle 55", "Slow trend bot."],
+    ["short", "Short bot", "Bets on prices falling."],
+    ["d20", "Daily leg", "Daily trend bot."],
+    ["sunny_gold", "Sunny Gold", "Trades gold, checked every hour."],
+    ["gold_fast", "Sunny Gold Fast", "Fast gold trader. Runs on the laptop."],
+    ["bees", "The Bees", "Six bees racing for 30 days."]
+  ];
+  var C = null, feeds = {}, pending = null;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function say(t) { var m = $("msg"); m.textContent = t; m.className = "msg show bad"; }
+  function ago(ms) {
+    var m = Math.max(0, Math.round((Date.now() - ms) / 60000));
+    if (m < 1) return "just now";
+    if (m < 60) return m + " min ago";
+    var h = Math.round(m / 60);
+    return h < 48 ? h + (h === 1 ? " hour ago" : " hours ago") : Math.round(h / 24) + " days ago";
+  }
+  function getJSON(url) {
+    return fetch(url, { credentials: "same-origin", cache: "no-store" }).then(function (r) {
+      return r.ok ? r.json().then(function (j) { return { ok: true, j: j, status: r.status }; }) : { ok: false, status: r.status };
+    }).catch(function () { return { ok: false, status: 0 }; });
+  }
+
+  /* ---- health: one light per bot, from the numbers the bots already send to the site ---- */
+  function hbTime() {
+    var b = feeds.bots && feeds.bots.data, m = b && /^(\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d) UTC/.exec(b.heartbeat || "");
+    return m ? Date.parse(m[1] + "T" + m[2] + "Z") : (b && Date.parse(b.updated)) || 0;
+  }
+  function health(key) {
+    var CRYPTO = { money: 1, learn: 1, quick: 1, ten: 1, m55: 1, short: 1, d20: 1 };
+    if (CRYPTO[key]) {
+      var t = hbTime();
+      if (!feeds.bots) return { c: "", t: "No news from the bots yet" };
+      var age = (Date.now() - t) / 60000, h = feeds.bots.data && feeds.bots.data.health && feeds.bots.data.health[key], fail = h && Date.parse(h.at);
+      if (fail && fail >= t - 10 * 60000) return { c: "bad", t: "Its last run had an error. Needs a look." };
+      if (age > 150) return { c: "late", t: "Running late: last run " + ago(t) };
+      if (fail && Date.now() - fail < 6 * 3600000) return { c: "late", t: "Had an error " + ago(fail) + ", fine since" };
+      return { c: "ok", t: "Running well. Last run " + ago(t) };
+    }
+    if (key === "sunny_gold" || key === "gold_fast") {
+      var id = key === "gold_fast" ? "sunny-gold-fast" : "sunny-gold", list = (feeds.special && feeds.special.bots) || [];
+      var b = list.filter(function (x) { return x && x.id === id; })[0], u = b && Date.parse(b.updated);
+      if (!u) return { c: "", t: "No news yet" };
+      var a = (Date.now() - u) / 60000, lim = key === "gold_fast" ? 30 : 150, bad = key === "gold_fast" ? 180 : 360;
+      if (a > bad) return { c: "bad", t: "No news for " + ago(u).replace(" ago", "") + ". Needs a look." };
+      if (a > lim) return { c: "late", t: "Running late: last news " + ago(u) };
+      return { c: "ok", t: "Running well. Last news " + ago(u) };
+    }
+    if (key === "bees") {
+      var bt = feeds.bees && Date.parse(feeds.bees.last_tick || feeds.bees.updated);
+      if (!bt) return { c: "", t: "No news yet" };
+      var ba = (Date.now() - bt) / 60000;
+      if (ba > 360) return { c: "bad", t: "No news for " + ago(bt).replace(" ago", "") + ". Needs a look." };
+      if (ba > 150) return { c: "late", t: "Running late: last run " + ago(bt) };
+      return { c: "ok", t: "Running well. Last run " + ago(bt) };
+    }
+    return { c: "", t: "" };
+  }
+
+  function nextRun() {
+    var d = new Date(), t = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), d.getUTCHours(), 35);
+    if (t <= Date.now() + 60000) t += 3600000;
+    return new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function paint() {
+    if (!C) return;
+    var on = !!C.halt_all;
+    $("stop").className = "u-card stopCard" + (on ? " on" : "");
+    $("stopState").textContent = on ? "ALL NEW TRADES ARE STOPPED" : "New trades are allowed";
+    $("stopNote").textContent = on
+      ? "No bot opens a new trade right now. Trades already open keep their safety stops."
+      : "Every bot keeps looking after the trades it already has. Their safety stops keep working.";
+    var sb = $("stopBtn");
+    sb.disabled = false;
+    sb.textContent = on ? "Allow new trades again" : "Stop all new trades";
+    sb.className = "u-btn big " + (on ? "ok" : "danger");
+    $("resetBees").disabled = false;
+
+    $("list").innerHTML = BOTS.map(function (b) {
+      var p = !!(C.paused && C.paused[b[0]]), hl = health(b[0]);
+      return '<div class="botRow' + (p ? " isPaused" : "") + '"><span class="u-lamp ' + hl.c + '" aria-hidden="true"></span>' +
+        '<div><h3>' + esc(b[1]) + '</h3><small>' + esc(hl.t || b[2]) + '</small></div>' +
+        '<div class="right"><span class="stateTxt">' + (p ? "Paused" : "Running") + '</span>' +
+        '<button type="button" class="u-sw" role="switch" aria-checked="' + p + '" data-k="' + b[0] + '" aria-label="' +
+        esc((p ? "Resume " : "Pause ") + b[1]) + '"></button></div></div>';
+    }).join("");
+    $("hbNote").textContent = feeds.bots ? "Cloud last ran " + ago(hbTime()) : "";
+
+    var h = (C.history || []).slice(0, 10);
+    $("hist").innerHTML = h.length ? h.map(function (x) {
+      var d = new Date(x.when);
+      return '<div><time>' + esc(isNaN(d) ? "" : d.toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })) +
+        '</time><span>' + esc(x.what) + '</span></div>';
+    }).join("") : '<div class="u-empty" style="border:0"><b>Nothing yet</b>When you press a button, it shows up here.</div>';
+  }
+
+  /* ---- "Are you sure?" then send ONE change ---- */
+  var lastFocus = null;
+  function ask(title, text, yesLabel, danger, go) {
+    lastFocus = document.activeElement;
+    $("dTitle").textContent = title; $("dText").textContent = text;
+    var y = $("dYes"); y.textContent = yesLabel; y.className = "u-btn " + (danger ? "danger" : "primary");
+    $("veil").hidden = false; $("dNo").focus();
+    pending = go;
+  }
+  function closeAsk() { $("veil").hidden = true; pending = null; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  $("dNo").addEventListener("click", closeAsk);
+  $("veil").addEventListener("click", function (e) { if (e.target === $("veil")) closeAsk(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("veil").hidden) closeAsk(); });
+  $("dYes").addEventListener("click", function () { var g = pending; closeAsk(); if (g) g(); });
+
+  function send(body, done) {
+    fetch("/api/control", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }); })
+      .then(function (x) {
+        if (!x.r.ok) { say(x.j && x.j.error ? x.j.error : "That did not save. Please try again."); return; }
+        C = x.j; paint();
+        var s = $("saved"); s.hidden = false;
+        s.textContent = "Saved: " + ((C.history && C.history[0] && C.history[0].what) || done) + ". The bots pick it up at their next run, about " + nextRun() + ".";
+      })
+      .catch(function () { say("Could not reach the site. Check your connection and try again."); });
+  }
+
+  $("stopBtn").addEventListener("click", function () {
+    var turnOn = !C.halt_all;
+    ask(turnOn ? "Stop all new trades?" : "Allow new trades again?",
+      turnOn ? "No bot will open a new trade until you switch this off. Trades that are already open keep their safety stops."
+             : "Bots that are not paused may open new trades again at their next run.",
+      turnOn ? "Yes, stop them" : "Yes, allow them", turnOn, function () { send({ what: "halt_all", on: turnOn }, "done"); });
+  });
+  $("resetBees").addEventListener("click", function () {
+    ask("Restart the Bee race?", "The current race is saved and closed. All six bees start again with $333.33 of practice money at the next hourly run.",
+      "Yes, restart it", false, function () { send({ what: "reset_bees" }, "Bee race restart asked for"); });
+  });
+  $("list").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".u-sw"); if (!b) return;
+    var k = b.getAttribute("data-k"), name = (BOTS.filter(function (x) { return x[0] === k; })[0] || [])[1] || k, paused = !!C.paused[k];
+    ask(paused ? "Resume " + name + "?" : "Pause " + name + "?",
+      paused ? name + " may open new trades again at its next run."
+             : name + " will open no new trades. Trades it already has stay open with their safety stops.",
+      paused ? "Yes, resume" : "Yes, pause", !paused, function () { send({ what: paused ? "resume" : "pause", bot: k }, "done"); });
+  });
+
+  function load() {
+    return Promise.all([getJSON("/api/control"), getJSON("/api/bots"), getJSON("/api/special"), getJSON("/api/bees")]).then(function (a) {
+      if (!a[0].ok) {
+        $("list").innerHTML = "";
+        say(a[0].status === 403 ? "Only the owner of this site can use the control room."
+          : a[0].status === 401 ? "You are signed out. Please sign in again." : "Could not load the switches. Try refreshing the page.");
+        $("hist").innerHTML = ""; $("stopState").textContent = "Not available";
+        return;
+      }
+      C = a[0].j;
+      feeds.bots = a[1].ok && !a[1].j.empty ? a[1].j : null;
+      feeds.special = a[2].ok ? a[2].j : null;
+      feeds.bees = a[3].ok && a[3].j && a[3].j.bees ? a[3].j : null;
+      paint();
+    });
+  }
+  load();
+  setInterval(function () { if (!document.hidden && !pending) load(); }, 60000);
+})();
+</script>
+<script src="/assets/account.js?v=d3821b8b" defer></script>
+<script src="/assets/fx.js?v=9dee16d4" defer></script>
+<script src="/assets/theme.js?v=59583424" defer></script>
+<script src="/assets/assistant.js?v=08579a63" defer></script>
+</body>
+</html>

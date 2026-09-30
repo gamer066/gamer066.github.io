@@ -11,7 +11,9 @@
     "/accounts",
     "/accounts/*",
     "/special",
-    "/special/*"
+    "/special/*",
+    "/control",
+    "/control/*"
   ],
   "exclude": []
 }

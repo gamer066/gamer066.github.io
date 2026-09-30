@@ -104,7 +104,7 @@
       seen[key] = 1;
       items.push({ label: label, hint: hint, go: go });
     }
-    [["Home", "/"], ["Studies", "/study/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"], ["Special bots", "/special/"],
+    [["Home", "/"], ["Studies", "/study/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"], ["Special bots", "/special/"], ["Control", "/control/"],
      ["Your profile", "/profile/"], ["Sign in", "/login/"]].forEach(function (p) {
       add(p[0], "Page", function () { location.href = p[1]; });
     });
@@ -268,8 +268,55 @@
     });
   }
 
+  /* ---- the phone tab bar (DESIGN-1, 30 Sep 2026) ----
+     On a phone the row of links is replaced by five big tabs along the bottom, the way app stores and banking apps do it.
+     Home, Trading, Bots and Control are one tap; "More" opens a small sheet with the rest. The links are read from the
+     page's own menu, so each page still writes them in one place. Not shown on the sign-in or "not found" pages. */
+  var IC = {
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
+    trade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 5-7 4 5"/><path d="M3 21h18"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg>',
+    ctl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>',
+    more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
+    study: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/></svg>',
+    acct: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>'
+  };
+
+  function buildTabbar() {
+    if (document.querySelector(".tabbar")) return;
+    var p = location.pathname;
+    if (/^\/(login|404)/.test(p)) return;
+    var nav = document.querySelector(".topbar .navlinks");
+    if (!nav || !nav.querySelector('a[href="/trading/"]')) return;
+    function on(prefix) { return prefix === "/" ? p === "/" : p === prefix.replace(/\/$/, "") || p.indexOf(prefix) === 0; }
+    var main = [["Home", "/", IC.home], ["Trading", "/trading/", IC.trade], ["Bots", "/special/", IC.star], ["Control", "/control/", IC.ctl]];
+    var rest = [["Studies", "/study/", IC.study], ["Accounts", "/accounts/", IC.acct], ["Profile", "/profile/", IC.user]];
+    var bar = document.createElement("nav");
+    bar.className = "tabbar";
+    bar.setAttribute("aria-label", "Main sections");
+    bar.innerHTML = main.map(function (m) {
+      return '<a href="' + m[1] + '"' + (on(m[1]) ? ' class="on" aria-current="page"' : "") + ">" + m[2] + "<span>" + m[0] + "</span></a>";
+    }).join("") + '<button type="button" aria-haspopup="true" aria-expanded="false">' + IC.more + "<span>More</span></button>";
+    var sheet = document.createElement("div");
+    sheet.className = "moreSheet";
+    sheet.hidden = true;
+    sheet.innerHTML = rest.map(function (m) {
+      return '<a href="' + m[1] + '"' + (on(m[1]) ? ' class="on"' : "") + ">" + m[2] + m[0] + "</a>";
+    }).join("");
+    var more = bar.querySelector("button");
+    if (rest.some(function (m) { return on(m[1]); })) more.classList.add("on");
+    function toggle(open) { sheet.hidden = !open; more.setAttribute("aria-expanded", open ? "true" : "false"); }
+    more.addEventListener("click", function (e) { e.stopPropagation(); toggle(sheet.hidden); });
+    document.addEventListener("click", function (e) { if (!sheet.hidden && !sheet.contains(e.target)) toggle(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") toggle(false); });
+    document.body.appendChild(sheet);
+    document.body.appendChild(bar);
+    document.body.classList.add("hasTabbar");
+  }
+
   function start() {
-    build(); buildMenu(); buildPalette(); buildKeys();
+    build(); buildMenu(); buildTabbar(); buildPalette(); buildKeys();
     Array.prototype.forEach.call(document.querySelectorAll(".palette"), trapFocus);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);

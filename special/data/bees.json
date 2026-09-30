@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-30T11:03:26Z",
+ "updated": "2026-09-30T11:16:27Z",
  "started": "2026-09-30T10:39:34+00:00",
- "last_tick": "2026-09-30T11:02:34+00:00",
+ "last_tick": "2026-09-30T11:15:34+00:00",
  "start_usd": 333.33,
  "bees": [
   {
@@ -11,7 +11,7 @@
    "fees": 0.0,
    "trades": 0,
    "jev_calls": 0,
-   "status": "waiting: BTC is 1.40% from breakout",
+   "status": "waiting: BTC is 1.28% from breakout",
    "pos": null,
    "basket": []
   },
@@ -39,7 +39,7 @@
    "fees": 0.3,
    "trades": 2,
    "jev_calls": 0,
-   "status": "holding NEAR, ZEC, SUI, QNT, ARB (+0.3%)",
+   "status": "holding NEAR, ZEC, SUI, QNT, ARB (+0.8%)",
    "pos": null,
    "basket": [
     {
@@ -76,7 +76,7 @@
    "fees": 0.0,
    "trades": 0,
    "jev_calls": 0,
-   "status": "waiting: BTC is 1.40% from breakout",
+   "status": "waiting: BTC is 1.28% from breakout",
    "pos": null,
    "basket": []
   },
@@ -98,7 +98,7 @@
    "fees": 0.3,
    "trades": 2,
    "jev_calls": 1,
-   "status": "holding NEAR, ZEC, SUI, QNT, ARB (+0.3%)",
+   "status": "holding NEAR, ZEC, SUI, QNT, ARB (+0.8%)",
    "pos": null,
    "basket": [
     {
@@ -156,6 +156,15 @@
    "Bizzy+Jev": 333.33,
    "Breezy+Jev": 333.33,
    "Boozy+Jev": 334.02
+  },
+  {
+   "t": "2026-09-30T11:15:34+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 333.06,
+   "Boozy": 335.71,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 333.33,
+   "Boozy+Jev": 335.71
   }
  ],
  "trades": [

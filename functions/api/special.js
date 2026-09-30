@@ -56,11 +56,35 @@ async function handle({ request, env, data }) {
     }
   }
   const when = new Date().toISOString();
+  const old = await env.DB.prepare("SELECT value, updated_at FROM store WHERE key = ?").bind(KEY).first();
   await env.DB.prepare(
     `INSERT INTO store (key, value, updated_at, updated_by) VALUES (?, ?, ?, ?)
      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at, updated_by = excluded.updated_by`
   ).bind(KEY, JSON.stringify(d), when, "github run " + (who.run || "?")).run();
+  let oldNet = null;
+  try { oldNet = JSON.parse(old.value).bots.reduce((a, b) => a + ((b.balance || 0) - (b.start_balance || 0)), 0); } catch (e) { /* no earlier copy */ }
+  await noteDayOpen(env, "gold", old, oldNet);
   return json({ ok: true, savedAt: when, bots: d.bots.length });
+}
+
+/* TODAY-1 (30 Sep 2026): "change today" on the Home page needs today's starting point. When the first news of a new
+   Dubai day arrives, the last total from the day before is kept as that day's start (store key "day_open").
+   It can never stop a save: any problem here is ignored. */
+async function noteDayOpen(env, part, old, oldNet) {
+  try {
+    if (!old || typeof oldNet !== "number" || !isFinite(oldNet)) return;
+    const dayOf = (iso) => new Date(Date.parse(iso) + 4 * 3600e3).toISOString().slice(0, 10);
+    const today = dayOf(new Date().toISOString());
+    if (dayOf(old.updated_at) === today) return;
+    const r = await env.DB.prepare("SELECT value FROM store WHERE key = 'day_open'").first();
+    let d = {};
+    try { d = r ? JSON.parse(r.value) : {}; } catch (e) { d = {}; }
+    d[part] = { day: today, net: Math.round(oldNet * 100) / 100 };
+    await env.DB.prepare(
+      `INSERT INTO store (key, value, updated_at, updated_by) VALUES ('day_open', ?, ?, 'site')
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
+    ).bind(JSON.stringify(d), new Date().toISOString()).run();
+  } catch (e) { /* never block a save */ }
 }
 
 async function makeTable(env) {

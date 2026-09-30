@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
-<link rel="stylesheet" href="/assets/style.css?v=1c22b4a3">
+<link rel="stylesheet" href="/assets/style.css?v=b4942ba0">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <script>document.documentElement.classList.add("js")</script>
 <style>
@@ -43,6 +43,7 @@
   @media (max-width:480px){.wide{padding-inline:16px}}
 
   /* ---------- hero ---------- */
+  body.hasToday .hero{padding-top:36px}
   .hero{padding-top:84px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px}
   .announce{display:inline-flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:999px;
     text-decoration:none;color:var(--ink-2);font-size:.8rem;font-weight:500;
@@ -267,6 +268,7 @@
     <a href="/" class="on">Home</a>
     <a href="/trading/">Trading</a>
     <a href="/special/">Special bots</a>
+    <a href="/control/">Control</a>
     <a href="/study/">Studies</a>
     <a href="/accounts/">Accounts</a>
     <a href="/login/" id="account">Sign in</a>
@@ -274,6 +276,24 @@
 </div></div>
 
 <main id="main">
+
+  <!-- ================= today (TODAY-1, 30 Sep 2026): shown only to the signed-in owner ================= -->
+  <section class="wide" id="today" hidden aria-labelledby="todayTitle">
+    <div class="u-card todayPanel neon">
+      <div class="u-row" style="justify-content:space-between">
+        <div><div class="u-eyebrow">Today</div><div class="u-title" id="todayTitle">How your practice bots are doing</div></div>
+        <a class="u-btn ghost" href="/control/">Open Control</a>
+      </div>
+      <div class="todayGrid">
+        <div><span class="k">Total so far</span><span class="v" id="tTotal">&mdash;</span><span class="n">won or lost, all bots together</span></div>
+        <div><span class="k">Change today</span><span class="v" id="tChange">&mdash;</span><span class="n" id="tChangeN">since midnight</span></div>
+        <div><span class="k">Best bot</span><span class="v" id="tBest">&mdash;</span><span class="n" id="tBestN"></span></div>
+        <div><span class="k">Worst bot</span><span class="v" id="tWorst">&mdash;</span><span class="n" id="tWorstN"></span></div>
+      </div>
+      <div class="needsYou" id="tNeeds" aria-live="polite"></div>
+      <div class="u-note">Practice money only. It updates every hour when the bots run.</div>
+    </div>
+  </section>
 
   <!-- ================= hero ================= -->
   <header class="wide hero">
@@ -468,7 +488,39 @@
 
 </main>
 
-<script src="/assets/status.js?v=5d701aac"></script>
+<script src="/assets/status.js?v=ff499b8f"></script>
+<script>
+/* TODAY-1 (30 Sep 2026): the owner's summary at the top of Home. It asks /api/today; anyone else (or signed out) sees nothing. */
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function usd(v) { return v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function tone(el, v) { el.className = "v " + (v > 0 ? "up" : v < 0 ? "down" : ""); }
+  fetch("/api/me", { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (me) {
+    if (!me || !me.signedIn) return null;
+    return fetch("/api/today", { credentials: "same-origin", cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; });
+  }).then(function (d) {
+    if (!d || !d.ok) return;
+    $("today").hidden = false;
+    document.body.classList.add("hasToday");
+    $("tTotal").textContent = usd(d.total); tone($("tTotal"), d.total);
+    $("tChange").textContent = usd(d.change_today); tone($("tChange"), d.change_today);
+    if (d.change_today == null) $("tChangeN").textContent = "starts counting tonight";
+    if (d.best) { $("tBest").textContent = usd(d.best.net); tone($("tBest"), d.best.net); $("tBestN").textContent = d.best.name; }
+    if (d.worst) { $("tWorst").textContent = usd(d.worst.net); tone($("tWorst"), d.worst.net); $("tWorstN").textContent = d.worst.name; }
+    var box = $("tNeeds"); box.textContent = "";
+    var items = d.needs_you || [];
+    if (!items.length) {
+      var ok = document.createElement("div"); ok.className = "ok"; ok.textContent = "All good. Nothing needs you right now."; box.appendChild(ok);
+    }
+    items.forEach(function (n) {
+      var a = document.createElement("a"); a.href = /^\/[a-z]/.test(n.link || "") ? n.link : "/control/";
+      a.className = n.level === "bad" ? "bad" : "";
+      a.textContent = (n.level === "bad" ? "Needs you: " : "Heads up: ") + n.text;
+      box.appendChild(a);
+    });
+  }).catch(function () {});
+})();
+</script>
 <script src="/assets/account.js?v=d3821b8b" defer></script>
 <script>
 (function () {
@@ -497,7 +549,7 @@
     if (document.hidden) return;
     ticks++;
     if (ticks % 5) { fill(); return; }
-    fetch("/assets/status.js?v=5d701aac?live=" + Date.now(), { cache: "no-store" })
+    fetch("/assets/status.js?v=ff499b8f?live=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.text() : ""; })
       .then(function (text) {
         var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");
@@ -572,6 +624,7 @@
 })();
 </script>
 <script src="/assets/fx.js?v=9dee16d4" defer></script>
-<script src="/assets/theme.js?v=935f0294" defer></script>
+<script src="/assets/theme.js?v=59583424" defer></script>
+<script src="/assets/assistant.js?v=08579a63" defer></script>
 </body>
 </html>

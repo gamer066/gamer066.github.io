@@ -1,21 +1,20 @@
-/* The trading page's numbers, as sent by the bots' own cloud run.
- *
- * WHY: the bots moved from the laptop to GitHub's cloud on 24 Sep 2026, and the trading page was only ever rebuilt on
- * the laptop. After every run the cloud now sends the page's numbers here, and functions/trading/_middleware.js puts
- * them into the page whenever they are newer than the laptop's copy.
- *
- * WHO MAY SEND, with no password anywhere: GitHub signs a short-lived identity token for each run. This file checks
- * that signature against GitHub's published keys, that the token was made for THIS site, and that it came from the
- * main branch of gamer066/trading-bots. Nobody else can make one, and it expires within minutes.
- *
- *   POST /api/bots   -> save the numbers (the bots' cloud run only)
- *   GET  /api/bots   -> read them back (signed-in visitors only)
- *
- * Only numbers are kept: no keys, no order ids, nothing that could place a trade.
- */
+/* The Bee race's numbers, as sent by the bots' own cloud run (BEES-CLOUD-1, 30 Sep 2026).
 
-const KEY = "bots";
-const MAX_BYTES = 300000;
+WHY: the Bees moved from the laptop into the cloud's hourly run. After every run the cloud sends the race here
+(leaderboard, money-over-time, latest moves, Jev's calls); /special/bees/ reads it live. The laptop's static file
+special/data/bees.json stays as the fallback, and whichever copy is newer wins.
+
+WHO MAY SEND: only a GitHub run from the main branch of gamer066/trading-bots, proved with GitHub's signed identity
+token made for this site (the same check as /api/bots). No password anywhere.
+
+  POST /api/bees   -> save the file (the bots' cloud run only)
+  GET  /api/bees   -> read it back (signed-in visitors only)
+
+Only numbers and plain text are kept: no keys, no order ids.
+*/
+
+const KEY = "bees";
+const MAX_BYTES = 400000;
 const ISSUER = "https://token.actions.githubusercontent.com";
 const AUDIENCE = "salmandlife";
 const REPO = "gamer066/trading-bots";
@@ -34,59 +33,40 @@ export async function onRequest(context) {
 
 async function handle({ request, env, data }) {
   if (!env.DB) return json({ error: "The database is not connected yet." }, 503);
+  await makeTable(env);
 
   if (request.method === "GET") {
     if (!data || !data.user) return json({ error: "You are not signed in. Please sign in again." }, 401);
-    await makeTable(env);
-    const row = await env.DB.prepare("SELECT value, updated_at FROM store WHERE key = ?").bind(KEY).first();
-    if (!row) return json({ empty: true });
-    return json({ data: JSON.parse(row.value), savedAt: row.updated_at });
+    const row = await env.DB.prepare("SELECT value FROM store WHERE key = ?").bind(KEY).first();
+    return new Response(row ? row.value : JSON.stringify({ bees: [] }), {
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
+    });
   }
-
   if (request.method !== "POST") return json({ error: "Something went wrong. Try again." }, 405);
 
   const who = await checkRun(request);
   if (!who.ok) return json({ error: "not allowed", why: who.why }, 403);
-
   const text = await request.text();
   if (text.length > MAX_BYTES) return json({ error: "too big" }, 413);
-  let snap;
-  try { snap = JSON.parse(text); } catch (e) { return json({ error: "not JSON" }, 400); }
-  const problem = shapeProblem(snap);
-  if (problem) return json({ error: problem }, 400);
-
-  await makeTable(env);
+  let d;
+  try { d = JSON.parse(text); } catch (e) { return json({ error: "not JSON" }, 400); }
+  if (!d || typeof d.updated !== "string" || isNaN(Date.parse(d.updated)) || !Array.isArray(d.bees) || !Array.isArray(d.curve)) return json({ error: "bad shape" }, 400);
+  for (const b of d.bees) {
+    if (!b || typeof b.name !== "string" || !/^[A-Za-z+]{2,20}$/.test(b.name) || typeof b.cash !== "number") return json({ error: "bad bee" }, 400);
+  }
   const when = new Date().toISOString();
   const old = await env.DB.prepare("SELECT value, updated_at FROM store WHERE key = ?").bind(KEY).first();
   await env.DB.prepare(
     `INSERT INTO store (key, value, updated_at, updated_by) VALUES (?, ?, ?, ?)
-     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at,
-                                    updated_by = excluded.updated_by`
-  ).bind(KEY, JSON.stringify(snap), when, "github run " + (who.run || "?")).run();
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at, updated_by = excluded.updated_by`
+  ).bind(KEY, JSON.stringify(d), when, "github run " + (who.run || "?")).run();
   let oldNet = null;
-  try { const o = JSON.parse(old.value); oldNet = o.closed + o.bots.reduce((a, b) => a + (b.openPnl || 0), 0); } catch (e) { /* no earlier copy */ }
-  await noteDayOpen(env, "bots", old, oldNet);
-  return json({ ok: true, savedAt: when, trades: snap.trades.length, open: snap.positions.length });
-}
-
-/* Only the shape the bots send is kept, so nothing else can be parked here. */
-function shapeProblem(s) {
-  if (!s || s.v !== 1) return "unknown version";
-  if (typeof s.updated !== "string" || isNaN(Date.parse(s.updated))) return "no time";
-  if (typeof s.closed !== "number" || !isFinite(s.closed)) return "no settled total";
-  if (!Array.isArray(s.trades) || !Array.isArray(s.bots) || !Array.isArray(s.positions)) return "missing lists";
-  for (const b of s.bots) {
-    if (!b || typeof b.name !== "string" || typeof b.closed !== "number" || typeof b.openPnl !== "number" ||
-        typeof b.done !== "number" || typeof b.open !== "number") return "bad bot line";
-  }
-  for (const p of s.positions) {
-    if (!p || typeof p.sym !== "string" || !/^[A-Z0-9]{2,20}$/.test(p.sym) || typeof p.qty !== "number" ||
-        typeof p.cost !== "number" || typeof p.val !== "number") return "bad open trade";
-  }
-  for (const t of s.trades) {
-    if (!t || typeof t.r !== "number" || !isFinite(t.r)) return "bad trade";
-  }
-  return "";
+  try {
+    const o = JSON.parse(old.value), last = o.curve[o.curve.length - 1];
+    oldNet = o.bees.reduce((a, b) => a + ((typeof b.equity === "number" ? b.equity : (typeof last[b.name] === "number" ? last[b.name] : b.cash)) - o.start_usd), 0);
+  } catch (e) { /* no earlier copy */ }
+  await noteDayOpen(env, "bees", old, oldNet);
+  return json({ ok: true, savedAt: when, bees: d.bees.length });
 }
 
 /* TODAY-1 (30 Sep 2026): "change today" on the Home page needs today's starting point. When the first news of a new
@@ -111,12 +91,7 @@ async function noteDayOpen(env, part, old, oldNet) {
 
 async function makeTable(env) {
   await env.DB.prepare(
-    `CREATE TABLE IF NOT EXISTS store (
-       key        TEXT PRIMARY KEY,
-       value      TEXT NOT NULL,
-       updated_at TEXT NOT NULL,
-       updated_by TEXT
-     )`
+    `CREATE TABLE IF NOT EXISTS store (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT)`
   ).run();
 }
 
