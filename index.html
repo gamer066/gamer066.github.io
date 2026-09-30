@@ -488,7 +488,7 @@
 
 </main>
 
-<script src="/assets/status.js?v=63fd175f"></script>
+<script src="/assets/status.js?v=6577c7d9"></script>
 <script>
 /* TODAY-1 (30 Sep 2026): the owner's summary at the top of Home. It asks /api/today; anyone else (or signed out) sees nothing. */
 (function () {
@@ -542,6 +542,19 @@
   }
   fill();
 
+  /* the cloud's copy of the counts (/api/status) wins when it is newer, so the page stays current with the laptop off */
+  function cloud() {
+    fetch("/api/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
+      if (c && c.updated && (!st.updated || Date.parse(c.updated) > Date.parse(st.updated))) {
+        st = { bots: c.bots != null ? c.bots : st.bots, openTrades: c.openTrades != null ? c.openTrades : st.openTrades,
+               mode: c.mode || st.mode, updated: c.updated };
+        fill();
+      }
+    }).catch(function () {});
+  }
+  cloud();
+  setInterval(function () { if (!document.hidden) cloud(); }, 300000);
+
   // Every minute the "updated ... ago" wording moves on; every five minutes the numbers themselves are re-read,
   // so a page left open stays true. Nothing runs while the tab is hidden.
   var ticks = 0;
@@ -549,11 +562,11 @@
     if (document.hidden) return;
     ticks++;
     if (ticks % 5) { fill(); return; }
-    fetch("/assets/status.js?v=63fd175f?live=" + Date.now(), { cache: "no-store" })
+    fetch("/assets/status.js?v=6577c7d9?live=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.text() : ""; })
       .then(function (text) {
         var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");
-        if (m) { try { st = JSON.parse(m[1]); } catch (e) {} }
+        if (m) { try { var n = JSON.parse(m[1]); if (!st.updated || Date.parse(n.updated) >= Date.parse(st.updated)) st = n; } catch (e) {} }
         fill();
       })
       .catch(function () { fill(); });
