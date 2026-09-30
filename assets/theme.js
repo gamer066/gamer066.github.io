@@ -280,8 +280,20 @@
     more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
     study: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/></svg>',
     acct: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
-    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>'
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
+    bees: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 7.8 4.5v9L12 21l-7.8-4.5v-9Z"/><path d="M12 8v8M8.5 10l7 4M15.5 10l-7 4"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>',
+    bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7Z"/></svg>',
+    up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 16 6-6 4 4 6-7"/><path d="M15 7h5v5"/></svg>',
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 8 6 6 4-4 6 7"/><path d="M15 17h5v-5"/></svg>',
+    pulse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
+    gold: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18l-2.5-7h-13Z"/><path d="M8 11 9.5 6h5L16 11"/></svg>',
+    coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.4-.9-1.4-1.5-2.5-1.5-1.4 0-2.5.8-2.5 2s1 1.6 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1.1 0-2.1-.6-2.5-1.5M12 6.5V8m0 8v1.5"/></svg>',
+    ask: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>'
   };
+  window.SDL = window.SDL || {};
+  window.SDL.icons = IC;
 
   function buildTabbar() {
     if (document.querySelector(".tabbar")) return;
@@ -289,9 +301,12 @@
     if (/^\/(login|404)/.test(p)) return;
     var nav = document.querySelector(".topbar .navlinks");
     if (!nav || !nav.querySelector('a[href="/trading/"]')) return;
-    function on(prefix) { return prefix === "/" ? p === "/" : p === prefix.replace(/\/$/, "") || p.indexOf(prefix) === 0; }
+    function on(prefix) {
+      if (prefix === "/special/") return p.indexOf("/special") === 0 && p.indexOf("/special/bees") !== 0;
+      return prefix === "/" ? p === "/" : p === prefix.replace(/\/$/, "") || p.indexOf(prefix) === 0;
+    }
     var main = [["Home", "/", IC.home], ["Trading", "/trading/", IC.trade], ["Bots", "/special/", IC.star], ["Control", "/control/", IC.ctl]];
-    var rest = [["Studies", "/study/", IC.study], ["Accounts", "/accounts/", IC.acct], ["Profile", "/profile/", IC.user]];
+    var rest = [["Studies", "/study/", IC.study], ["Accounts", "/accounts/", IC.acct], ["Bees", "/special/bees/", IC.bees], ["Profile", "/profile/", IC.user]];
     var bar = document.createElement("nav");
     bar.className = "tabbar";
     bar.setAttribute("aria-label", "Main sections");
@@ -315,8 +330,89 @@
     document.body.classList.add("hasTabbar");
   }
 
+  /* ---- the app shell (DESIGN-2, 30 Sep 2026) ----
+     A slim sidebar on a wide screen (it folds down to icons and remembers that), and the page's name in the top bar.
+     It is drawn here so every page gets the same shell and writes its own links in one place only. The sign-in page
+     keeps its own centred look (it has no sidebar) and gets the class noSb. */
+  var PAGES = [
+    ["Money", [["Home", "/", "home"], ["Trading", "/trading/", "trade"], ["Special bots", "/special/", "star"], ["Bees", "/special/bees/", "bees"], ["Control", "/control/", "ctl"]]],
+    ["Life", [["Studies", "/study/", "study"], ["Accounts", "/accounts/", "acct"], ["Profile", "/profile/", "user"]]]
+  ];
+  function pageName() {
+    var p = location.pathname.replace(/index\.html$/, "");
+    if (/^\/login/.test(p)) return "Sign in";
+    if (/^\/special\/bees/.test(p)) return "Bees";
+    if (/^\/special/.test(p)) return "Special bots";
+    var hit = null;
+    PAGES.forEach(function (g) { g[1].forEach(function (i) { if (i[1] !== "/" && p.indexOf(i[1].replace(/\/$/, "")) === 0) hit = i[0]; }); });
+    if (hit) return hit;
+    if (p === "/" || p === "") return "Home";
+    return "Page not found";
+  }
+  function buildShell() {
+    var p = location.pathname;
+    var bar = document.querySelector(".topbar .inner");
+    if (/^\/login/.test(p)) document.body.classList.add("noSb");
+    if (bar && !bar.querySelector(".pageTitle")) {
+      var t = document.createElement("div");
+      t.className = "pageTitle";
+      t.textContent = pageName();
+      var brand = bar.querySelector(".brand");
+      bar.insertBefore(t, brand ? brand.nextSibling : bar.firstChild);
+    }
+    if (/^\/login/.test(p) || document.querySelector(".sidebar")) return;
+    function on(h) {
+      if (h === "/") return p === "/" || p === "/index.html";
+      if (h === "/special/") return p.indexOf("/special") === 0 && p.indexOf("/special/bees") !== 0;
+      return p === h.replace(/\/$/, "") || p.indexOf(h) === 0;
+    }
+    var nav = document.createElement("aside");
+    nav.className = "sidebar";
+    nav.setAttribute("aria-label", "Sections");
+    var html = '<a class="sbHead" href="/" aria-label="Salman.D.Life home"><span class="mark"></span><span>Salman.D.Life</span></a>';
+    PAGES.forEach(function (g) {
+      html += '<div class="sbLabel">' + g[0] + '</div><nav class="sbNav" aria-label="' + g[0] + '">';
+      g[1].forEach(function (i) {
+        html += '<a href="' + i[1] + '" title="' + i[0] + '"' + (on(i[1]) ? ' class="on" aria-current="page"' : "") + ">" + IC[i[2]] + "<span>" + i[0] + "</span></a>";
+      });
+      html += "</nav>";
+    });
+    html += '<div class="sbFoot"><button type="button" class="sbToggle" aria-label="Fold the sidebar" title="Fold the sidebar">' + IC.chev + "<span>Fold</span></button></div>";
+    nav.innerHTML = html;
+    document.body.appendChild(nav);
+    var root = document.documentElement, tg = nav.querySelector(".sbToggle");
+    try { if (localStorage.getItem("sdl-sb") === "1") root.classList.add("sbMini"); } catch (e) {}
+    function label() {
+      var mini = root.classList.contains("sbMini");
+      tg.setAttribute("aria-label", mini ? "Open the sidebar" : "Fold the sidebar");
+      tg.title = tg.getAttribute("aria-label");
+      tg.setAttribute("aria-expanded", mini ? "false" : "true");
+    }
+    label();
+    tg.addEventListener("click", function () {
+      var mini = root.classList.toggle("sbMini");
+      try { localStorage.setItem("sdl-sb", mini ? "1" : "0"); } catch (e) {}
+      label();
+    });
+  }
+
+  /* numbers count up from zero. Used by Home; a person who asked for less motion just gets the number. */
+  window.SDL.countUp = function (el, to, fmt, ms) {
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still || !isFinite(to)) { el.textContent = fmt(to); return; }
+    var t0 = null, dur = ms || 900;
+    function step(t) {
+      if (t0 === null) t0 = t;
+      var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(to * e);
+      if (k < 1) requestAnimationFrame(step); else el.textContent = fmt(to);
+    }
+    requestAnimationFrame(step);
+    setTimeout(function () { el.textContent = fmt(to); }, dur + 400);   // a tab in the background pauses animation: still land on the true number
+  };
+
   function start() {
-    build(); buildMenu(); buildTabbar(); buildPalette(); buildKeys();
+    buildShell(); build(); buildMenu(); buildTabbar(); buildPalette(); buildKeys();
     Array.prototype.forEach.call(document.querySelectorAll(".palette"), trapFocus);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);

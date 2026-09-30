@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
-<link rel="stylesheet" href="/assets/style.css?v=b4942ba0">
+<link rel="stylesheet" href="/assets/style.css?v=b0ab7e83">
 <script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
 <script>document.documentElement.classList.add("js")</script>
 <style>
@@ -277,26 +277,66 @@
 
 <main id="main">
 
-  <!-- ================= today (TODAY-1, 30 Sep 2026): shown only to the signed-in owner ================= -->
-  <section class="wide" id="today" hidden aria-labelledby="todayTitle">
-    <div class="u-card todayPanel neon">
-      <div class="u-row" style="justify-content:space-between">
-        <div><div class="u-eyebrow">Today</div><div class="u-title" id="todayTitle">How your practice bots are doing</div></div>
-        <a class="u-btn ghost" href="/control/">Open Control</a>
+  <!-- ================= the owner's dashboard (DESIGN-2, 30 Sep 2026): shown only to the signed-in owner ================= -->
+  <section class="wide dsh" id="dash" hidden aria-labelledby="dHello" aria-busy="true">
+    <div class="dHead">
+      <div>
+        <h1 id="dHello">Welcome back</h1>
+        <p id="dDate">&nbsp;</p>
       </div>
-      <div class="todayGrid">
-        <div><span class="k">Total so far</span><span class="v" id="tTotal">&mdash;</span><span class="n">won or lost, all bots together</span></div>
-        <div><span class="k">Change today</span><span class="v" id="tChange">&mdash;</span><span class="n" id="tChangeN">since midnight</span></div>
-        <div><span class="k">Best bot</span><span class="v" id="tBest">&mdash;</span><span class="n" id="tBestN"></span></div>
-        <div><span class="k">Worst bot</span><span class="v" id="tWorst">&mdash;</span><span class="n" id="tWorstN"></span></div>
+      <div class="dQuick">
+        <a class="u-btn primary" href="/control/">Open Control</a>
+        <button type="button" class="u-btn" id="dAsk">Ask AI</button>
       </div>
-      <div class="needsYou" id="tNeeds" aria-live="polite"></div>
-      <div class="u-note">Practice money only. It updates every hour when the bots run.</div>
+    </div>
+
+    <div class="glass d-money">
+      <div class="mcTop">
+        <div>
+          <div class="mcLab">Total so far</div>
+          <div class="mcNum" id="tTotal" aria-live="polite">&mdash;</div>
+          <div class="mcNote" id="tTotalN">Won or lost, all bots together. Practice money only.</div>
+        </div>
+        <span class="u-chip" id="tChip">Loading&hellip;</span>
+      </div>
+      <div class="mcChart" id="mcChart" role="img" aria-label="Chart of the total over time">
+        <div class="shim" style="position:absolute;inset:14px 26px 14px;opacity:.5"></div>
+      </div>
+    </div>
+
+    <div class="d-tiles" id="dTiles">
+      <div class="glass d-tile"><span class="ti" id="tiChange"></span><span class="k">Change today</span><span class="v" id="tChange">&mdash;</span><span class="n" id="tChangeN">since midnight</span></div>
+      <div class="glass d-tile"><span class="ti" id="tiBest"></span><span class="k">Best bot</span><span class="v" id="tBest">&mdash;</span><span class="n" id="tBestN">&nbsp;</span></div>
+      <div class="glass d-tile"><span class="ti" id="tiWorst"></span><span class="k">Worst bot</span><span class="v" id="tWorst">&mdash;</span><span class="n" id="tWorstN">&nbsp;</span></div>
+      <div class="glass d-tile"><span class="ti" id="tiHealth"></span><span class="k">Running well</span><span class="v" id="tHealth">&mdash;</span><span class="n" id="tHealthN">&nbsp;</span></div>
+    </div>
+
+    <h2 class="dh">Your bots <span class="u-chip" id="botsCount"></span></h2>
+    <div class="d-bots" id="dBots">
+      <div class="shim" style="height:132px;border-radius:20px"></div><div class="shim" style="height:132px;border-radius:20px"></div>
+      <div class="shim" style="height:132px;border-radius:20px"></div><div class="shim" style="height:132px;border-radius:20px"></div>
+    </div>
+
+    <div class="d-low">
+      <div class="glass">
+        <h3>Needs you</h3>
+        <div class="needsYou" id="tNeeds" aria-live="polite"></div>
+      </div>
+      <div class="glass">
+        <h3>Quick actions</h3>
+        <div class="d-quick">
+          <a class="u-btn primary" href="/control/">Open Control</a>
+          <button type="button" class="u-btn" id="dAsk2">Ask AI about my bots</button>
+          <a class="u-btn ghost" href="/trading/">See every trade</a>
+        </div>
+        <div class="u-note">It updates every hour when the bots run.</div>
+      </div>
     </div>
   </section>
+  <script>try{if(localStorage.getItem("sdl-owner")==="1"){document.getElementById("dash").hidden=false;document.body.classList.add("isOwner")}}catch(e){}</script>
 
   <!-- ================= hero ================= -->
-  <header class="wide hero">
+  <header class="wide hero pub">
     <a class="announce" href="/trading/">
       <span class="beat"></span><span><b>Live</b> &middot; <span id="aBots">7</span> bots trading &middot; updated <span id="aWhen">recently</span></span>
       <span class="go2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
@@ -346,7 +386,7 @@
   </header>
 
   <!-- ================= marquee ================= -->
-  <div class="marquee" aria-hidden="true">
+  <div class="marquee pub" aria-hidden="true">
     <div class="track">
       <span>Invite-only sign-in</span><span>Passwords stored scrambled</span><span>Private database</span>
       <span>Opens on your phone like an app</span><span>Works offline</span><span>Dark and daylight</span>
@@ -358,7 +398,7 @@
   </div>
 
   <!-- ================= bento ================= -->
-  <section class="wide sect rise" aria-labelledby="roomsTitle">
+  <section class="wide sect rise pub" aria-labelledby="roomsTitle">
     <span class="eyebrow">What's inside</span>
     <h2 id="roomsTitle">Three rooms behind one door.</h2>
     <p class="intro">Each section is private and opens with the same sign-in. This front page is the only part anyone
@@ -422,7 +462,7 @@
   </section>
 
   <!-- ================= how it works ================= -->
-  <section class="wide sect rise" aria-labelledby="howTitle">
+  <section class="wide sect rise pub" aria-labelledby="howTitle">
     <span class="eyebrow">How it works</span>
     <h2 id="howTitle">Built to be trusted.</h2>
     <div class="steps">
@@ -448,7 +488,7 @@
   </section>
 
   <!-- ================= closing call to action ================= -->
-  <section class="wide rise">
+  <section class="wide rise pub">
     <div class="cta">
       <span class="eyebrow">Practice money only</span>
       <h2>One door. Everything behind it.</h2>
@@ -488,39 +528,7 @@
 
 </main>
 
-<script src="/assets/status.js?v=b89ebd9d"></script>
-<script>
-/* TODAY-1 (30 Sep 2026): the owner's summary at the top of Home. It asks /api/today; anyone else (or signed out) sees nothing. */
-(function () {
-  function $(id) { return document.getElementById(id); }
-  function usd(v) { return v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-  function tone(el, v) { el.className = "v " + (v > 0 ? "up" : v < 0 ? "down" : ""); }
-  fetch("/api/me", { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (me) {
-    if (!me || !me.signedIn) return null;
-    return fetch("/api/today", { credentials: "same-origin", cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; });
-  }).then(function (d) {
-    if (!d || !d.ok) return;
-    $("today").hidden = false;
-    document.body.classList.add("hasToday");
-    $("tTotal").textContent = usd(d.total); tone($("tTotal"), d.total);
-    $("tChange").textContent = usd(d.change_today); tone($("tChange"), d.change_today);
-    if (d.change_today == null) $("tChangeN").textContent = "starts counting tonight";
-    if (d.best) { $("tBest").textContent = usd(d.best.net); tone($("tBest"), d.best.net); $("tBestN").textContent = d.best.name; }
-    if (d.worst) { $("tWorst").textContent = usd(d.worst.net); tone($("tWorst"), d.worst.net); $("tWorstN").textContent = d.worst.name; }
-    var box = $("tNeeds"); box.textContent = "";
-    var items = d.needs_you || [];
-    if (!items.length) {
-      var ok = document.createElement("div"); ok.className = "ok"; ok.textContent = "All good. Nothing needs you right now."; box.appendChild(ok);
-    }
-    items.forEach(function (n) {
-      var a = document.createElement("a"); a.href = /^\/[a-z]/.test(n.link || "") ? n.link : "/control/";
-      a.className = n.level === "bad" ? "bad" : "";
-      a.textContent = (n.level === "bad" ? "Needs you: " : "Heads up: ") + n.text;
-      box.appendChild(a);
-    });
-  }).catch(function () {});
-})();
-</script>
+<script src="/assets/status.js?v=40fbafd5"></script>
 <script src="/assets/account.js?v=d3821b8b" defer></script>
 <script>
 (function () {
@@ -562,7 +570,7 @@
     if (document.hidden) return;
     ticks++;
     if (ticks % 5) { fill(); return; }
-    fetch("/assets/status.js?v=b89ebd9d?live=" + Date.now(), { cache: "no-store" })
+    fetch("/assets/status.js?v=40fbafd5?live=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.text() : ""; })
       .then(function (text) {
         var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");
@@ -637,7 +645,8 @@
 })();
 </script>
 <script src="/assets/fx.js?v=9dee16d4" defer></script>
-<script src="/assets/theme.js?v=59583424" defer></script>
+<script src="/assets/theme.js?v=e0023cf6" defer></script>
+<script src="/assets/home.js?v=0ec97007" defer></script>
 <script src="/assets/assistant.js?v=08579a63" defer></script>
 </body>
 </html>
