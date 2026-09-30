@@ -69,6 +69,8 @@ async function handle({ request, env }) {
     }, 403);
   }
 
+  // Sign-ins that have run out are useless; clear them out now and then so the table does not grow for ever.
+  await env.DB.prepare("DELETE FROM sessions WHERE expires_at < ?").bind(new Date().toISOString()).run();
   const cookie = await startSession(env, user.id);
   return json({ ok: true, email: user.email, name: user.name }, 200, cookie);
 }

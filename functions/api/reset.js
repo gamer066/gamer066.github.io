@@ -61,7 +61,10 @@ async function handle({ request, env }) {
     return json({ error: "There is no account with that email." }, 404);
   }
 
-  const owner = await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
+  // The owner: OWNER_EMAIL if it is set in Cloudflare's settings, otherwise the first account ever made (OWNER-1).
+  const owner = env.OWNER_EMAIL
+    ? { id: user.email === String(env.OWNER_EMAIL).trim().toLowerCase() ? user.id : -1 }
+    : await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
   if (owner && owner.id === user.id && !isOwnerCode) {
     await env.DB.prepare("INSERT INTO login_attempts (who) VALUES (?)").bind(who).run();
     return json({ error: "This account cannot be reset with the invite code. Use Continue with Google instead." }, 403);

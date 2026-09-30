@@ -1,7 +1,7 @@
 /* Stores and hands back Salman's own documents, so any of them opens from his phone.
  *
  * The files sit in Cloudflare's key-value storage (bound to this site as DOCS), never in this public
- * repository. Every request needs a signed-in visitor.
+ * repository. Every request needs the site owner to be signed in (OWNER-1); other invited people get a polite no.
  *
  *   GET  /api/doc?list=1          what has been uploaded (name, unit, size, when)
  *   GET  /api/doc?id=<id>         the file itself, opened in the browser where it can be
@@ -39,6 +39,7 @@ export async function onRequest(context) {
 
 async function handle({ request, env, data }) {
   if (!data || !data.user) return json({ error: "You are not signed in. Please sign in again." }, 401);
+  if (!(await isOwner(env, data.user))) return json({ error: "This part of the site is only for its owner." }, 403);
   if (!env.DOCS) return json({ error: "The document store is not connected yet." }, 503);
 
   const url = new URL(request.url);
@@ -49,7 +50,7 @@ async function handle({ request, env, data }) {
     do {
       const page = await env.DOCS.list({ cursor: cursor, limit: 1000 });
       for (const k of page.keys) {
-        if (k.name.indexOf("avatar/") === 0) continue;   // profile photos live here too; they are not documents
+        if (isAvatar(k.name)) continue;   // profile photos live here too; they are not documents
         found.push(Object.assign({ id: k.name }, k.metadata || {}));
       }
       cursor = page.list_complete ? null : page.cursor;
@@ -60,6 +61,8 @@ async function handle({ request, env, data }) {
   if (request.method === "GET") {
     const id = url.searchParams.get("id") || "";
     if (!id) return json({ error: "Which file?" }, 400);
+    // Profile photos share this store but belong to /api/avatar, which only hands each person their own.
+    if (isAvatar(id)) return json({ error: "That file has not been uploaded yet." }, 404);
     const hit = await env.DOCS.getWithMetadata(id, { type: "stream" });
     if (!hit || !hit.value) return json({ error: "That file has not been uploaded yet." }, 404);
     const meta = hit.metadata || {};
@@ -93,6 +96,7 @@ async function handle({ request, env, data }) {
   if (request.method === "DELETE") {
     const id = url.searchParams.get("id") || "";
     if (!id) return json({ error: "Which file?" }, 400);
+    if (isAvatar(id)) return json({ error: "That file has not been uploaded yet." }, 404);
     await env.DOCS.delete(id);
     return json({ ok: true });
   }
@@ -105,6 +109,10 @@ function makeId(unit, name, bytes) {
   return (unit || "doc").toLowerCase() + "/" + bytes + "/" + name.toLowerCase();
 }
 
+function isAvatar(id) {
+  return id.indexOf("avatar/") === 0;
+}
+
 function safeName(s) {
   return String(s || "").replace(/[\\/\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
 }
@@ -112,6 +120,18 @@ function safeName(s) {
 function typeFor(name) {
   const ext = (name.split(".").pop() || "").toLowerCase();
   return TYPES[ext] || "application/octet-stream";
+}
+
+
+/* OWNER-1 (24 Sep 2026): this is Salman's own data. Anyone he gives the invite code to can make an account and
+   sign in, so "signed in" is not enough: only the site owner may read or change it. The owner is the first
+   account ever made (the same rule /api/reset uses), or OWNER_EMAIL if that is set in Cloudflare's settings.
+   If the owner cannot be worked out, the answer is no. */
+async function isOwner(env, user) {
+  if (env.OWNER_EMAIL) return String(user.email || "").toLowerCase() === String(env.OWNER_EMAIL).trim().toLowerCase();
+  if (!env.DB) return false;
+  const first = await env.DB.prepare("SELECT MIN(id) AS id FROM users").first();
+  return !!first && first.id === user.id;
 }
 
 function json(obj, status) {
