@@ -1,7 +1,7 @@
 {
- "updated": "2026-09-30T09:58:37Z",
+ "updated": "2026-09-30T10:11:23Z",
  "started": "2026-09-30T06:15:09+00:00",
- "last_tick": "2026-09-30T09:58:36+00:00",
+ "last_tick": "2026-09-30T10:10:34+00:00",
  "start_usd": 333.33,
  "bees": [
   {
@@ -11,7 +11,7 @@
    "fees": 0.0,
    "trades": 0,
    "jev_calls": 0,
-   "status": "waiting: BTC is 1.12% from breakout",
+   "status": "waiting: BTC is 1.00% from breakout",
    "pos": null
   },
   {
@@ -37,7 +37,7 @@
    "fees": 0.17,
    "trades": 0,
    "jev_calls": 0,
-   "status": "riding QNT (-1.4%), held 4h",
+   "status": "riding QNT (-0.3%), held 4h",
    "pos": {
     "sym": "QNTUSDT",
     "side": "long",
@@ -53,7 +53,7 @@
    "fees": 0.0,
    "trades": 0,
    "jev_calls": 0,
-   "status": "waiting: BTC is 1.12% from breakout",
+   "status": "waiting: BTC is 1.00% from breakout",
    "pos": null
   },
   {
@@ -79,7 +79,7 @@
    "fees": 0.17,
    "trades": 0,
    "jev_calls": 1,
-   "status": "riding QNT (-2.6%), held 4h",
+   "status": "riding QNT (-1.5%), held 4h",
    "pos": {
     "sym": "QNTUSDT",
     "side": "long",
@@ -233,6 +233,24 @@
    "Bizzy+Jev": 333.33,
    "Breezy+Jev": 335.23,
    "Boozy+Jev": 321.26
+  },
+  {
+   "t": "2026-09-30T10:00:44+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 335.32,
+   "Boozy": 327.63,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 335.61,
+   "Boozy+Jev": 323.61
+  },
+  {
+   "t": "2026-09-30T10:00:49+00:00",
+   "Bizzy": 333.33,
+   "Breezy": 335.56,
+   "Boozy": 327.36,
+   "Bizzy+Jev": 333.33,
+   "Breezy+Jev": 335.86,
+   "Boozy+Jev": 323.35
   }
  ],
  "trades": [

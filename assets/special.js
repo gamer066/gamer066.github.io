@@ -66,8 +66,18 @@
       .then(function (both) {
         var a = both[0], b = both[1];
         function t(x) { return x && Array.isArray(x.bots) && x.bots.length ? Date.parse(x.updated) || 0 : -1; }
-        var d = t(b) > t(a) ? b : a;
+        var d = t(b) > t(a) ? b : a, other = d === a ? b : a;
         if (!d) throw new Error("no data");
+        // Guard (30 Sep 2026): a newer copy that lost a bot's history (0 trades, nothing open) never replaces an
+        // older copy that has it - the cloud could not always read the fast bot's trades.
+        if (other && Array.isArray(other.bots)) {
+          d = { updated: d.updated, bots: d.bots.map(function (x) {
+            var o = other.bots.filter(function (y) { return y && y.id === x.id; })[0];
+            var empty = !(x.trades && x.trades.length) && !x.open_position;
+            var full = o && ((o.trades && o.trades.length) || o.open_position);
+            return empty && full ? o : x;
+          }) };
+        }
         return d;
       })
       .then(function (d) {
