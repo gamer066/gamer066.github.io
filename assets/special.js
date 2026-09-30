@@ -167,6 +167,15 @@
     };
   }
 
+  /* Plain warning when a bot has not sent numbers for over 3 hours (30 Sep 2026), so a stopped bot is never hidden
+     behind old numbers. Returns "" when all is fine. */
+  function staleNote(iso) {
+    var t = Date.parse(iso);
+    if (isNaN(t)) return "";
+    var h = (Date.now() - t) / 3600000;
+    return h > 3 ? "No new numbers for " + Math.round(h) + " hours — the bot may have stopped. Live prices still work." : "";
+  }
+
   var STATUS = {
     "testing": ["Testing", "amber"],
     "live-practice": ["Live · practice", "green"],
@@ -180,6 +189,6 @@
   window.SDLSpecial = {
     FRAMES: FRAMES, esc: esc, num: num, okId: okId, okSymbol: okSymbol, okFrame: okFrame, money: money, pct: pct, price: price,
     tone: tone, when: when, ago: ago, load: load, stats: stats, klines: klines, ticker: ticker, stream: stream,
-    statusPill: statusPill
+    statusPill: statusPill, staleNote: staleNote
   };
 })();

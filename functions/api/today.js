@@ -46,6 +46,37 @@ function beeEquity(b, last) {
   return b.cash;
 }
 
+/* Small charts. cum() turns [time, result] steps into a running total (last 24 steps). allSteps() does it for a set of bots. */
+function cum(steps) {
+  const ok = steps.filter((e) => isFinite(e[0]) && typeof e[1] === "number").sort((a, b) => a[0] - b[0]);
+  if (ok.length < 2) return null;
+  let run = 0;
+  return ok.map((e) => r2(run += e[1])).slice(-24);
+}
+function allSteps(cs, trades) {
+  const names = new Set(); cs.forEach((c) => { names.add(c.key); names.add(c.name); });
+  let run = 0;
+  const ok = (Array.isArray(trades) ? trades : []).filter((t) => t && typeof t.r === "number" && isFinite(Date.parse(t.t))).sort((a, b) => Date.parse(a.t) - Date.parse(b.t));
+  return ok.map((t) => [Date.parse(t.t), r2(run += t.r)]);
+}
+
+/* The big chart: the total over time. Each group (crypto, gold, bees) is a step line; at any moment the total is the sum of each group's latest step. */
+function totalSeries(events, total) {
+  const all = [];
+  for (const k of Object.keys(events)) for (const e of events[k]) all.push([e[0], k, e[1]]);
+  all.sort((a, b) => a[0] - b[0]);
+  const now = { bots: 0, gold: 0, bees: 0 };
+  const pts = [];
+  for (const e of all) { now[e[1]] = e[2]; pts.push([e[0], r2(now.bots + now.gold + now.bees)]); }
+  if (total != null) pts.push([Date.now(), total]);
+  if (pts.length < 2) return null;
+  if (pts.length <= 60) return pts;
+  const step = pts.length / 60, out = [];
+  for (let i = 0; i < 60; i++) out.push(pts[Math.floor(i * step)]);
+  out[out.length - 1] = pts[pts.length - 1];
+  return out;
+}
+
 export async function summarise(env) {
   const [botsR, spR, beesR, ctlR, openR] = await Promise.all(
     ["bots", "special", "bees", "control", "day_open"].map((k) => row(env, k)));
@@ -53,9 +84,13 @@ export async function summarise(env) {
   const paused = (ctl.paused && typeof ctl.paused === "object") ? ctl.paused : {};
   const open = (openR && openR.v) || {};
   const today = new Date(Date.now() + 4 * 3600e3).toISOString().slice(0, 10);   // Dubai day
+  const hbE = bots && /^(\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d) UTC/.exec(bots.heartbeat || "");
+  const hbMinEarly = hbE ? ageMin(hbE[1] + "T" + hbE[2] + "Z") : ageMin(bots && bots.updated);
 
   const parts = { bots: null, gold: null, bees: null };
   const list = [];                                   // every bot with its result so far
+  const cards = [];                                  // one card per bot for the Home page (name, one-line status, health, small chart)
+  const events = { bots: [], gold: [], bees: [] };   // [time in ms, running result] steps, used for the big chart
   let cryptoLines = [];
   if (bots && Array.isArray(bots.bots)) {
     let net = (typeof bots.closed === "number" ? bots.closed : 0);
@@ -65,7 +100,18 @@ export async function summarise(env) {
       const n = r2((b.closed || 0) + (b.openPnl || 0));
       list.push({ key: b.key, name: CRYPTO[b.key] || b.name, net: n });
       cryptoLines.push({ name: CRYPTO[b.key] || b.name, net: n, settled: r2(b.closed || 0), open_result: r2(b.openPnl || 0), finished_trades: b.done, open_trades: b.open });
+      const mine = (Array.isArray(bots.trades) ? bots.trades : []).filter((t) => t && (t.bot === b.key || t.bot === b.name || t.bot === CRYPTO[b.key]));
+      const err = bots.health && bots.health[b.key] && Date.parse(bots.health[b.key].at);
+      let health = "ok";
+      if (paused[b.key]) health = "late";
+      else if (err && (Date.now() - err) / 60000 <= (hbMinEarly == null ? 90 : hbMinEarly + 10)) health = "bad";
+      else if (hbMinEarly != null && hbMinEarly > 150) health = "bad";
+      else if (hbMinEarly != null && hbMinEarly > 90) health = "late";
+      cards.push({ key: b.key, group: "crypto", name: CRYPTO[b.key] || b.name, net: n, health, link: "/trading/",
+        line: paused[b.key] ? "Paused by you" : (b.open ? b.open + " open, " : "None open, ") + (b.done || 0) + " finished",
+        spark: cum(mine.map((t) => [Date.parse(t.t), t.r])) });
     }
+    events.bots = allSteps(cards.filter((c) => c.group === "crypto"), bots.trades);
   }
   const goldLines = [];
   if (sp && Array.isArray(sp.bots)) {
@@ -79,6 +125,19 @@ export async function summarise(env) {
                        note: Array.isArray(b.context) ? b.context.slice(0, 2).join(" ") : "", last_news_min_ago: Math.round(ageMin(b.updated) || 0) });
     }
     parts.gold = r2(net);
+    const goldSteps = [];
+    for (const b of sp.bots) {
+      const done = (Array.isArray(b.trades) ? b.trades : []).filter((t) => t && typeof t.result_usd === "number");
+      const steps = done.map((t) => [Date.parse(t.closed), t.result_usd]);
+      for (const st of steps) goldSteps.push(st);
+      const m = ageMin(b.updated), fast = b.id === "sunny-gold-fast";
+      const key = fast ? "gold_fast" : "sunny_gold";
+      const health = paused[key] ? "late" : m == null ? "late" : m > (fast ? 120 : 240) ? "bad" : m > (fast ? 60 : 150) ? "late" : "ok";
+      cards.push({ key, group: "gold", name: b.name, net: r2((b.balance || 0) - (b.start_balance || 0)), health, link: "/special/",
+        line: paused[key] ? "Paused by you" : b.open_position ? "Holding gold (" + b.open_position.side + ")" : "Waiting, nothing open",
+        spark: cum(steps) });
+    }
+    events.gold = goldSteps.filter((e) => isFinite(e[0])).sort((a, b) => a[0] - b[0]);
   }
   const beeLines = [];
   let beeNet = null;
@@ -94,6 +153,16 @@ export async function summarise(env) {
     beeNet = r2(sum);
     parts.bees = beeNet;
     list.push({ key: "bees", name: "The Bees (all six)", net: beeNet });
+    const curve = Array.isArray(bees.curve) ? bees.curve : [];
+    const names = bees.bees.map((b) => b.name);
+    const beeSteps = curve.map((c) => [Date.parse(c.t), r2(names.reduce((a, nm) => a + (typeof c[nm] === "number" ? c[nm] : start), 0) - start * names.length)]).filter((e) => isFinite(e[0]));
+    events.bees = beeSteps;
+    const trading = bees.bees.filter((b) => b.pos || (Array.isArray(b.basket) && b.basket.length)).length;
+    const bm = ageMin(bees.last_tick || bees.updated);
+    cards.push({ key: "bees", group: "bees", name: "The Bees", net: beeNet, link: "/special/bees/",
+      health: paused.bees ? "late" : bm == null ? "late" : bm > 240 ? "bad" : bm > 150 ? "late" : "ok",
+      line: paused.bees ? "Paused by you" : trading ? trading + " of " + names.length + " are in a trade" : "Six bees racing, all waiting",
+      spark: beeSteps.length > 1 ? beeSteps.map((e) => e[1]).slice(-24) : null });
   }
 
   let total = 0, have = 0, change = 0, changeKnown = false;
@@ -135,6 +204,8 @@ export async function summarise(env) {
     parts,
     change_today: changeKnown ? r2(change) : null,
     best, worst,
+    cards,
+    history: totalSeries(events, have ? r2(total) : null),
     needs_you: needs,
     control: { halt_all: !!ctl.halt_all, paused: pausedNames },
     ready: bots && bots.ready ? { verdict: !!bots.ready.verdict, checks: (bots.ready.checks || []).map((c) => ({ name: c.name, ok: !!c.ok, detail: c.detail })) } : null,

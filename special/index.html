@@ -117,7 +117,7 @@
 
 </div>
 
-<script src="/assets/special.js?v=c433ab07"></script>
+<script src="/assets/special.js?v=4d328cab"></script>
 <script>
 (function () {
   var S = window.SDLSpecial, box = document.getElementById("bots"), msg = document.getElementById("msg");
@@ -177,6 +177,7 @@
   function paint(d) {
     bots = d.bots;
     document.getElementById("upd").textContent = d.updated ? "Numbers updated " + S.ago(d.updated) : "";
+    var stale = S.staleNote(d.updated); if (stale) say(stale);
     /* all special bots together */
     var tot = { net: 0, n: 0, wins: 0, live: 0, open: 0 };
     bots.forEach(function (b) {
