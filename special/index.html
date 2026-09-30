@@ -194,6 +194,10 @@
         return "<div><span>" + c[0] + "</span><b class='" + c[2] + "'>" + S.esc(c[1]) + "</b></div>";
       }).join("");
     box.innerHTML = bots.map(card).join("") +
+      /* BEES-1 (30 Sep 2026): the 30-day bee race has its own page */
+      '<a class="bcard" href="/special/bees/"><div class="bc-top"><span class="coin" style="background:radial-gradient(circle at 30% 30%,#fff3b0,#f5b544 60%,#8a5a0f);font-size:1.1rem">🐝</span>' +
+      '<div><h3>The Bees</h3><small>6 bots · 30-day race · Jev AI vs plain rules</small></div>' + S.statusPill("live-practice") + '</div>' +
+      '<div class="bc-foot"><span>Bizzy, Breezy, Boozy and their Jev twins</span><span class="open">Watch the race &rarr;</span></div></a>' +
       '<div class="soon"><b>More special bots are on the way</b>Each new bot gets its own card and live chart here.</div>';
     live(); sparks();
   }
