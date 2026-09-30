@@ -11,7 +11,7 @@
  */
 
 const COOKIE = "sdl_session";
-const PRIVATE = ["/trading", "/profile", "/study", "/accounts", "/special", "/control"];   // CTRL-1 (30 Sep 2026): /control added
+const PRIVATE = ["/trading", "/profile", "/study", "/accounts", "/special", "/control", "/hacklab"];   // HACK-1 (30 Sep 2026): /hacklab added
 
 export async function onRequest(context) {
   const { request, env, next, data } = context;

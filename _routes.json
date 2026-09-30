@@ -13,7 +13,9 @@
     "/special",
     "/special/*",
     "/control",
-    "/control/*"
+    "/control/*",
+    "/hacklab",
+    "/hacklab/*"
   ],
   "exclude": []
 }

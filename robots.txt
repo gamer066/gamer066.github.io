@@ -6,6 +6,8 @@ Disallow: /special
 Disallow: /profile
 Disallow: /study
 Disallow: /accounts
+Disallow: /control
+Disallow: /hacklab
 Disallow: /login
 Disallow: /api/
 

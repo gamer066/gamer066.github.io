@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hack Lab &middot; Salman.D.Life</title>
+<meta name="description" content="Run your own tools on your own laptop, from your phone.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060B">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=49e72e1f">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=f65be539">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/style.css?v=b0ab7e83">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
+<script>document.documentElement.classList.add("js")</script>
+<style>
+  .hero{padding-top:44px;display:flex;flex-direction:column;gap:12px}
+  .hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem)}
+  .rule{height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-top:4px}
+  .own{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;padding:6px 11px;border-radius:999px;
+    font-size:.74rem;font-weight:700;letter-spacing:.04em;background:var(--accent-soft);color:var(--ink);border:1px solid var(--line)}
+  .btnGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--s2)}
+  .toolBtn{display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;padding:var(--s3) var(--s4);
+    border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);cursor:pointer;font-family:inherit}
+  .toolBtn:hover{border-color:var(--accent)}
+  .toolBtn b{font-size:.95rem}
+  .toolBtn span{font-size:var(--t-sm);color:var(--ink-3)}
+  .customRow{display:flex;gap:var(--s2)}
+  .customRow input{flex:1;padding:11px 14px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--line);
+    color:var(--ink);font-family:var(--mono);font-size:.9rem}
+  .jobs{display:flex;flex-direction:column;gap:var(--s2)}
+  .job{border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);padding:var(--s3) var(--s4)}
+  .job .row{display:flex;justify-content:space-between;align-items:center;gap:var(--s2)}
+  .job b{font-family:var(--mono);font-size:.88rem}
+  .job time{font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+  .job .st{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .job .st.waiting{color:var(--warn)}
+  .job .st.done{color:var(--up)}
+  .job .st.bad{color:var(--down)}
+  .job pre{margin-top:8px;padding:10px 12px;border-radius:var(--r-sm);background:var(--bg-2,rgba(0,0,0,.25));
+    font-family:var(--mono);font-size:.8rem;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow:auto}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" id="prog"></div>
+<div class="backdrop" aria-hidden="true"><canvas id="stars"></canvas><div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<div class="topbar"><div class="inner">
+  <a class="brand" href="/"><span class="mark"></span>Salman.D.Life</a>
+  <nav class="navlinks">
+    <a href="/">Home</a>
+    <a href="/trading/">Trading</a>
+    <a href="/special/">Special bots</a>
+    <a href="/control/">Control</a>
+    <a href="/hacklab/" class="on">Hack Lab</a>
+    <a href="/study/">Studies</a>
+    <a href="/accounts/">Accounts</a>
+    <a href="/profile/" id="account">Profile</a>
+  </nav>
+</div></div>
+
+<div class="wrap" id="main">
+
+  <header class="hero">
+    <div class="eyebrow">Your own tools</div>
+    <h1>Hack Lab</h1>
+    <p class="lede">Press a button here, your laptop runs it in Kali, and the answer shows up below.
+      Only you can see this page. Everything runs on your own machine &mdash; nothing here costs money.</p>
+    <span class="own">100% yours &mdash; free, no subscription, no third party</span>
+    <div class="rule"></div>
+  </header>
+
+  <div id="msg" class="msg" role="status" aria-live="polite" style="margin-top:16px"></div>
+
+  <section class="block">
+    <div class="headrow"><h2>Quick tools</h2><span class="muted" id="helperNote">Checking your laptop&hellip;</span></div>
+    <div class="btnGrid" id="presets"></div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>Type your own command</h2></div>
+    <div class="u-card u-stack">
+      <p class="u-note">Runs inside Kali on your laptop. Example: <code>nmap -sV 192.168.1.1</code></p>
+      <div class="customRow">
+        <input type="text" id="customCmd" placeholder="nmap -sV 192.168.1.1" autocomplete="off" spellcheck="false">
+        <button type="button" class="u-btn primary" id="runCustom">Run</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>What you've run</h2></div>
+    <div class="jobs" id="jobs"><div class="skel u-load"></div><div class="skel u-load"></div></div>
+  </section>
+
+  <footer>
+    <div>Salman.D.Life &mdash; private area. Jobs run on your laptop only when Kali and the helper are running.</div>
+    <div>Only for your own devices and legal practice targets.</div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var PRESETS = null, jobs = [];
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function say(t, bad) { var m = $("msg"); m.textContent = t; m.className = "msg show" + (bad === false ? "" : " bad"); }
+  function ago(iso) {
+    var ms = Date.parse(iso); if (!ms) return "";
+    var m = Math.max(0, Math.round((Date.now() - ms) / 60000));
+    if (m < 1) return "just now";
+    if (m < 60) return m + " min ago";
+    return Math.round(m / 60) + " h ago";
+  }
+  function getJSON(url, opts) {
+    return fetch(url, Object.assign({ credentials: "same-origin", cache: "no-store" }, opts || {})).then(function (r) {
+      return r.ok ? r.json().then(function (j) { return { ok: true, j: j, status: r.status }; }) : { ok: false, status: r.status };
+    }).catch(function () { return { ok: false, status: 0 }; });
+  }
+
+  function paintPresets() {
+    if (!PRESETS) return;
+    $("presets").innerHTML = Object.keys(PRESETS).map(function (k) {
+      return '<button type="button" class="toolBtn" data-k="' + k + '"><b>' + esc(PRESETS[k]) + '</b><span>Tap to run</span></button>';
+    }).join("");
+  }
+
+  function paintJobs() {
+    var box = $("jobs");
+    if (!jobs.length) { box.innerHTML = '<div class="u-empty" style="border:0"><b>Nothing yet</b>Run a tool above and it shows up here.</div>'; return; }
+    var recent = jobs.filter(function (j) { return j.status === "waiting"; }).length;
+    $("helperNote").textContent = recent ? recent + " job(s) waiting for your laptop" : "";
+    box.innerHTML = jobs.map(function (j) {
+      var st = j.status === "waiting" ? "waiting" : (j.ok === false ? "bad" : "done");
+      var stTxt = j.status === "waiting" ? "Waiting for laptop" : (j.ok === false ? "Failed" : "Done");
+      return '<div class="job"><div class="row"><b>' + esc(j.label) + '</b><time>' + esc(ago(j.added_at)) + '</time></div>' +
+        '<div class="st ' + st + '">' + stTxt + '</div>' +
+        (j.output ? '<pre>' + esc(j.output) + '</pre>' : '') + '</div>';
+    }).join("");
+  }
+
+  function load() {
+    return getJSON("/api/hacklab").then(function (r) {
+      if (!r.ok) {
+        say(r.status === 403 ? "Only the owner of this site can use the Hack Lab."
+          : r.status === 401 ? "You are signed out. Please sign in again." : "Could not load. Try refreshing.");
+        return;
+      }
+      $("msg").className = "msg";
+      PRESETS = r.j.presets; jobs = r.j.jobs || [];
+      paintPresets(); paintJobs();
+    });
+  }
+
+  function run(body) {
+    return getJSON("/api/hacklab", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) {
+        if (!r.ok) { say(r.status === 400 ? "That did not look right." : "Could not send that. Try again."); return; }
+        jobs = r.j.jobs || jobs; paintJobs();
+      });
+  }
+
+  $("presets").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".toolBtn"); if (!b) return;
+    run({ what: b.getAttribute("data-k") });
+  });
+  $("runCustom").addEventListener("click", function () {
+    var v = $("customCmd").value.trim(); if (!v) return;
+    run({ what: "custom", cmd: v }); $("customCmd").value = "";
+  });
+  $("customCmd").addEventListener("keydown", function (e) { if (e.key === "Enter") $("runCustom").click(); });
+
+  load();
+  setInterval(function () { if (!document.hidden) load(); }, 8000);
+})();
+</script>
+<script src="/assets/account.js?v=d3821b8b" defer></script>
+<script src="/assets/fx.js?v=9dee16d4" defer></script>
+<script src="/assets/theme.js?v=e0023cf6" defer></script>
+<script src="/assets/assistant.js?v=08579a63" defer></script>
+</body>
+</html>

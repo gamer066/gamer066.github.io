@@ -105,7 +105,7 @@
       items.push({ label: label, hint: hint, go: go });
     }
     [["Home", "/"], ["Studies", "/study/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"], ["Special bots", "/special/"], ["Control", "/control/"],
-     ["Your profile", "/profile/"], ["Sign in", "/login/"]].forEach(function (p) {
+     ["Hack Lab", "/hacklab/"], ["Your profile", "/profile/"], ["Sign in", "/login/"]].forEach(function (p) {
       add(p[0], "Page", function () { location.href = p[1]; });
     });
     add(now() === "light" ? "Switch to the dark look" : "Switch to the daylight look", "Action", function () {
