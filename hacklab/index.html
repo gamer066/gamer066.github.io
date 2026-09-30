@@ -84,6 +84,19 @@
   </section>
 
   <section class="block">
+    <div class="headrow"><h2>Phone</h2><span class="muted">on the phone that has <a href="/hacklab/phone/">this page</a> open</span></div>
+    <div class="u-card u-stack">
+      <p class="u-note">Message and sound only &mdash; the person sees it happen live on their own screen,
+        nothing about them is saved.</p>
+      <div class="customRow">
+        <input type="text" id="phoneMsg" placeholder="Message to show" autocomplete="off" maxlength="300">
+        <button type="button" class="u-btn primary" id="sendPhoneMsg">Show it</button>
+      </div>
+      <div class="btnGrid" id="phonePresets" style="margin-top:var(--s2)"></div>
+    </div>
+  </section>
+
+  <section class="block">
     <div class="headrow"><h2>Type your own command</h2></div>
     <div class="u-card u-stack">
       <p class="u-note">Runs inside Kali on your laptop. Example: <code>nmap -sV 192.168.1.1</code></p>
@@ -107,7 +120,7 @@
 
 <script>
 (function () {
-  var PRESETS = null, jobs = [];
+  var PRESETS = null, PHONE_PRESETS = null, jobs = [];
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function say(t, bad) { var m = $("msg"); m.textContent = t; m.className = "msg show" + (bad === false ? "" : " bad"); }
@@ -124,6 +137,12 @@
     }).catch(function () { return { ok: false, status: 0 }; });
   }
 
+  function paintPhonePresets() {
+    if (!PHONE_PRESETS) return;
+    $("phonePresets").innerHTML = Object.keys(PHONE_PRESETS).filter(function (k) { return k !== "phone_message"; }).map(function (k) {
+      return '<button type="button" class="toolBtn" data-k="' + k + '"><b>' + esc(PHONE_PRESETS[k]) + '</b><span>Tap to run</span></button>';
+    }).join("");
+  }
   function paintPresets() {
     if (!PRESETS) return;
     $("presets").innerHTML = Object.keys(PRESETS).map(function (k) {
@@ -134,12 +153,17 @@
   function paintJobs() {
     var box = $("jobs");
     if (!jobs.length) { box.innerHTML = '<div class="u-empty" style="border:0"><b>Nothing yet</b>Run a tool above and it shows up here.</div>'; return; }
-    var recent = jobs.filter(function (j) { return j.status === "waiting"; }).length;
-    $("helperNote").textContent = recent ? recent + " job(s) waiting for your laptop" : "";
+    var waitLap = jobs.filter(function (j) { return j.status === "waiting" && j.device !== "phone"; }).length;
+    var waitPhone = jobs.filter(function (j) { return j.status === "waiting" && j.device === "phone"; }).length;
+    var bits = [];
+    if (waitLap) bits.push(waitLap + " waiting for your laptop");
+    if (waitPhone) bits.push(waitPhone + " waiting for the phone");
+    $("helperNote").textContent = bits.join(" · ");
     box.innerHTML = jobs.map(function (j) {
       var st = j.status === "waiting" ? "waiting" : (j.ok === false ? "bad" : "done");
       var stTxt = j.status === "waiting" ? "Waiting for laptop" : (j.ok === false ? "Failed" : "Done");
-      return '<div class="job"><div class="row"><b>' + esc(j.label) + '</b><time>' + esc(ago(j.added_at)) + '</time></div>' +
+      var tag = j.device === "phone" ? '<span class="pill" style="margin-right:6px">Phone</span>' : '';
+      return '<div class="job"><div class="row"><b>' + tag + esc(j.label) + '</b><time>' + esc(ago(j.added_at)) + '</time></div>' +
         '<div class="st ' + st + '">' + stTxt + '</div>' +
         (j.output ? '<pre>' + esc(j.output) + '</pre>' : '') + '</div>';
     }).join("");
@@ -153,8 +177,8 @@
         return;
       }
       $("msg").className = "msg";
-      PRESETS = r.j.presets; jobs = r.j.jobs || [];
-      paintPresets(); paintJobs();
+      PRESETS = r.j.presets; PHONE_PRESETS = r.j.phonePresets; jobs = r.j.jobs || [];
+      paintPresets(); paintPhonePresets(); paintJobs();
     });
   }
 
@@ -175,6 +199,15 @@
     run({ what: "custom", cmd: v }); $("customCmd").value = "";
   });
   $("customCmd").addEventListener("keydown", function (e) { if (e.key === "Enter") $("runCustom").click(); });
+  $("phonePresets").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".toolBtn"); if (!b) return;
+    run({ what: b.getAttribute("data-k"), device: "phone" });
+  });
+  $("sendPhoneMsg").addEventListener("click", function () {
+    var v = $("phoneMsg").value.trim(); if (!v) return;
+    run({ what: "phone_message", device: "phone", text: v }); $("phoneMsg").value = "";
+  });
+  $("phoneMsg").addEventListener("keydown", function (e) { if (e.key === "Enter") $("sendPhoneMsg").click(); });
 
   load();
   setInterval(function () { if (!document.hidden) load(); }, 8000);

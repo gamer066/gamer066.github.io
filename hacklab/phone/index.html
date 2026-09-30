@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phone &middot; Hack Lab &middot; Salman.D.Life</title>
+<meta name="description" content="Turns this phone into a target for Hack Lab's message and sound pranks.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060B">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=49e72e1f">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=f65be539">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/style.css?v=b0ab7e83">
+<script>(function(){try{var m=localStorage.getItem("sdl-theme");if(m==="light"){document.documentElement.setAttribute("data-theme","light");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content","#F6F7FE");}}catch(e){}})();</script>
+<style>
+  body{overflow:hidden}
+  .stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:var(--s4);padding:var(--s5);text-align:center}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--ink-3)}
+  .dot.on{background:var(--up);box-shadow:0 0 0 6px var(--up-soft)}
+  .state{font-family:var(--mono);font-size:.9rem;color:var(--ink-2)}
+  .startBtn{padding:16px 28px;border-radius:999px;background:var(--accent);color:var(--bg);border:0;
+    font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer}
+  .hint{font-size:var(--t-sm);color:var(--ink-3);max-width:38ch}
+  .flash{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    background:var(--bg);padding:var(--s5);text-align:center}
+  .flash.on{display:flex}
+  .flash p{font-family:var(--serif);font-size:clamp(1.6rem,8vw,2.6rem);font-weight:700;color:var(--ink);
+    max-width:22ch}
+  .flash button{margin-top:var(--s5);padding:12px 24px;border-radius:999px;background:var(--accent);
+    color:var(--bg);border:0;font-family:inherit;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true"><canvas id="stars"></canvas><div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<div class="stage" id="stage">
+  <div class="dot" id="dot"></div>
+  <h1 style="font-size:1.3rem">Hack Lab &mdash; this phone</h1>
+  <p class="state" id="state">Not connected</p>
+  <button type="button" class="startBtn" id="startBtn" hidden>Start</button>
+  <p class="hint" id="hint">Tap Start, then keep this screen open and on. It only works while you're looking
+    at it &mdash; closing the tab or locking the screen disconnects it.</p>
+</div>
+
+<div class="flash" id="flash" role="alertdialog" aria-modal="true">
+  <div>
+    <p id="flashText"></p>
+    <button type="button" id="flashClose">OK</button>
+  </div>
+</div>
+
+<audio id="beep" hidden></audio>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  var unlocked = false, connected = false, timer = null;
+
+  /* a short, no-file-needed prank tone, built with the Web Audio API */
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ctx = AC ? new AC() : null;
+  function boo() {
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume();
+    var t0 = ctx.currentTime;
+    [220, 180, 140, 90].forEach(function (f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sawtooth"; o.frequency.setValueAtTime(f, t0 + i * 0.22);
+      g.gain.setValueAtTime(0.0001, t0 + i * 0.22);
+      g.gain.exponentialRampToValueAtTime(0.28, t0 + i * 0.22 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.22 + 0.2);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t0 + i * 0.22); o.stop(t0 + i * 0.22 + 0.22);
+    });
+  }
+
+  function setState(t, on) { $("state").textContent = t; $("dot").className = "dot" + (on ? " on" : ""); }
+
+  function showMessage(text) {
+    $("flashText").textContent = text;
+    $("flash").classList.add("on");
+    try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+  }
+  $("flashClose").addEventListener("click", function () { $("flash").classList.remove("on"); });
+
+  function poll() {
+    fetch("/api/hacklab?device=phone", { credentials: "same-origin", cache: "no-store" })
+      .then(function (r) {
+        if (r.status === 401 || r.status === 403) { setState("Not signed in as the owner", false); connected = false; return null; }
+        return r.ok ? r.json() : null;
+      })
+      .then(function (d) {
+        if (!d) return;
+        connected = true;
+        setState((d.jobs || []).length ? "Waiting job..." : "Connected", true);
+        (d.jobs || []).forEach(run);
+      })
+      .catch(function () { setState("No connection", false); });
+  }
+
+  function run(job) {
+    var out = "", ok = true;
+    if (job.cmd === "phone_message") { showMessage(job.text || "..."); out = "shown"; }
+    else if (job.cmd === "phone_sound") { boo(); out = "played"; }
+    else { ok = false; out = "This phone does not do that one."; }
+    fetch("/api/hacklab", {
+      method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answer_id: job.id, ok: ok, output: out })
+    }).catch(function () {});
+  }
+
+  $("startBtn").addEventListener("click", function () {
+    // one tap unlocks sound on iOS Safari for the rest of this page's life
+    if (ctx && ctx.state === "suspended") ctx.resume();
+    unlocked = true;
+    $("startBtn").hidden = true;
+    $("hint").textContent = "Connected. Keep this screen open and on — it disconnects the moment you leave.";
+    setState("Connecting…", false);
+    poll();
+    timer = setInterval(poll, 3000);
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { setState("Paused (screen not active)", false); }
+    else if (unlocked) { setState("Connecting…", false); poll(); }
+  });
+
+  // show the Start button once we know a backdrop loaded (page is ready); no auto-start, since sound needs a tap
+  $("startBtn").hidden = false;
+  setState("Tap Start to connect");
+})();
+</script>
+<script src="/assets/fx.js?v=9dee16d4" defer></script>
+</body>
+</html>
