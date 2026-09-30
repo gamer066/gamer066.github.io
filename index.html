@@ -488,7 +488,7 @@
 
 </main>
 
-<script src="/assets/status.js?v=902c0831"></script>
+<script src="/assets/status.js?v=48c0ea0f"></script>
 <script>
 /* TODAY-1 (30 Sep 2026): the owner's summary at the top of Home. It asks /api/today; anyone else (or signed out) sees nothing. */
 (function () {
@@ -549,7 +549,7 @@
     if (document.hidden) return;
     ticks++;
     if (ticks % 5) { fill(); return; }
-    fetch("/assets/status.js?v=902c0831?live=" + Date.now(), { cache: "no-store" })
+    fetch("/assets/status.js?v=48c0ea0f?live=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.text() : ""; })
       .then(function (text) {
         var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");

@@ -17,7 +17,9 @@ LIMIT: 60 questions a day (Dubai days) so it can never run away with the free al
 
 import { summarise } from "./today.js";
 
-const MODEL = "@cf/meta/llama-3.1-8b-instruct";
+// Models are retired from time to time (llama-3.1-8b-instruct was on 30 May 2026, found 30 Sep). The first one that
+// answers is used, so one retirement never switches the helper off. All are free-plan models.
+const MODELS = ["@cf/meta/llama-3.1-8b-instruct-fp8", "@cf/meta/llama-3.2-3b-instruct", "@cf/google/gemma-4-26b-a4b-it"];
 const PER_DAY = 60;
 const MAX_CONTEXT_CHARS = 9000;              // about 3,000 tokens
 
@@ -66,14 +68,19 @@ async function handle({ request, env, data }) {
   try { ctx = JSON.stringify(await summarise(env)); } catch (e) { ctx = "{}"; }
   if (ctx.length > MAX_CONTEXT_CHARS) ctx = ctx.slice(0, MAX_CONTEXT_CHARS) + "...";
 
-  const out = await env.AI.run(MODEL, {
+  const req = {
     messages: [
       { role: "system", content: SYSTEM },
       { role: "user", content: "DATA (practice-money numbers, right now, " + new Date().toISOString().slice(0, 16) + " UTC):\n" + ctx + "\n\nQUESTION: " + q }
     ],
     max_tokens: 260,
     temperature: 0.3
-  });
+  };
+  let out = null, lastErr = null;
+  for (const m of MODELS) {
+    try { out = await env.AI.run(m, req); if (out) break; } catch (e) { lastErr = e; }
+  }
+  if (!out && lastErr) throw lastErr;
   let answer = String((out && (out.response || (out.result && out.result.response) ||
     (out.choices && out.choices[0] && out.choices[0].message && out.choices[0].message.content))) || "").trim();
   if (!answer) return json({ error: "The helper gave no answer. Please ask again.", left: Math.max(0, PER_DAY - u.n - 1) }, 502);
