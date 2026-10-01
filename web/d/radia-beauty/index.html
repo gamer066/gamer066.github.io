@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "Radia Beauty", "nameAr": "", "area": "Dubai", "street": "", "whatsapp": "971589153100", "phone": "+971 58 915 3100", "mapQuery": "25.216641,55.260668", "hours": [["Every day", "كل يوم", "10:00 am - 10:00 pm"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#9d174d", "dark": "#500724", "soft": "#fdf2f8"}, "labels": {"en": {"section": "Services", "hint": "Tap + to pick services, then book on WhatsApp.", "cta": "Book on WhatsApp", "see": "See services", "send": "Send booking", "msgHead": "I'd like to book:", "tagline": "Look and feel your best. Book on WhatsApp."}, "ar": {"section": "الخدمات", "hint": "اضغط + لاختيار الخدمات ثم احجز عبر واتساب. الأسعار بالدرهم.", "cta": "احجز عبر واتساب", "see": "شاهد الخدمات", "send": "إرسال الحجز", "msgHead": "أرغب بالحجز:", "tagline": "اهتمي بجمالك. احجزي عبر واتساب."}}, "cats": [{"en": "Hair", "ar": "الشعر", "items": [["Haircut & Blow-dry", "قص وتسشوار", 60], ["Hair Colour", "صبغة شعر", 180], ["Keratin Treatment", "علاج كيراتين", 350]]}, {"en": "Nails", "ar": "الأظافر", "items": [["Manicure", "مانيكير", 50], ["Pedicure", "باديكير", 60], ["Gel Polish", "جل", 80]]}, {"en": "Skin", "ar": "البشرة", "items": [["Facial", "تنظيف بشرة", 120], ["Threading", "خيط", 15], ["Waxing (full arms)", "واكس (يدين كاملتين)", 40]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "Radia Beauty", "nameAr": "", "area": "Dubai", "street": "", "whatsapp": "971589153100", "phone": "+971 58 915 3100", "mapQuery": "25.216641,55.260668", "hours": [["Every day", "كل يوم", "10:00 am - 10:00 pm"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#9d174d", "dark": "#500724", "soft": "#fdf2f8"}, "labels": {"en": {"section": "Services", "hint": "Tap + to pick services, then book on WhatsApp.", "cta": "Book on WhatsApp", "see": "See services", "send": "Send booking", "msgHead": "I'd like to book:", "tagline": "Look and feel your best. Book on WhatsApp."}, "ar": {"section": "الخدمات", "hint": "اضغط + لاختيار الخدمات ثم احجز عبر واتساب. الأسعار بالدرهم.", "cta": "احجز عبر واتساب", "see": "شاهد الخدمات", "send": "إرسال الحجز", "msgHead": "أرغب بالحجز:", "tagline": "اهتمي بجمالك. احجزي عبر واتساب."}}, "cats": [{"en": "Hair", "ar": "الشعر", "items": [["Haircut & Blow-dry", "قص وتسشوار", 60], ["Hair Colour", "صبغة شعر", 180], ["Keratin Treatment", "علاج كيراتين", 350]]}, {"en": "Nails", "ar": "الأظافر", "items": [["Manicure", "مانيكير", 50], ["Pedicure", "باديكير", 60], ["Gel Polish", "جل", 80]]}, {"en": "Skin", "ar": "البشرة", "items": [["Facial", "تنظيف بشرة", 120], ["Threading", "خيط", 15], ["Waxing (full arms)", "واكس (يدين كاملتين)", 40]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {

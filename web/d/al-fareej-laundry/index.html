@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "Al Fareej Laundry", "nameAr": "", "area": "Abu Dhabi", "street": "", "whatsapp": "971559892424", "phone": "+971 2 633 8532;+971 55 546 3133", "mapQuery": "24.486507,54.355258", "hours": [["Fri", "الجمعة", "12:00 pm - 11:00 pm"], ["Mon, Tue, Wed, Thu, Sat, Sun", "الإثنين، الثلاثاء، الأربعاء، الخميس، السبت، الأحد", "8:00 am - 11:00 pm"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#1d4ed8", "dark": "#172554", "soft": "#eff6ff"}, "labels": {"en": {"section": "Price list", "hint": "Tap + to pick what you need, then message us on WhatsApp.", "cta": "Message on WhatsApp", "see": "See price list", "send": "Send request", "msgHead": "I need:", "tagline": "Pick-up and delivery. Fresh, folded, on time."}, "ar": {"section": "قائمة الأسعار", "hint": "اضغط + لاختيار ما تحتاجه ثم راسلنا عبر واتساب. الأسعار بالدرهم.", "cta": "راسلنا عبر واتساب", "see": "شاهد الأسعار", "send": "إرسال الطلب", "msgHead": "أحتاج:", "tagline": "استلام وتوصيل. نظيف ومرتب وفي الموعد."}}, "cats": [{"en": "Wash & iron", "ar": "غسيل وكوي", "items": [["Shirt / Kandura", "قميص / كندورة", 4], ["Trousers", "بنطلون", 4], ["Bed sheet", "شرشف", 8], ["Abaya", "عباية", 8]]}, {"en": "Dry clean", "ar": "تنظيف جاف", "items": [["Suit (2 pc)", "بدلة (قطعتين)", 25], ["Dress", "فستان", 20], ["Coat", "معطف", 25]]}, {"en": "Service", "ar": "الخدمة", "items": [["Pick-up + delivery", "استلام وتوصيل", 5], ["Express (same day)", "خدمة سريعة (نفس اليوم)", 10]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "Al Fareej Laundry", "nameAr": "", "area": "Abu Dhabi", "street": "", "whatsapp": "971559892424", "phone": "+971 2 633 8532;+971 55 546 3133", "mapQuery": "24.486507,54.355258", "hours": [["Fri", "الجمعة", "12:00 pm - 11:00 pm"], ["Mon, Tue, Wed, Thu, Sat, Sun", "الإثنين، الثلاثاء، الأربعاء، الخميس، السبت، الأحد", "8:00 am - 11:00 pm"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#1d4ed8", "dark": "#172554", "soft": "#eff6ff"}, "labels": {"en": {"section": "Price list", "hint": "Tap + to pick what you need, then message us on WhatsApp.", "cta": "Message on WhatsApp", "see": "See price list", "send": "Send request", "msgHead": "I need:", "tagline": "Pick-up and delivery. Fresh, folded, on time."}, "ar": {"section": "قائمة الأسعار", "hint": "اضغط + لاختيار ما تحتاجه ثم راسلنا عبر واتساب. الأسعار بالدرهم.", "cta": "راسلنا عبر واتساب", "see": "شاهد الأسعار", "send": "إرسال الطلب", "msgHead": "أحتاج:", "tagline": "استلام وتوصيل. نظيف ومرتب وفي الموعد."}}, "cats": [{"en": "Wash & iron", "ar": "غسيل وكوي", "items": [["Shirt / Kandura", "قميص / كندورة", 4], ["Trousers", "بنطلون", 4], ["Bed sheet", "شرشف", 8], ["Abaya", "عباية", 8]]}, {"en": "Dry clean", "ar": "تنظيف جاف", "items": [["Suit (2 pc)", "بدلة (قطعتين)", 25], ["Dress", "فستان", 20], ["Coat", "معطف", 25]]}, {"en": "Service", "ar": "الخدمة", "items": [["Pick-up + delivery", "استلام وتوصيل", 5], ["Express (same day)", "خدمة سريعة (نفس اليوم)", 10]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {

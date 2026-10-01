@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "Al Haramain Ladies Textiles and Tailoring", "nameAr": "", "area": "Abu Dhabi", "street": "17th St. Old Airport Rd. Sea Shell buil.", "whatsapp": "971559892424", "phone": "024432023", "mapQuery": "24.451978,54.386962", "hours": [["Mon, Tue, Wed, Thu, Sat, Sun", "الإثنين، الثلاثاء، الأربعاء، الخميس، السبت، الأحد", "9:00 am - 2:00 pm / 4:00 pm - 11:00 pm"], ["Fri", "الجمعة", "4:30 pm - 9:30 pm"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#6d28d9", "dark": "#2e1065", "soft": "#f5f3ff"}, "labels": {"en": {"section": "Price list", "hint": "Tap + to pick what you need, then message us on WhatsApp.", "cta": "Message on WhatsApp", "see": "See price list", "send": "Send request", "msgHead": "I need:", "tagline": "Stitching and alterations, done right."}, "ar": {"section": "قائمة الأسعار", "hint": "اضغط + لاختيار ما تحتاجه ثم راسلنا عبر واتساب. الأسعار بالدرهم.", "cta": "راسلنا عبر واتساب", "see": "شاهد الأسعار", "send": "إرسال الطلب", "msgHead": "أحتاج:", "tagline": "خياطة وتعديلات بإتقان."}}, "cats": [{"en": "Stitching", "ar": "الخياطة", "items": [["Kandura", "كندورة", 60], ["Shirt", "قميص", 40], ["Trousers", "بنطلون", 45], ["Suit", "بدلة", 350]]}, {"en": "Alterations", "ar": "التعديل", "items": [["Hem / Length", "تقصير", 15], ["Waist adjust", "تعديل الخصر", 20], ["Zip repair", "تصليح سحاب", 15]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "Al Haramain Ladies Textiles and Tailoring", "nameAr": "", "area": "Abu Dhabi", "street": "17th St. Old Airport Rd. Sea Shell buil.", "whatsapp": "971559892424", "phone": "024432023", "mapQuery": "24.451978,54.386962", "hours": [["Mon, Tue, Wed, Thu, Sat, Sun", "الإثنين، الثلاثاء، الأربعاء، الخميس، السبت، الأحد", "9:00 am - 2:00 pm / 4:00 pm - 11:00 pm"], ["Fri", "الجمعة", "4:30 pm - 9:30 pm"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#6d28d9", "dark": "#2e1065", "soft": "#f5f3ff"}, "labels": {"en": {"section": "Price list", "hint": "Tap + to pick what you need, then message us on WhatsApp.", "cta": "Message on WhatsApp", "see": "See price list", "send": "Send request", "msgHead": "I need:", "tagline": "Stitching and alterations, done right."}, "ar": {"section": "قائمة الأسعار", "hint": "اضغط + لاختيار ما تحتاجه ثم راسلنا عبر واتساب. الأسعار بالدرهم.", "cta": "راسلنا عبر واتساب", "see": "شاهد الأسعار", "send": "إرسال الطلب", "msgHead": "أحتاج:", "tagline": "خياطة وتعديلات بإتقان."}}, "cats": [{"en": "Stitching", "ar": "الخياطة", "items": [["Kandura", "كندورة", 60], ["Shirt", "قميص", 40], ["Trousers", "بنطلون", 45], ["Suit", "بدلة", 350]]}, {"en": "Alterations", "ar": "التعديل", "items": [["Hem / Length", "تقصير", 15], ["Waist adjust", "تعديل الخصر", 20], ["Zip repair", "تصليح سحاب", 15]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {

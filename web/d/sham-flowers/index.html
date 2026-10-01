@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "Sham Flowers", "nameAr": "", "area": "Abu Dhabi", "street": "", "whatsapp": "971559892424", "phone": "+971 2 555 2271;+971 2 555 2278;+971 56 951 0047", "mapQuery": "24.376686,54.516381", "hours": [["Every day", "كل يوم", "7:45 am - 12:45 am"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#991b1b", "dark": "#450a0a", "soft": "#fef2f2"}, "labels": {"en": {"section": "Menu", "hint": "Tap + to add items, then send your order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See menu", "send": "Send order", "msgHead": "my order:", "tagline": "Order straight from us. No app fees."}, "ar": {"section": "القائمة", "hint": "اضغط + لإضافة الأصناف ثم أرسل طلبك عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد القائمة", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "اطلب مباشرة منا. بدون رسوم تطبيقات."}}, "cats": [{"en": "Starters", "ar": "المقبلات", "items": [["Hummus", "حمص", 14], ["Fattoush", "فتوش", 16], ["Soup of the day", "شوربة اليوم", 12]]}, {"en": "Main dishes", "ar": "الأطباق الرئيسية", "items": [["Chicken Biryani", "برياني دجاج", 22], ["Mixed Grill", "مشاوي مشكلة", 38], ["Butter Chicken", "دجاج بالزبدة", 26], ["Fish Fry", "سمك مقلي", 30]]}, {"en": "Drinks", "ar": "المشروبات", "items": [["Soft drink", "مشروب غازي", 4], ["Fresh Juice", "عصير طازج", 12], ["Lassi", "لسي", 10]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "Sham Flowers", "nameAr": "", "area": "Abu Dhabi", "street": "", "whatsapp": "971559892424", "phone": "+971 2 555 2271;+971 2 555 2278;+971 56 951 0047", "mapQuery": "24.376686,54.516381", "hours": [["Every day", "كل يوم", "7:45 am - 12:45 am"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#991b1b", "dark": "#450a0a", "soft": "#fef2f2"}, "labels": {"en": {"section": "Menu", "hint": "Tap + to add items, then send your order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See menu", "send": "Send order", "msgHead": "my order:", "tagline": "Order straight from us. No app fees."}, "ar": {"section": "القائمة", "hint": "اضغط + لإضافة الأصناف ثم أرسل طلبك عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد القائمة", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "اطلب مباشرة منا. بدون رسوم تطبيقات."}}, "cats": [{"en": "Starters", "ar": "المقبلات", "items": [["Hummus", "حمص", 14], ["Fattoush", "فتوش", 16], ["Soup of the day", "شوربة اليوم", 12]]}, {"en": "Main dishes", "ar": "الأطباق الرئيسية", "items": [["Chicken Biryani", "برياني دجاج", 22], ["Mixed Grill", "مشاوي مشكلة", 38], ["Butter Chicken", "دجاج بالزبدة", 26], ["Fish Fry", "سمك مقلي", 30]]}, {"en": "Drinks", "ar": "المشروبات", "items": [["Soft drink", "مشروب غازي", 4], ["Fresh Juice", "عصير طازج", 12], ["Lassi", "لسي", 10]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {

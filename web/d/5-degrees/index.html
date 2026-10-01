@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "5 Degrees", "nameAr": "", "area": "Dubai", "street": "", "whatsapp": "971559892424", "phone": "+971 4 276 6327;+971 50 308 8451", "mapQuery": "25.192593,55.288755", "hours": [["Every day", "كل يوم", "10:00 am - 12:00 am"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#0f766e", "dark": "#042f2e", "soft": "#f0fdfa"}, "labels": {"en": {"section": "Services", "hint": "Tap + to pick services, then book on WhatsApp.", "cta": "Book on WhatsApp", "see": "See services", "send": "Send booking", "msgHead": "I'd like to book:", "tagline": "Sharp cuts, clean shaves. Book your slot on WhatsApp."}, "ar": {"section": "الخدمات", "hint": "اضغط + لاختيار الخدمات ثم احجز عبر واتساب. الأسعار بالدرهم.", "cta": "احجز عبر واتساب", "see": "شاهد الخدمات", "send": "إرسال الحجز", "msgHead": "أرغب بالحجز:", "tagline": "قصات أنيقة وحلاقة نظيفة. احجز موعدك عبر واتساب."}}, "cats": [{"en": "Haircut", "ar": "قص الشعر", "items": [["Haircut", "قص شعر", 20], ["Haircut + Beard", "قص شعر + لحية", 35], ["Kids Cut", "قص أطفال", 15]]}, {"en": "Beard & face", "ar": "اللحية والوجه", "items": [["Beard Trim", "تحديد لحية", 15], ["Clean Shave", "حلاقة كاملة", 15], ["Facial", "تنظيف بشرة", 40]]}, {"en": "Extras", "ar": "إضافات", "items": [["Hair Colour", "صبغة شعر", 60], ["Head Massage", "مساج رأس", 20]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "5 Degrees", "nameAr": "", "area": "Dubai", "street": "", "whatsapp": "971559892424", "phone": "+971 4 276 6327;+971 50 308 8451", "mapQuery": "25.192593,55.288755", "hours": [["Every day", "كل يوم", "10:00 am - 12:00 am"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#0f766e", "dark": "#042f2e", "soft": "#f0fdfa"}, "labels": {"en": {"section": "Services", "hint": "Tap + to pick services, then book on WhatsApp.", "cta": "Book on WhatsApp", "see": "See services", "send": "Send booking", "msgHead": "I'd like to book:", "tagline": "Sharp cuts, clean shaves. Book your slot on WhatsApp."}, "ar": {"section": "الخدمات", "hint": "اضغط + لاختيار الخدمات ثم احجز عبر واتساب. الأسعار بالدرهم.", "cta": "احجز عبر واتساب", "see": "شاهد الخدمات", "send": "إرسال الحجز", "msgHead": "أرغب بالحجز:", "tagline": "قصات أنيقة وحلاقة نظيفة. احجز موعدك عبر واتساب."}}, "cats": [{"en": "Haircut", "ar": "قص الشعر", "items": [["Haircut", "قص شعر", 20], ["Haircut + Beard", "قص شعر + لحية", 35], ["Kids Cut", "قص أطفال", 15]]}, {"en": "Beard & face", "ar": "اللحية والوجه", "items": [["Beard Trim", "تحديد لحية", 15], ["Clean Shave", "حلاقة كاملة", 15], ["Facial", "تنظيف بشرة", 40]]}, {"en": "Extras", "ar": "إضافات", "items": [["Hair Colour", "صبغة شعر", 60], ["Head Massage", "مساج رأس", 20]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {

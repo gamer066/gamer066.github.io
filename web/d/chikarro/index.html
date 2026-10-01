@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "Chikarro", "nameAr": "", "area": "Sharjah", "street": "", "whatsapp": "971559892424", "phone": "+971 6 579 1974", "mapQuery": "25.299467,55.367919", "hours": [["Sat, Sun", "السبت، الأحد", "12:00 pm - 12:45 am"], ["Mon - Thu", "الإثنين - الخميس", "12:00 pm - 12:00 am"], ["Fri", "الجمعة", "2:00 pm - 12:45 am"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#b45309", "dark": "#451a03", "soft": "#fffbeb"}, "labels": {"en": {"section": "Menu", "hint": "Tap + to add items, then send your order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See menu", "send": "Send order", "msgHead": "my order:", "tagline": "Hot, quick and close by. Order on WhatsApp."}, "ar": {"section": "القائمة", "hint": "اضغط + لإضافة الأصناف ثم أرسل طلبك عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد القائمة", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "ساخن وسريع وقريب منك. اطلب عبر واتساب."}}, "cats": [{"en": "Burgers & rolls", "ar": "البرغر واللفائف", "items": [["Chicken Burger", "برغر دجاج", 14], ["Beef Burger", "برغر لحم", 18], ["Shawarma Roll", "لفة شاورما", 9], ["Falafel Roll", "لفة فلافل", 7]]}, {"en": "Sides", "ar": "جانبية", "items": [["Fries", "بطاطس مقلية", 7], ["Onion Rings", "حلقات بصل", 9], ["Garlic Sauce", "صلصة ثوم", 2]]}, {"en": "Combos", "ar": "وجبات", "items": [["Burger + Fries + Drink", "برغر + بطاطس + مشروب", 24], ["2 Shawarma + Drink", "٢ شاورما + مشروب", 20]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "Chikarro", "nameAr": "", "area": "Sharjah", "street": "", "whatsapp": "971559892424", "phone": "+971 6 579 1974", "mapQuery": "25.299467,55.367919", "hours": [["Sat, Sun", "السبت، الأحد", "12:00 pm - 12:45 am"], ["Mon - Thu", "الإثنين - الخميس", "12:00 pm - 12:00 am"], ["Fri", "الجمعة", "2:00 pm - 12:45 am"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#b45309", "dark": "#451a03", "soft": "#fffbeb"}, "labels": {"en": {"section": "Menu", "hint": "Tap + to add items, then send your order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See menu", "send": "Send order", "msgHead": "my order:", "tagline": "Hot, quick and close by. Order on WhatsApp."}, "ar": {"section": "القائمة", "hint": "اضغط + لإضافة الأصناف ثم أرسل طلبك عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد القائمة", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "ساخن وسريع وقريب منك. اطلب عبر واتساب."}}, "cats": [{"en": "Burgers & rolls", "ar": "البرغر واللفائف", "items": [["Chicken Burger", "برغر دجاج", 14], ["Beef Burger", "برغر لحم", 18], ["Shawarma Roll", "لفة شاورما", 9], ["Falafel Roll", "لفة فلافل", 7]]}, {"en": "Sides", "ar": "جانبية", "items": [["Fries", "بطاطس مقلية", 7], ["Onion Rings", "حلقات بصل", 9], ["Garlic Sauce", "صلصة ثوم", 2]]}, {"en": "Combos", "ar": "وجبات", "items": [["Burger + Fries + Drink", "برغر + بطاطس + مشروب", 24], ["2 Shawarma + Drink", "٢ شاورما + مشروب", 20]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {

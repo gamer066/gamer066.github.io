@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script>
-const SHOP = {"name": "Arabian Flowers", "nameAr": "", "area": "Abu Dhabi", "street": "", "whatsapp": "971504398954", "phone": "+971 50 439 8954", "mapQuery": "24.45756,54.673095", "hours": [["Opening hours", "ساعات العمل", "Your hours here"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#be185d", "dark": "#500724", "soft": "#fdf2f8"}, "labels": {"en": {"section": "Shop", "hint": "Tap + to choose, then order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See products", "send": "Send order", "msgHead": "my order:", "tagline": "Fresh flowers, delivered."}, "ar": {"section": "المتجر", "hint": "اضغط + للاختيار ثم اطلب عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد المنتجات", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "ورد طازج يصلك أينما كنت."}}, "cats": [{"en": "Bouquets", "ar": "الباقات", "items": [["Small Bouquet", "باقة صغيرة", 60], ["Rose Bouquet (12)", "باقة ورد (١٢)", 120], ["Premium Bouquet", "باقة فاخرة", 250]]}, {"en": "Gifts", "ar": "الهدايا", "items": [["Flowers + Chocolates", "ورد وشوكولاتة", 150], ["Plant", "نبتة", 80]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+const SHOP = {"name": "Arabian Flowers", "nameAr": "", "area": "Abu Dhabi", "street": "", "whatsapp": "971504398954", "phone": "+971 50 439 8954", "mapQuery": "24.45756,54.673095", "hours": [["Opening hours", "ساعات العمل", "Your hours here"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#be185d", "dark": "#500724", "soft": "#fdf2f8"}, "labels": {"en": {"section": "Shop", "hint": "Tap + to choose, then order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See products", "send": "Send order", "msgHead": "my order:", "tagline": "Fresh flowers, delivered."}, "ar": {"section": "المتجر", "hint": "اضغط + للاختيار ثم اطلب عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد المنتجات", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "ورد طازج يصلك أينما كنت."}}, "cats": [{"en": "Bouquets", "ar": "الباقات", "items": [["Small Bouquet", "باقة صغيرة", 60], ["Rose Bouquet (12)", "باقة ورد (١٢)", 120], ["Premium Bouquet", "باقة فاخرة", 250]]}, {"en": "Gifts", "ar": "الهدايا", "items": [["Flowers + Chocolates", "ورد وشوكولاتة", 150], ["Plant", "نبتة", 80]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424", "makerWa": "971559892424"};
 </script>
 <style>
 :root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
@@ -153,7 +153,11 @@ function drawStatic() {
   $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
   if (SHOP.demo) {
     $("demoBar").style.display = "block";
-    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+    const a = document.createElement("a");
+    a.href = "https://wa.me/" + (SHOP.makerWa || "") + "?text=" + encodeURIComponent("Hi Salman, I saw the preview you made for " + SHOP.name + ". I'm interested.");
+    a.style.cssText = "color:inherit;text-decoration:underline";
+    a.textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. Tap here to WhatsApp " + SHOP.makerPhone + " and make it yours.");
+    $("demoBar").replaceChildren(a);
   }
 }
 function drawCats() {
