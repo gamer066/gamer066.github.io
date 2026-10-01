@@ -127,8 +127,16 @@
   });
 
   document.addEventListener("visibilitychange", function () {
-    if (document.hidden) { setState("Paused (screen not active)", false); }
-    else if (unlocked) { setState("Connecting…", false); poll(); }
+    // stop polling for real while the screen is away, so a message or sound can never fire when nobody is looking -
+    // this is the whole safety promise of this page, not just a status label
+    if (document.hidden) {
+      if (timer) { clearInterval(timer); timer = null; }
+      setState("Paused (screen not active)", false);
+    } else if (unlocked && !timer) {
+      setState("Connecting…", false);
+      poll();
+      timer = setInterval(poll, 3000);
+    }
   });
 
   // show the Start button once we know a backdrop loaded (page is ready); no auto-start, since sound needs a tap
