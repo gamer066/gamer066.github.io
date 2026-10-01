@@ -104,7 +104,7 @@
       seen[key] = 1;
       items.push({ label: label, hint: hint, go: go });
     }
-    [["Home", "/"], ["Studies", "/study/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"], ["Special bots", "/special/"], ["Control", "/control/"],
+    [["Home", "/"], ["Studies", "/study/"], ["Shop sites", "/web/"], ["Accounts", "/accounts/"], ["Trading", "/trading/"], ["Special bots", "/special/"], ["Control", "/control/"],
      ["Hack Lab", "/hacklab/"], ["Your profile", "/profile/"], ["Sign in", "/login/"]].forEach(function (p) {
       add(p[0], "Page", function () { location.href = p[1]; });
     });
@@ -306,7 +306,7 @@
       return prefix === "/" ? p === "/" : p === prefix.replace(/\/$/, "") || p.indexOf(prefix) === 0;
     }
     var main = [["Home", "/", IC.home], ["Trading", "/trading/", IC.trade], ["Bots", "/special/", IC.star], ["Control", "/control/", IC.ctl]];
-    var rest = [["Studies", "/study/", IC.study], ["Accounts", "/accounts/", IC.acct], ["Bees", "/special/bees/", IC.bees], ["Profile", "/profile/", IC.user]];
+    var rest = [["Studies", "/study/", IC.study], ["Shop sites", "/web/", IC.star], ["Accounts", "/accounts/", IC.acct], ["Bees", "/special/bees/", IC.bees], ["Profile", "/profile/", IC.user]];
     var bar = document.createElement("nav");
     bar.className = "tabbar";
     bar.setAttribute("aria-label", "Main sections");
@@ -335,7 +335,7 @@
      It is drawn here so every page gets the same shell and writes its own links in one place only. The sign-in page
      keeps its own centred look (it has no sidebar) and gets the class noSb. */
   var PAGES = [
-    ["Money", [["Home", "/", "home"], ["Trading", "/trading/", "trade"], ["Special bots", "/special/", "star"], ["Bees", "/special/bees/", "bees"], ["Control", "/control/", "ctl"]]],
+    ["Money", [["Home", "/", "home"], ["Trading", "/trading/", "trade"], ["Special bots", "/special/", "star"], ["Bees", "/special/bees/", "bees"], ["Control", "/control/", "ctl"], ["Shop sites", "/web/", "star"]]],
     ["Life", [["Studies", "/study/", "study"], ["Accounts", "/accounts/", "acct"], ["Profile", "/profile/", "user"]]]
   ];
   function pageName() {

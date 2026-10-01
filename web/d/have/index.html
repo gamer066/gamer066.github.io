@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Have</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fraunces:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script>
+const SHOP = {"name": "Have", "nameAr": "", "area": "Dubai", "street": "", "whatsapp": "971559892424", "phone": "+971 4 547 6005", "mapQuery": "25.202357,55.251012", "hours": [["Opening hours", "ساعات العمل", "Your hours here"]], "heroPhoto": "", "instagram": "", "colors": {"main": "#9a3412", "dark": "#431407", "soft": "#fff7ed"}, "labels": {"en": {"section": "Menu", "hint": "Tap + to add items, then send your order on WhatsApp.", "cta": "Order on WhatsApp", "see": "See menu", "send": "Send order", "msgHead": "my order:", "tagline": "Fresh karak, snacks and more. Order in 2 taps."}, "ar": {"section": "القائمة", "hint": "اضغط + لإضافة الأصناف ثم أرسل طلبك عبر واتساب. الأسعار بالدرهم.", "cta": "اطلب عبر واتساب", "see": "شاهد القائمة", "send": "إرسال الطلب", "msgHead": "طلبي:", "tagline": "كرك طازج ووجبات خفيفة. اطلب بضغطتين."}}, "cats": [{"en": "Hot drinks", "ar": "مشروبات ساخنة", "items": [["Karak Chai", "شاي كرك", 2], ["Arabic Coffee", "قهوة عربية", 3], ["Cappuccino", "كابتشينو", 10], ["Hot Chocolate", "شوكولاتة ساخنة", 10]]}, {"en": "Snacks", "ar": "وجبات خفيفة", "items": [["Zaatar Manakish", "مناقيش زعتر", 5], ["Cheese Paratha", "باراثا بالجبن", 6], ["Egg Sandwich", "ساندويتش بيض", 8], ["Chicken Roll", "رول دجاج", 10]]}, {"en": "Cold drinks", "ar": "مشروبات باردة", "items": [["Fresh Lemon Mint", "ليمون بالنعناع", 8], ["Orange Juice", "عصير برتقال", 9], ["Iced Tea", "شاي مثلج", 7], ["Water", "ماء", 1]]}], "currency": "AED", "demo": true, "makerPhone": "+971 55 989 2424"};
+</script>
+<style>
+:root { --main:#9a3412; --dark:#431407; --soft:#fff7ed; --ink:#1c1917; --muted:#57534e; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Inter,system-ui,sans-serif; color:var(--ink); background:#fff; line-height:1.5; }
+html[dir=rtl] body { font-family:Cairo,Inter,system-ui,sans-serif; }
+h1,h2 { font-family:Fraunces,Georgia,serif; line-height:1.1; }
+html[dir=rtl] h1, html[dir=rtl] h2 { font-family:Cairo,sans-serif; line-height:1.3; }
+.wrap { max-width:960px; margin:0 auto; padding:0 16px; }
+header.hero { color:#fff; background:linear-gradient(135deg,var(--main),var(--dark)); background-size:cover; background-position:center; position:relative; }
+header.hero::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.55)); }
+header.hero .wrap { position:relative; z-index:1; padding-top:22px; padding-bottom:64px; }
+nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:72px; gap:10px; }
+nav b { font-family:Fraunces,serif; font-size:20px; }
+html[dir=rtl] nav b { font-family:Cairo,sans-serif; }
+.navr { display:flex; gap:8px; }
+nav a, nav button { color:#fff; text-decoration:none; font:600 14px Inter,Cairo,sans-serif; border:1px solid rgba(255,255,255,.6); padding:8px 14px; border-radius:99px; background:transparent; cursor:pointer; }
+.hero h1 { font-size:clamp(40px,9vw,72px); font-weight:800; }
+.hero p { font-size:18px; margin:14px 0 26px; max-width:520px; opacity:.95; }
+.btn { display:inline-flex; align-items:center; gap:8px; background:#25d366; color:#052e16; font-weight:600; padding:14px 22px; border-radius:99px; text-decoration:none; border:0; font-size:16px; cursor:pointer; font-family:inherit; }
+.btn.alt { background:#fff; color:var(--dark); margin-inline-start:8px; }
+section { padding:56px 0; }
+section h2 { font-size:32px; margin-bottom:6px; color:var(--dark); }
+.sub { color:var(--muted); margin-bottom:26px; }
+.cats { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:18px; }
+.cats button { flex:none; border:1px solid #e7e5e4; background:#fff; padding:8px 16px; border-radius:99px; font:600 14px Inter,Cairo,sans-serif; cursor:pointer; color:var(--muted); }
+.cats button.on { background:var(--main); border-color:var(--main); color:#fff; }
+.items { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+.item { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:16px; border:1px solid #e7e5e4; border-radius:14px; background:var(--soft); }
+.item .nm { font-weight:600; }
+.item .pr { color:var(--main); font-weight:600; font-size:14px; }
+.qty { display:flex; align-items:center; gap:8px; }
+.qty button { width:34px; height:34px; border-radius:50%; border:0; background:var(--main); color:#fff; font-size:20px; cursor:pointer; line-height:1; }
+.qty button.minus { background:#fff; color:var(--main); border:1px solid var(--main); }
+.qty span { min-width:14px; text-align:center; font-weight:600; }
+.info { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.card { border:1px solid #e7e5e4; border-radius:16px; padding:22px; }
+.card h3 { font-size:17px; margin-bottom:10px; }
+.card table { width:100%; border-collapse:collapse; }
+.card td { padding:6px 0; border-bottom:1px dashed #e7e5e4; font-size:15px; }
+.card td:last-child { text-align:end; color:var(--muted); }
+iframe { width:100%; height:100%; min-height:260px; border:0; border-radius:16px; }
+footer { background:var(--dark); color:#fed7aa; text-align:center; padding:28px 16px 110px; font-size:14px; }
+footer a { color:#fed7aa; }
+.bar { position:fixed; left:12px; right:12px; bottom:12px; z-index:9; display:none; justify-content:space-between; align-items:center; gap:12px; background:var(--ink); color:#fff; padding:12px 12px 12px 20px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.25); max-width:720px; margin:0 auto; }
+.bar.show { display:flex; }
+@media (max-width:640px) {
+  .info { grid-template-columns:1fr; }
+  .btn.alt { margin:10px 0 0; }
+  nav { margin-bottom:48px; }
+}
+</style>
+</head>
+<body>
+<div id="demoBar" dir="ltr" style="display:none;background:#fde047;color:#1c1917;text-align:center;font:600 13px Inter,Cairo,sans-serif;padding:8px 12px"></div>
+
+<header class="hero" id="hero">
+  <div class="wrap">
+    <nav><b id="navName"></b><div class="navr"><button id="lang" type="button"></button><a id="navCall" href="#"></a></div></nav>
+    <h1 id="heroName"></h1>
+    <p id="heroTag"></p>
+    <a class="btn" id="heroWa" href="#">💬 <span id="ctaText"></span></a>
+    <a class="btn alt" href="#menu" id="seeBtn"></a>
+  </div>
+</header>
+
+<section id="menu">
+  <div class="wrap">
+    <h2 id="secTitle"></h2>
+    <p class="sub" id="secHint"></p>
+    <div class="cats" id="cats"></div>
+    <div class="items" id="items"></div>
+  </div>
+</section>
+
+<section style="background:#fafaf9">
+  <div class="wrap">
+    <h2 id="findT"></h2>
+    <p class="sub" id="area"></p>
+    <div class="info">
+      <div class="card">
+        <h3 id="hoursT"></h3>
+        <table id="hours"></table>
+        <h3 style="margin-top:22px" id="contactT"></h3>
+        <p id="phoneLine"></p>
+        <p id="igLine" style="margin-top:6px"></p>
+      </div>
+      <iframe id="map" loading="lazy" title="Map"></iframe>
+    </div>
+  </div>
+</section>
+
+<footer><div id="foot"></div></footer>
+
+<div class="bar" id="bar">
+  <span id="barText"></span>
+  <a class="btn" id="barBtn" href="#"></a>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const CUR = SHOP.currency || "AED";
+const UI = {
+  en: { find: "Find us", hoursT: "Opening hours", contactT: "Contact", call: "Call us", follow: "Follow us on Instagram",
+        prices: "Prices in", total: "Total", items: "items", item: "item", demoTag: "[Demo preview] ", toggle: "العربية" },
+  ar: { find: "موقعنا", hoursT: "ساعات العمل", contactT: "تواصل معنا", call: "اتصل بنا", follow: "تابعنا على انستغرام",
+        prices: "الأسعار بالدرهم", total: "المجموع", items: "أصناف", item: "صنف", demoTag: "[تجربة] ", toggle: "English" }
+};
+let lang = "en";
+try { lang = localStorage.getItem("shopLang") || (SHOP.defaultLang || "en"); } catch (e) { lang = SHOP.defaultLang || "en"; }
+if (!SHOP.labels.ar) lang = "en";
+
+const r = document.documentElement.style;
+r.setProperty("--main", SHOP.colors.main); r.setProperty("--dark", SHOP.colors.dark); r.setProperty("--soft", SHOP.colors.soft);
+const L = () => Object.assign({}, UI[lang], SHOP.labels[lang]);
+const pick = (en, ar) => (lang === "ar" && ar) ? ar : en;
+const wa = t => `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(t)}`;
+const tel = SHOP.phone.replace(/[^\d+]/g, "");
+const cats = SHOP.cats;
+let current = 0;
+const cart = {};
+
+function drawStatic() {
+  const l = L();
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.title = pick(SHOP.name, SHOP.nameAr);
+  $("navName").textContent = $("heroName").textContent = pick(SHOP.name, SHOP.nameAr);
+  $("heroTag").textContent = l.tagline;
+  $("secTitle").textContent = l.section;
+  $("secHint").textContent = l.hint + (lang === "ar" ? "" : " " + l.prices + " " + CUR + ".");
+  $("ctaText").textContent = l.cta;
+  $("seeBtn").textContent = l.see;
+  $("barBtn").textContent = l.send;
+  $("findT").textContent = l.find; $("hoursT").textContent = l.hoursT; $("contactT").textContent = l.contactT;
+  $("navCall").textContent = l.call; $("navCall").href = "tel:" + tel;
+  $("lang").textContent = l.toggle; $("lang").style.display = SHOP.labels.ar ? "" : "none";
+  $("area").textContent = SHOP.street ? SHOP.street + ", " + SHOP.area : SHOP.area;
+  $("hours").innerHTML = SHOP.hours.map(h => `<tr><td>${pick(h[0], h[1])}</td><td dir="ltr">${h[2]}</td></tr>`).join("");
+  $("phoneLine").innerHTML = `<a href="tel:${tel}" dir="ltr" style="color:inherit;font-weight:600">${SHOP.phone}</a>`;
+  $("igLine").innerHTML = SHOP.instagram ? `<a href="${SHOP.instagram}" rel="noopener" style="color:var(--main);font-weight:600">${l.follow}</a>` : "";
+  $("foot").textContent = `© ${new Date().getFullYear()} ${pick(SHOP.name, SHOP.nameAr)} · ${SHOP.area}`;
+  $("heroWa").href = wa((SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead);
+  if (SHOP.demo) {
+    $("demoBar").style.display = "block";
+    $("demoBar").textContent = SHOP.demoText || ("Preview made for " + SHOP.name + " by Salman. Sample menu and prices. WhatsApp " + SHOP.makerPhone + " to make it yours.");
+  }
+}
+function drawCats() {
+  $("cats").innerHTML = cats.map((c, i) => `<button class="${i === current ? "on" : ""}" data-c="${i}">${pick(c.en, c.ar)}</button>`).join("");
+}
+function drawItems() {
+  $("items").innerHTML = cats[current].items.map(([n, a, p]) => {
+    const q = cart[n]?.q || 0, nm = n.replace(/"/g, "&quot;");
+    return `<div class="item"><div><div class="nm">${pick(n, a)}</div><div class="pr">${CUR} ${p}</div></div>
+      <div class="qty">${q ? `<button class="minus" data-n="${nm}" data-d="-1">−</button><span>${q}</span>` : ""}
+      <button data-n="${nm}" data-d="1">+</button></div></div>`;
+  }).join("");
+}
+function priceOf(n) { for (const c of cats) for (const it of c.items) if (it[0] === n) return it; return null; }
+function drawBar() {
+  const l = L();
+  const list = Object.entries(cart).filter(([, v]) => v > 0);
+  const count = list.reduce((s, [, v]) => s + v, 0);
+  const total = list.reduce((s, [n, v]) => s + v * priceOf(n)[2], 0);
+  $("bar").classList.toggle("show", count > 0);
+  $("barText").textContent = `${count} ${count > 1 ? l.items : l.item} · ${CUR} ${total}`;
+  const msg = (SHOP.demo ? l.demoTag : "") + (lang === "ar" ? "مرحبا " : "Hi ") + pick(SHOP.name, SHOP.nameAr) + ", " + l.msgHead + "\n" +
+    list.map(([n, v]) => { const it = priceOf(n); return `• ${v} x ${pick(it[0], it[1])}`; }).join("\n") + `\n${l.total}: ${CUR} ${total}`;
+  $("barBtn").href = wa(msg);
+}
+$("cats").onclick = e => { if (e.target.dataset.c !== undefined) { current = +e.target.dataset.c; drawCats(); drawItems(); } };
+$("items").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const n = b.dataset.n; cart[n] = Math.max(0, (cart[n] || 0) + +b.dataset.d);
+  drawItems(); drawBar();
+};
+$("lang").onclick = () => {
+  lang = lang === "en" ? "ar" : "en";
+  try { localStorage.setItem("shopLang", lang); } catch (e) {}
+  drawStatic(); drawCats(); drawItems(); drawBar();
+};
+$("map").src = "https://www.google.com/maps?q=" + encodeURIComponent(SHOP.mapQuery) + "&output=embed";
+if (SHOP.heroPhoto) $("hero").style.backgroundImage = `url('${SHOP.heroPhoto}')`;
+drawStatic(); drawCats(); drawItems(); drawBar();
+</script>
+</body>
+</html>

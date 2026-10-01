@@ -9,6 +9,7 @@ Disallow: /accounts
 Disallow: /control
 Disallow: /hacklab
 Disallow: /login
+Disallow: /web/d
 Disallow: /api/
 
 Sitemap: https://salmandlife.pages.dev/sitemap.xml
