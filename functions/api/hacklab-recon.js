@@ -187,7 +187,7 @@ async function ports(body) {
   // a hard overall deadline means the reply is never later than this, whatever any one port is doing
   const results = await withTimeout(Promise.all(list.map(function (p) { return tryPort(connectFn, host, p); })), OVERALL_PORT_MS)
     .catch(function () { return list.map(function (p) { return { port: p, open: null }; }); });
-  return json({ host: host, results: results });
+  return json({ host: host, results: results, note: "Cloudflare itself blocks outbound connections to some common ports (like 80 and 443) from a website's own code, so those two may show closed even when they are not really. Treat them as unknown; the rest are real." });
 }
 function tryPort(connectFn, host, port) {
   var sock;

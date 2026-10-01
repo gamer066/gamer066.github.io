@@ -331,7 +331,7 @@
         var txt3 = r.open === true ? "OPEN" : r.open === false ? "closed" : "timed out";
         return '<div class="' + (r.open === true ? "hit" : "safe") + '"><span>Port ' + r.port + '</span><span class="tag ' + cls3 + '">' + txt3 + '</span></div>';
       }).join("");
-      return '<div class="reconList">' + rows3 + "</div>";
+      return '<div class="reconList">' + rows3 + '</div>' + (j.note ? "<p style='margin-top:8px;color:var(--ink-3);font-size:.76rem'>" + esc(j.note) + "</p>" : "");
     }
     if (what === "vuln") {
       var rows4 = j.checks.map(function (c) {

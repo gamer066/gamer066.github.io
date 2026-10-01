@@ -530,7 +530,7 @@
 
 </main>
 
-<script src="/assets/status.js?v=a8ac0ddd"></script>
+<script src="/assets/status.js?v=c3a8f40e"></script>
 <script src="/assets/account.js?v=d3821b8b" defer></script>
 <script>
 (function () {
@@ -572,7 +572,7 @@
     if (document.hidden) return;
     ticks++;
     if (ticks % 5) { fill(); return; }
-    fetch("/assets/status.js?v=a8ac0ddd?live=" + Date.now(), { cache: "no-store" })
+    fetch("/assets/status.js?v=c3a8f40e?live=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.text() : ""; })
       .then(function (text) {
         var m = /SITE_STATUS\s*=\s*(\{[\s\S]*?\})\s*;/.exec(text || "");
