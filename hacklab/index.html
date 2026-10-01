@@ -43,6 +43,30 @@
   .job .st.bad{color:var(--down)}
   .job pre{margin-top:8px;padding:10px 12px;border-radius:var(--r-sm);background:var(--bg-2,rgba(0,0,0,.25));
     font-family:var(--mono);font-size:.8rem;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow:auto}
+
+  /* ---- From anywhere: server-side lookups, no laptop needed ---- */
+  .reconGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--s3)}
+  .reconCard{display:flex;flex-direction:column;gap:9px;padding:var(--s4);border-radius:var(--r-lg);
+    background:var(--surface);border:1px solid var(--line)}
+  .reconCard h3{font-size:.98rem;display:flex;align-items:center;gap:7px}
+  .reconCard p{font-size:var(--t-sm);color:var(--ink-3);margin:0}
+  .reconCard .customRow{margin-top:2px}
+  .reconCard .customRow input{font-family:var(--sans)}
+  .consentRow{display:flex;align-items:flex-start;gap:8px;font-size:.78rem;color:var(--ink-2)}
+  .consentRow input{margin-top:3px;flex:none}
+  .reconOut{display:none;margin-top:4px;border-radius:var(--r-sm);background:var(--bg-2,rgba(0,0,0,.25));
+    padding:10px 12px;font-size:.84rem;max-height:340px;overflow:auto}
+  .reconOut.show{display:block}
+  .reconOut .warn{color:var(--warn);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+  .reconList{display:flex;flex-direction:column;gap:4px}
+  .reconList div{display:flex;justify-content:space-between;gap:10px;padding:5px 7px;border-radius:7px;font-family:var(--mono);font-size:.78rem}
+  .reconList div.hit{background:var(--down-soft,rgba(255,80,80,.1))}
+  .reconList div.safe{background:transparent}
+  .reconList .tag{font-family:var(--sans);font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em}
+  .reconList .tag.found,.reconList .tag.hit{color:var(--down)}
+  .reconList .tag.notfound,.reconList .tag.safe{color:var(--up)}
+  .reconList .tag.unknown{color:var(--ink-3)}
+  .reconSubs{font-family:var(--mono);font-size:.78rem;word-break:break-all;line-height:1.7}
 </style>
 </head>
 <body>
@@ -100,11 +124,62 @@
   <section class="block">
     <div class="headrow"><h2>Type your own command</h2></div>
     <div class="u-card u-stack">
-      <p class="u-note">Runs inside Kali on your laptop. Example: <code>nmap -sV 192.168.1.1</code></p>
+      <p class="u-note">Runs inside Kali on your laptop. Example: <code>nmap -sV 192.168.1.1</code> &mdash;
+        also works: <code>password &lt;anything&gt;</code> (how long it takes to crack),
+        <code>breach &lt;email&gt;</code> (checks it against known leaks),
+        <code>hide &lt;message&gt;</code> (hides that message inside a picture) and <code>reveal</code>
+        (reads the last hidden message back out).</p>
       <div class="customRow">
         <input type="text" id="customCmd" placeholder="nmap -sV 192.168.1.1" autocomplete="off" spellcheck="false">
         <button type="button" class="u-btn primary" id="runCustom">Run</button>
       </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="headrow"><h2>From anywhere</h2><span class="muted">runs on the website itself &mdash; no laptop or Kali needed</span></div>
+    <p class="lede" style="font-size:.88rem">Only use these on sites, servers and accounts you own or have permission to test.</p>
+    <div class="reconGrid">
+
+      <div class="reconCard">
+        <h3>Subdomain hunter</h3>
+        <p>Public certificate records for a domain &mdash; never touches the site itself.</p>
+        <div class="customRow"><input type="text" id="rSubDomain" placeholder="example.com" autocomplete="off"><button type="button" class="u-btn primary" data-recon="subdomains">Find</button></div>
+        <div class="reconOut" id="outSubdomains"></div>
+      </div>
+
+      <div class="reconCard">
+        <h3>Leaked secrets scanner</h3>
+        <p>Checks a site for a few commonly-forgotten exposed files.</p>
+        <div class="customRow"><input type="text" id="rSecretsUrl" placeholder="https://example.com" autocomplete="off"><button type="button" class="u-btn primary" data-recon="secrets">Scan</button></div>
+        <label class="consentRow"><input type="checkbox" id="rSecretsConsent"> I own this site or have permission to test it</label>
+        <div class="reconOut" id="outSecrets"></div>
+      </div>
+
+      <div class="reconCard">
+        <h3>Username tracker</h3>
+        <p>Checks ~18 big platforms for a public profile with this username.</p>
+        <div class="customRow"><input type="text" id="rUserName" placeholder="username" autocomplete="off"><button type="button" class="u-btn primary" data-recon="username">Check</button></div>
+        <div class="reconOut" id="outUsername"></div>
+      </div>
+
+      <div class="reconCard">
+        <h3>Port scanner (cloud)</h3>
+        <p>Tries a short list of common ports on an address, from the cloud.</p>
+        <div class="customRow"><input type="text" id="rPortsHost" placeholder="example.com or an IP" autocomplete="off"><button type="button" class="u-btn primary" data-recon="ports">Scan</button></div>
+        <input type="text" id="rPortsList" placeholder="ports (optional, e.g. 22,80,443)" autocomplete="off" style="padding:9px 12px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:.82rem">
+        <label class="consentRow"><input type="checkbox" id="rPortsConsent"> I own this address or have permission to test it</label>
+        <div class="reconOut" id="outPorts"></div>
+      </div>
+
+      <div class="reconCard">
+        <h3>Vulnerability tester</h3>
+        <p>A basic, surface-only check for a reflected script or a database error message. Not a real security test.</p>
+        <div class="customRow"><input type="text" id="rVulnUrl" placeholder="https://example.com/page?id=1" autocomplete="off"><button type="button" class="u-btn primary" data-recon="vuln">Check</button></div>
+        <label class="consentRow"><input type="checkbox" id="rVulnConsent"> I own this site or have permission to test it</label>
+        <div class="reconOut" id="outVuln"></div>
+      </div>
+
     </div>
   </section>
 
@@ -151,6 +226,14 @@
     }).join("");
   }
 
+  // a demo's output (e.g. the "hide a message in a picture" tool) can be a picture; everything else is plain text
+  function outputBlock(out) {
+    if (/^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(out) && out.length < 2000000) {
+      return '<img src="' + out + '" alt="Picture made by the tool" style="max-width:100%;border-radius:var(--r-sm);margin-top:8px;display:block">';
+    }
+    return '<pre>' + esc(out) + '</pre>';
+  }
+
   function paintJobs() {
     var box = $("jobs");
     if (!jobs.length) { box.innerHTML = '<div class="u-empty" style="border:0"><b>Nothing yet</b>Run a tool above and it shows up here.</div>'; return; }
@@ -166,7 +249,7 @@
       var tag = j.device === "phone" ? '<span class="pill" style="margin-right:6px">Phone</span>' : '';
       return '<div class="job"><div class="row"><b>' + tag + esc(j.label) + '</b><time>' + esc(ago(j.added_at)) + '</time></div>' +
         '<div class="st ' + st + '">' + stTxt + '</div>' +
-        (j.output ? '<pre>' + esc(j.output) + '</pre>' : '') + '</div>';
+        (j.output ? outputBlock(j.output) : '') + '</div>';
     }).join("");
   }
 
@@ -212,6 +295,77 @@
 
   load();
   setInterval(function () { if (!document.hidden) load(); }, 8000);
+
+  /* ---- From anywhere: server-side lookups ---- */
+  function reconRun(what, payload) {
+    var out = $("out" + what.charAt(0).toUpperCase() + what.slice(1));
+    out.className = "reconOut show"; out.textContent = "Working…";
+    return getJSON("/api/hacklab-recon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ what: what }, payload)) })
+      .then(function (r) {
+        if (!r.ok) { out.textContent = (r.j && r.j.error) || "Could not run that. Try again."; return; }
+        out.innerHTML = reconPaint(what, r.j);
+      });
+  }
+  function reconPaint(what, j) {
+    if (what === "subdomains") {
+      if (!j.found) return "No subdomains turned up in public certificate records for " + esc(j.domain) + ".";
+      return "<b>" + j.found + "</b> found for " + esc(j.domain) + ":<div class=\"reconSubs\">" + j.subdomains.map(esc).join("<br>") + "</div>";
+    }
+    if (what === "secrets") {
+      var rows = j.results.map(function (r) {
+        return '<div class="' + (r.exposed ? "hit" : "safe") + '"><span>' + esc(r.path) + '</span><span class="tag ' +
+          (r.exposed ? "hit" : "safe") + '">' + (r.exposed ? "FOUND - exposed" : esc(r.note)) + '</span></div>';
+      }).join("");
+      return "<b>" + j.exposed + " of " + j.checked + "</b> paths answered." + '<div class="reconList">' + rows + "</div>";
+    }
+    if (what === "username") {
+      var rows2 = j.results.map(function (r) {
+        var cls = r.state === "found" ? "found" : r.state === "not found" ? "notfound" : "unknown";
+        return '<div><span>' + esc(r.site) + '</span><span class="tag ' + cls + '">' + esc(r.state) + '</span></div>';
+      }).join("");
+      return '<div class="reconList">' + rows2 + "</div><p style='margin-top:8px;color:var(--ink-3);font-size:.76rem'>" + esc(j.note) + "</p>";
+    }
+    if (what === "ports") {
+      var rows3 = j.results.map(function (r) {
+        var cls3 = r.open === true ? "hit" : r.open === false ? "safe" : "unknown";
+        var txt3 = r.open === true ? "OPEN" : r.open === false ? "closed" : "timed out";
+        return '<div class="' + (r.open === true ? "hit" : "safe") + '"><span>Port ' + r.port + '</span><span class="tag ' + cls3 + '">' + txt3 + '</span></div>';
+      }).join("");
+      return '<div class="reconList">' + rows3 + "</div>";
+    }
+    if (what === "vuln") {
+      var rows4 = j.checks.map(function (c) {
+        return '<div class="' + (c.flagged ? "hit" : "safe") + '"><span>' + esc(c.name) + '</span><span class="tag ' +
+          (c.flagged ? "hit" : "safe") + '">' + (c.flagged ? "FLAGGED" : "looks okay") + '</span></div>';
+      }).join("");
+      return '<div class="reconList">' + rows4 + '</div><p class="warn" style="margin-top:8px">' + esc(j.warning) + "</p>";
+    }
+    return "Done.";
+  }
+  document.querySelectorAll("[data-recon]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var what = b.getAttribute("data-recon");
+      if (what === "subdomains") {
+        var d = $("rSubDomain").value.trim(); if (!d) return;
+        reconRun("subdomains", { domain: d });
+      } else if (what === "secrets") {
+        var u = $("rSecretsUrl").value.trim(); if (!u) return;
+        if (!$("rSecretsConsent").checked) { say("Tick “I own this site or have permission to test it” first."); return; }
+        reconRun("secrets", { url: u, consent: true });
+      } else if (what === "username") {
+        var n = $("rUserName").value.trim(); if (!n) return;
+        reconRun("username", { name: n });
+      } else if (what === "ports") {
+        var h = $("rPortsHost").value.trim(); if (!h) return;
+        if (!$("rPortsConsent").checked) { say("Tick “I own this address or have permission to test it” first."); return; }
+        reconRun("ports", { host: h, ports: $("rPortsList").value.trim() || undefined, consent: true });
+      } else if (what === "vuln") {
+        var v = $("rVulnUrl").value.trim(); if (!v) return;
+        if (!$("rVulnConsent").checked) { say("Tick “I own this site or have permission to test it” first."); return; }
+        reconRun("vuln", { url: v, consent: true });
+      }
+    });
+  });
 })();
 </script>
 <script src="/assets/account.js?v=d3821b8b" defer></script>

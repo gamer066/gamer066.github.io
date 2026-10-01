@@ -35,6 +35,13 @@ const PRESETS = {
   kali_status: "Show Kali tool versions (nmap, metasploit)",
   self_scan: "Scan my own laptop's open ports",
   wifi_scan: "List wifi networks my laptop can see",
+  wifi_control: "Find my router and every device on my wifi",
+  malware_scan: "Scan my Downloads folder for malware",
+  laptop_exposed: "Check if my laptop is exposed to the internet",
+  active_connections: "What's talking to the internet right now",
+  laptop_fingerprint: "My laptop's full security report",
+  arp_check: "Check if anyone is secretly spying on my wifi",
+  steg_demo: "Hide a secret message inside a picture (demo)",
   update_tools: "Update every hacking tool"
 };
 const PHONE_PRESETS = {
