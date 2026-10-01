@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-01T11:13:31Z",
+ "updated": "2026-10-01T12:00:36Z",
  "bots": [
   {
    "id": "sunny-gold",
@@ -33,7 +33,12 @@
    "timeframe": "15m",
    "start_balance": 1000.0,
    "balance": 968.06,
-   "open_position": null,
+   "open_position": {
+    "side": "long",
+    "entry": 4185.08,
+    "qty": 0.358,
+    "opened": "2026-10-01T11:31:09Z"
+   },
    "trades": [
     {
      "opened": "2026-09-24T23:16:09Z",
@@ -90,7 +95,7 @@
      "result_usd": -8.25
     }
    ],
-   "updated": "2026-10-01T11:13:31Z",
+   "updated": "2026-10-01T12:00:36Z",
    "context": [
     "Checks gold every 5 minutes, day and night.",
     "No trades yet - it is still waiting.",
