@@ -41,6 +41,12 @@
   .money{text-align:right}
   .money b{display:block;font-family:var(--mono);font-size:1.12rem;font-weight:600}
   .money span{font-family:var(--mono);font-size:.8rem;font-weight:600}
+  /* a brief highlight when a bee's money actually moves, so the race feels alive without re-reading every number */
+  .eqNum.flashUp{animation:eqFlashUp 1.1s ease}
+  .eqNum.flashDown{animation:eqFlashDown 1.1s ease}
+  @keyframes eqFlashUp{0%{color:var(--up);text-shadow:0 0 10px var(--up-soft)}100%{color:inherit;text-shadow:none}}
+  @keyframes eqFlashDown{0%{color:var(--down);text-shadow:0 0 10px var(--down-soft)}100%{color:inherit;text-shadow:none}}
+  @media (prefers-reduced-motion:reduce){.eqNum.flashUp,.eqNum.flashDown{animation:none}}
   .tag{display:inline-block;margin-left:6px;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
     padding:2px 6px;border-radius:999px;vertical-align:2px}
   .tag.die{color:var(--down);background:rgba(255,90,90,.12)}
@@ -179,18 +185,22 @@
       .replace(/^long /, "Holding ").replace(/^short /, "Betting down on ");
   }
 
+  var lastEq = {};   // last painted $ per bee, so a real move can flash briefly instead of just silently changing
   function paintBoard() {
     var list = D.bees.map(function (b) { return { b: b, eq: equity(b) }; }).sort(function (x, y) { return y.eq - x.eq; });
     document.getElementById("board").innerHTML = list.map(function (x, i) {
       var b = x.b, L = LOOK[base(b.name)], ch = x.eq - D.start_usd, pc = ch / D.start_usd * 100;
       var tag = i === 0 ? '<span class="tag win">leading</span>' : i === list.length - 1 ? '<span class="tag die">last · dies</span>' : "";
       var line = holding(b) || plain(b.status);
+      var prev = lastEq[b.name];
+      var flash = prev != null && Math.abs(x.eq - prev) > 0.005 ? (x.eq > prev ? " flashUp" : " flashDown") : "";
+      lastEq[b.name] = x.eq;
       return '<div class="row' + (i === 0 ? " first" : "") + (i === list.length - 1 ? " last" : "") + '">' +
         '<div class="rank">#' + (i + 1) + '</div>' +
         '<div class="bee" style="background:' + L[1] + '22">' + L[0] + (b.jev ? '<span class="j">JEV</span>' : "") + '</div>' +
         '<div class="who"><h3>' + esc(b.name.replace("+Jev", " + Jev")) + tag + '</h3><small>' + esc(line) +
           '<br>' + esc(L[2]) + (b.jev ? " · asked Jev " + b.jev_calls + "×" : "") + '</small></div>' +
-        '<div class="money"><b>$' + x.eq.toFixed(2) + '</b><span class="' + S.tone(ch) + '">' + usd(ch, true) +
+        '<div class="money"><b class="eqNum' + flash + '">$' + x.eq.toFixed(2) + '</b><span class="' + S.tone(ch) + '">' + usd(ch, true) +
           " (" + (pc >= 0 ? "+" : "") + pc.toFixed(1) + '%)</span></div></div>';
     }).join("");
 
