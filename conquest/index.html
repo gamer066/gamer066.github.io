@@ -371,10 +371,8 @@ const shadowT=tex(64,64,(g)=>{const r=g.createRadialGradient(32,32,0,32,32,32);r
 function blob(par,x,z,s){const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:shadowT,transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.58,z);m.scale.set(s,s,1);par.add(m);return m}
 {const fl=new THREE.InstancedMesh(new THREE.SphereGeometry(.13,6,5),new THREE.MeshStandardMaterial({roughness:.6}),900),d=new THREE.Object3D(),cols=[0xff4f7a,0xffd23f,0xffffff,0xb06bff,0xff8a3d].map(c=>lin(c));let n=0;
  for(let i=0;i<120;i++){const a=Math.random()*7,r=rr(19,44),cx=Math.cos(a)*r,cz=Math.sin(a)*r,col=cols[ri(5)];if(Math.abs(Math.abs(cx)-22)<1.6||Math.abs(Math.abs(cz)-22)<1.6||(Math.abs(cx)<2&&cz>16))continue;if(Math.max(Math.abs(cx),Math.abs(cz))<18.6)continue;for(let j=0;j<7&&n<900;j++){d.position.set(cx+rr(-.8,.8),.5,cz+rr(-.8,.8));d.updateMatrix();fl.setMatrixAt(n,d.matrix);fl.setColorAt(n,col);n++}}
- fl.count=n;city.add(fl);
- const bu=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.55,1),mat(0x3f9a32),160);n=0;for(let i=0;i<160;i++){const t=rr(-14.5,14.5),sd=ri(4),q=15.2;const bx=sd<2?t:(sd===2?-q:q),bz=sd<2?(sd?q:-q):t;if(sd===1&&Math.abs(bx)<4){continue}d.position.set(bx,.75,bz);d.scale.set(rr(.8,1.3),rr(.7,1),rr(.8,1.3));d.updateMatrix();bu.setMatrixAt(n++,d.matrix)}bu.castShadow=true;city.add(bu);
- for(const sx of[-1,1])for(let i=0;i<5;i++){const z=10+i*2.4,x=sx*2.6;M(CY,mat(0x2b2b2b,null,{metalness:.6,roughness:.4}),x,1.6,z,.07,2.2,.07,city);M(BX,mat(0x2b2b2b),x,2.8,z,.3,.3,.3,city);const lmp=spr(0xffd07a,true,.95);lmp.position.set(x,2.8,z);lmp.scale.set(1.4,1.4,1);city.add(lmp)}
- for(const sx of[-1,1])for(let i=0;i<12;i++){M(BX,mat(0x8a5a2a,T.wood),sx*1.95,.75,8.6+i*1.1,.12,.5,.12,city)}for(const sx of[-1,1])M(BX,mat(0x8a5a2a,T.wood),sx*1.95,.9,14.6,.06,.08,13,city)}
+ fl.count=0;
+ }
 // buildings
 const bg={},pick=[];const chim=[];
 function house(g,body,roofM,w,h,d,rh){M(BX,mat(body,T.brick),0,.35+h/2,0,w,h,d,g);M(BX,mat(0x4b2f1a,T.wood),0,.35+h*.35,d/2+.02,w*.28,h*.7,.05,g);M(CO4,roofM,0,.35+h+rh/2,0,Math.max(w,d)*.76,rh,Math.max(w,d)*.76,g,Math.PI/4)}
@@ -514,12 +512,12 @@ function kitWorldModel(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k
 const KK={};let KKOK=false;const KKT={};
 const KKL=["building_castle_blue","building_castle_red","building_castle_yellow","building_castle_green","building_barracks_blue","building_church_blue","building_tavern_blue","building_windmill_blue","building_lumbermill_blue","building_mine_blue","building_market_blue","building_blacksmith_blue","building_tower_A_blue","building_tower_B_blue","building_tower_catapult_blue","building_tower_catapult_red","building_tower_catapult_yellow","building_tower_catapult_green","building_home_A_blue","building_home_B_blue","building_home_A_red","building_home_B_yellow","building_well_blue","building_archeryrange_blue","building_watermill_blue","building_grain","building_stage_A","wall_straight","wall_straight_gate","fence_wood_straight","fence_stone_straight","barrel","crate_A_big","crate_B_small","sack","tent","weaponrack","target","wheelbarrow","resource_lumber","resource_stone","flag_blue","flag_red","bucket_water","trees_A_large","trees_A_medium","trees_B_large","trees_B_medium","tree_single_A","tree_single_B","hills_A_trees","hills_B_trees","mountain_A_grass_trees","mountain_B_grass_trees","mountain_C_grass","rock_single_A","rock_single_C","cloud_big","cloud_small"];
 // painted isometric art (CC0, OpenGameArt) drawn as flat pictures that always face the camera
-const ISO={},ISOM={},ISOL=["castle","ha0","ha1","ha2","ha3","hb0","hb1","hb3","hc0","hc1","hc2","hc3","hd0","hd1","hd2","hd3","he0","he1","he2","he3"];
+const ISO={},ISOM={},ISOL=["castle","ha0","ha1","ha2","ha3","hb0","hb1","hb3","hc0","hc1","hc2","hc3","hd0","hd1","hd2","hd3","he0","he1","he2","he3","b_barracks","b_archery","b_smith","b_stable","b_house1","b_house2","b_house3","b_watch","t0","t2","t4","t5","t6","t7","t8","t9","tent1","tent2","tent3","campfire","p_sacks","p_sacks2","p_barrels","p_crates","p_crates2","p_barrel"];
 const HITM=new THREE.MeshBasicMaterial({visible:false});
 function loadISO(){const L=new THREE.TextureLoader();return Promise.all(ISOL.map(n=>new Promise(res=>L.load("iso/"+n+".png",t=>{t.encoding=THREE.sRGBEncoding;t.anisotropy=4;ISO[n]=t;res()},undefined,()=>res()))))}
-function ISP(par,n,w,x,z){const t=ISO[n];if(!t||!t.image)return null;const a=t.image.height/t.image.width,h=w*a;
- const m=ISOM[n]||(ISOM[n]=new THREE.SpriteMaterial({map:t,transparent:true,alphaTest:.12,toneMapped:false,color:new THREE.Color(n==="castle"?1.12:1.3,n==="castle"?1.12:1.24,n==="castle"?1.1:1.15)}));const s=new THREE.Sprite(m);s.center.set(.5,.16);s.scale.set(w,h,1);s.position.set(x||0,h*.11+.15,z||0);par.add(s);
- const hb=new THREE.Mesh(BX,HITM);hb.scale.set(w*.6,h*.55,w*.6);hb.position.set(x||0,h*.28,z||0);par.add(hb);return s}
+function ISP(par,n,w,x,z,y0,flip){const t=ISO[n];if(!t||!t.image)return null;const a=t.image.height/t.image.width,h=w*a;
+ const m=ISOM[n]||(ISOM[n]=new THREE.SpriteMaterial({map:t,transparent:true,alphaTest:.12,toneMapped:false,color:new THREE.Color(n==="castle"?1.12:1.3,n==="castle"?1.12:1.24,n==="castle"?1.1:1.15)}));const s=new THREE.Sprite(m);s.center.set(.5,.16);s.scale.set(flip?-w:w,h,1);s.position.set(x||0,(y0||0)+h*.11+.15,z||0);par.add(s);
+ const hb=new THREE.Mesh(BX,HITM);hb.scale.set(w*.6,h*.55,w*.6);hb.position.set(x||0,(y0||0)+h*.28,z||0);if(w>2.5)par.add(hb);return s}
 function loadKK(){if(!THREE.GLTFLoader)return Promise.resolve(false);const L=new THREE.GLTFLoader();
  const mm=MONM.map(m=>new Promise(res=>L.load("mm/"+m[0]+".glb",g=>{g.scene.traverse(o=>{if(o.isMesh){o.castShadow=true;o.material.envMapIntensity=.5}});KK[m[0]]=g.scene;res()},undefined,()=>res())));
  let done=0;const tot=KKL.length+MONM.length;const tick1=()=>{done++;const b=document.getElementById("lbar");if(b)b.style.width=(done/tot*100)+"%"};mm.forEach(p=>p.then(tick1));
@@ -531,8 +529,8 @@ function kkVariants(){let img=null;KK.building_castle_blue.traverse(o=>{if(o.isM
 const KMC2={};function Q(par,n,x,y,z,s,ry,tex){const t=KK[n];if(!t)return null;const o=t.clone();o.position.set(x,y,z);o.scale.setScalar(s);o.rotation.y=ry||0;const tx=tex&&KKT[tex];if(tx)o.traverse(m=>{if(m.isMesh){const k=m.material.uuid+tex;if(!KMC2[k]){KMC2[k]=m.material.clone();KMC2[k].map=tx}m.material=KMC2[k]}});par.add(o);return o}
 const KKB={castle:["building_castle_blue",3.3],barracks:["building_barracks_blue",2.7],academy:["building_church_blue",2.6],infirmary:["building_tavern_blue",2.6],farm:["building_windmill_blue",2.6],quarry:["building_stage_A",2.4],mill:["building_lumbermill_blue",2.6],mine:["building_mine_blue",2.6],manor:["building_home_B_blue",3],vault:["building_blacksmith_blue",2.6],wall:["wall_straight_gate",2.4],battle:["building_archeryrange_blue",2.6],trade:["building_market_blue",2.6],prison:["building_tower_catapult_blue",2.3],embassy:["building_tower_B_blue",2.6],tower:["building_tower_A_blue",2.6]};
 function buildKK(k){const g=new THREE.Group(),l=S.bl[k],[px,pz]=B[k].p;g.position.set(k==="castle"?0:px*1.6,.55,k==="castle"?0:pz*1.6);const[n,s]=KKB[k];
- if(k==="wall"){g.position.set(0,.55,16.8);Q(g,n,0,0,0,s,0);g.userData.k=k;city.add(g);bg[k]=g;g.traverse(o=>{if(o.isMesh){o.userData.k=k;pick.push(o)}});return}
- const ISB={castle:["castle",16],barracks:["hd2",8],academy:["hc0",7],infirmary:["ha0",6.2],farm:["he0",6],quarry:["he2",5.8],mill:["he1",6],mine:["he3",5.8],manor:["hd0",7.6],vault:["hc2",6.6],battle:["hd3",7.4],trade:["hb0",6.8],prison:["hc3",6.4],embassy:["hb1",6.8],tower:["hc1",6.2]};
+ if(k==="wall"){g.position.set(0,.55,16.8);Q(g,n,0,0,0,s,0);if(ISO.castle){const WM=mat(0xa49c90,T.brick);g.traverse(m=>{if(m.isMesh)m.material=WM})}g.userData.k=k;city.add(g);bg[k]=g;g.traverse(o=>{if(o.isMesh){o.userData.k=k;pick.push(o)}});return}
+ const ISB={castle:["castle",16],barracks:["b_barracks",8.6],academy:["hc0",7],infirmary:["b_house3",6.6],farm:["he0",6],quarry:["he2",5.8],mill:["he1",6],mine:["b_smith",7.4],manor:["hd0",7.6],vault:["hc2",6.6],battle:["b_archery",8.2],trade:["b_stable",8],prison:["hc3",6.4],embassy:["b_house1",6.8],tower:["b_watch",4.2]};
  if(ISB[k]&&ISO[ISB[k][0]]){ISP(g,ISB[k][0],ISB[k][1]);
   if(k==="castle"){for(const sx of[-1,1]){const f=spr(0xff9a30,true,.95);f.position.set(sx*2.2,1.4,6);f.scale.set(1.3,1.3,1);g.add(f);(city.userData.fires=city.userData.fires||[]).push(f)}}
   g.scale.setScalar(k==="castle"?1+Math.min(l,25)*.008:1+Math.min(l,25)*.01);g.userData.k=k;city.add(g);bg[k]=g;g.traverse(o=>{if(o.isMesh){o.userData.k=k;pick.push(o)}});return}
@@ -549,29 +547,39 @@ function buildKK(k){const g=new THREE.Group(),l=S.bl[k],[px,pz]=B[k].p;g.positio
  if(["barracks","infirmary","farm","mill","manor","embassy"].includes(k))chim.push({x:g.position.x+.4,y:5,z:g.position.z-.4,k});
  g.scale.setScalar(k==="castle"?1+Math.min(l,25)*.01:1+Math.min(l,25)*.014);g.userData.k=k;city.add(g);bg[k]=g;const sh=blob(g,0,0,k==="castle"?14:5.6);sh.position.y=.05;g.traverse(o=>{if(o.isMesh){o.userData.k=k;pick.push(o)}})}
 const KCLOUDS=[];
-function kkCity(){const H=16.8,WS2=2.4,seg=4.8;
+function kkCity(){const H=16.8,WS2=2.4,seg=4.8;const kids0=city.children.length;
  for(let i=0;i<7;i++){const t=-H+seg/2+i*seg;Q(city,"wall_straight",t,.55,-H,WS2,0);Q(city,"wall_straight",-H,.55,t,WS2,Math.PI/2);Q(city,"wall_straight",H,.55,t,WS2,Math.PI/2);if(i!==3)Q(city,"wall_straight",t,.55,H,WS2,0)}
- for(const[x,z]of[[-H,-H],[H,-H],[-H,H],[H,H]])Q(city,"building_tower_A_blue",x,.55,z,2.4,Math.PI/6);
+ // stone-coloured walls instead of the bright cartoon caps
+ if(ISO.castle){const WM=mat(0xa49c90,T.brick);city.children.slice(kids0).forEach(o=>o.traverse(m=>{if(m.isMesh)m.material=WM}))}
+ for(const[x,z]of[[-H,-H],[H,-H],[-H,H],[H,H]])if(!ISP(city,"b_watch",4.2,x,z,.4))Q(city,"building_tower_A_blue",x,.55,z,2.4,Math.PI/6);
  for(const sx of[-1,1]){const f=spr(0xffa030,true,.9);f.position.set(sx*3.4,3.2,H+1.4);f.scale.set(1.6,1.6,1);city.add(f);(city.userData.fires=city.userData.fires||[]).push(f);M(CY,mat(0x333333),sx*3.4,1.9,H+1.4,.16,2.6,.16,city)}
  // plaza props
- Q(city,"building_well_blue",0,.55,9,2.2);Q(city,"tent",-7,.55,14,2.2,.3);Q(city,"tent",7,.55,14,2.2,-.3);
+ if(ISO.tent1){ISP(city,"campfire",1.8,0,9.5,.4);ISP(city,"tent1",4.4,-7.5,13.5,.4);ISP(city,"tent2",4.4,7.5,13.5,.4,1);ISP(city,"p_barrels",1.8,-10,12,.4);ISP(city,"p_crates",2.2,10,12,.4);ISP(city,"p_sacks2",1.2,-5,15,.4);
+  // bushes along the inside of the wall
+  for(let i=0;i<46;i++){const t=rr(-14.5,14.5),sd=ri(4),q=15;const bx=sd<2?t:(sd===2?-q:q),bz=sd<2?(sd?q:-q):t;if(sd===1&&Math.abs(bx)<4)continue;ISP(city,["t0","t2","t8","t9"][ri(4)],rr(1.8,2.6),bx,bz,.4,Math.random()<.5)}}
+ else{Q(city,"building_well_blue",0,.55,9,2.2);Q(city,"tent",-7,.55,14,2.2,.3);Q(city,"tent",7,.55,14,2.2,-.3);}
  // outside: village, fields, forests, mountains
  const vh=[["building_home_A_blue",27,5],["building_home_B_blue",31,11],["building_home_A_red",27,-27],["building_home_B_yellow",-6,-28],["building_home_A_blue",4,-29],["building_home_B_blue",14,-28],["building_home_A_red",-27,27],["building_watermill_blue",33,-4],["building_market_blue",27,27],["building_tavern_blue",-14,-29],["building_home_B_yellow",31,-17]];
- const VHI=["ha1","ha2","ha3","hb3","hd1","hb0","ha0","hc2","he1","hd0","ha2"];
+ const VHI=["b_house1","b_house2","ha3","b_house3","hd1","b_stable","b_house2","b_smith","he1","b_house1","ha2"];
  vh.forEach(([n,x,z],i)=>{if(!ISP(city,VHI[i%VHI.length],rr(5.5,6.8),x,z))Q(city,n,x,.4,z,2.4,ri(6)*Math.PI/3)});
- for(let i=0;i<110;i++){const a=Math.random()*7,r=rr(30,43),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<4&&z>16)continue;Q(city,["trees_A_large","trees_A_medium","trees_B_large","trees_B_medium","tree_single_A","tree_single_B"][ri(6)],x,.4,z,rr(2,2.8),Math.random()*7)}
- for(let i=0;i<18;i++){const a=Math.random()*7,r=rr(19.5,23),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.max(Math.abs(x),Math.abs(z))<19||(Math.abs(x)<4&&z>15))continue;Q(city,["tree_single_A","tree_single_B"][ri(2)],x,.4,z,rr(2,2.6),Math.random()*7)}
+ for(let i=0;i<110;i++){const a=Math.random()*7,r=rr(30,43),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<4&&z>16)continue;if(ISP(city,["t4","t5","t6","t7"][ri(4)],rr(4,5.6),x,z,.4,Math.random()<.5))continue;Q(city,["trees_A_large","trees_A_medium","trees_B_large","trees_B_medium","tree_single_A","tree_single_B"][ri(6)],x,.4,z,rr(2,2.8),Math.random()*7)}
+ for(let i=0;i<18;i++){const a=Math.random()*7,r=rr(19.5,23),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.max(Math.abs(x),Math.abs(z))<19||(Math.abs(x)<4&&z>15))continue;if(ISP(city,["t4","t5","t6","t7"][ri(4)],rr(3.6,4.6),x,z,.4,Math.random()<.5))continue;Q(city,["tree_single_A","tree_single_B"][ri(2)],x,.4,z,rr(2,2.6),Math.random()*7)}
  for(let i=0;i<8;i++){const c=Q(city,Math.random()<.5?"cloud_big":"cloud_small",rr(-70,70),rr(30,36),rr(-70,-10),rr(2.5,4));if(c){c.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=false}});KCLOUDS.push(c)}}
 }
 
 // tiny pine clusters like the classic kingdom map
-function pineClusters(){const g1=new THREE.ConeGeometry(.28,.9,6);g1.translate(0,.45,0);const im=new THREE.InstancedMesh(g1,mat(0x2c6a34),5200),d=new THREE.Object3D();let n=0;
+function pineClusters(){if(ISO.t5)return treeCards();const g1=new THREE.ConeGeometry(.28,.9,6);g1.translate(0,.45,0);const im=new THREE.InstancedMesh(g1,mat(0x2c6a34),5200),d=new THREE.Object3D();let n=0;
  for(let c=0;c<520&&n<5200;c++){const cx=rr(-WS+3,WS-3),cz=rr(-WS+3,WS-3);if(Math.hypot(cx,cz)<62)continue;const k=4+ri(9);for(let i=0;i<k&&n<5200;i++){d.position.set(cx+rr(-1.6,1.6),0,cz+rr(-1.2,1.2));d.scale.setScalar(rr(.6,1.2));d.updateMatrix();im.setMatrixAt(n++,d.matrix)}}
  im.count=n;im.castShadow=true;world.add(im)}
+// thousands of small painted trees as flat cards turned to face the camera (one draw call per tree picture)
+function treeCards(){const keys=["t4","t5","t6","t7"],N=900,d=new THREE.Object3D();d.rotation.order="YXZ";const ims=keys.map(k=>{const t=ISO[k],a=t.image.height/t.image.width;const g=new THREE.PlaneGeometry(1.5,1.5*a);g.translate(0,1.5*a*.42,0);
+  const m=new THREE.InstancedMesh(g,new THREE.MeshBasicMaterial({map:t,alphaTest:.45,toneMapped:false,color:new THREE.Color(1.15,1.15,1.1),side:THREE.DoubleSide}),N);m.count=0;world.add(m);return m});
+ for(let c=0;c<560;c++){const cx=rr(-WS+3,WS-3),cz=rr(-WS+3,WS-3);if(Math.hypot(cx,cz)<62)continue;const k=3+ri(6);for(let i=0;i<k;i++){const m=ims[ri(4)];if(m.count>=N)continue;d.position.set(cx+rr(-1.8,1.8),0,cz+rr(-1.4,1.4));d.rotation.set(-CAM.world.pitch*.55,CAM.world.yaw,0);const sc=rr(.7,1.25);d.scale.set(Math.random()<.5?-sc:sc,sc,sc);d.updateMatrix();m.setMatrixAt(m.count++,d.matrix)}}
+ ims.forEach(m=>m.instanceMatrix.needsUpdate=true)}
 // world: castles by guild colour
 const KGC={K77:["red","purple"],EC:["blue",null],DRK:["red",null],WLF:["yellow",null],SKY:["green",null],ORC:["blue","purple"],"":["blue","grey"]};
 function kkWorld(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k==="me"?"EC":(o.tag||""),[col,tex]=KGC[tag]||KGC[""];
- if(o.k==="castle"||o.k==="me"){const lv=o.k==="me"?S.bl.castle:o.lvl;const plate=new THREE.Mesh(BX,mat(0xffffff,T.plaza));plate.scale.set(3.6,.16,3.6);plate.position.y=.08;plate.receiveShadow=true;grp.add(plate);
+ if(o.k==="castle"||o.k==="me"){const lv=o.k==="me"?S.bl.castle:o.lvl;const plate=new THREE.Mesh(BX,mat(0xffffff,T.plaza));if(ISO.castle)plate.visible=false;plate.scale.set(3.6,.16,3.6);plate.position.y=.08;plate.receiveShadow=true;grp.add(plate);
   if(!ISO.castle)for(const[a,b]of[[-1.7,-1.7],[1.7,-1.7],[-1.7,1.7],[1.7,1.7]]){const t=new THREE.Mesh(CY,mat(0x8f8a80,T.brick));t.scale.set(.22,.7,.22);t.position.set(a,.45,b);t.castShadow=true;grp.add(t)}
   if(ISO.castle){if(o.k==="me"||lv>=17)ISP(grp,"castle",o.k==="me"?4.6:3.6+lv*.02);else if(lv>=9)ISP(grp,"hd0",3.2);else ISP(grp,["ha0","ha1","hb1","hc0"][o.lvl%4],2.7);
    Q(grp,o.k==="me"?"flag_blue":"flag_red",1.7,.16,1.4,.9);return true}
@@ -581,12 +589,18 @@ function kkWorld(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k==="me
  if(o.k==="wonder"&&ISO.castle){ISP(grp,"castle",8.5);ISP(grp,"hc0",3.2,4,2.6);ISP(grp,"hc3",3.2,-4,-2.6);return true}
  if(o.k==="fort"){const c=col==="blue"&&tex?"blue":col;Q(grp,"building_tower_catapult_"+c,0,0,0,1.6,0,tex);for(const[a,b]of[[-1.8,0],[1.8,0]])Q(grp,"wall_straight",a,0,b+1.6,1,0,null);Q(grp,"building_tower_A_blue",-2.2,0,-1.2,.9,0,tex||(col!=="blue"?null:null));return true}
  if(o.k==="wonder"){Q(grp,"building_castle_yellow",0,.5,0,2.4);Q(grp,"building_church_blue",3.4,0,2,1.2);Q(grp,"building_church_blue",-3.4,0,-2,1.2);return true}
+ if(o.k==="res"&&ISO.p_sacks2){const ff=Math.random()<.5;{const hb=new THREE.Mesh(BX,HITM);hb.scale.set(2.6,1.6,2.6);hb.position.y=.8;grp.add(hb)}
+  if(o.r==="food"){ISP(grp,"tent1",2.4,-.3,-.4,0,ff);ISP(grp,"p_sacks2",.9,.9,.7);ISP(grp,"p_sacks",.8,-.9,.9);ISP(grp,"p_barrels",1.2,.2,1.2)}
+  else if(o.r==="wood"){ISP(grp,"t5",2.6,-.6,-.6,0,ff);ISP(grp,"t7",2.3,.8,-.2,0,!ff);ISP(grp,"t6",2,0,.7);ISP(grp,"p_crates",1.3,1,1.1)}
+  else{const kk=o.r==="stone"?"resource_stone":"rock_single_C";const rk=Q(grp,kk,0,0,0,1.8);if(o.r!=="stone"&&rk){const tint=o.r==="gold"?0xffc828:0x6f9fff;rk.traverse(m=>{if(m.isMesh){m.material=m.material.clone();m.material.color=lin(tint);m.material.emissive=lin(o.r==="gold"?0x553300:0x0a1f55);m.material.metalness=.4;m.material.roughness=.4}})}
+   ISP(grp,o.r==="stone"?"p_barrel":"p_crates2",1.2,1,.9);ISP(grp,"tent2",1.8,-1.1,-.9,0,ff)}
+  return true}
  if(o.k==="res"){if(o.r==="food"){Q(grp,"building_grain",0,0,0,1.25);Q(grp,"sack",.9,0,.8,1.3)}else if(o.r==="wood"){Q(grp,"resource_lumber",0,0,0,1.7);Q(grp,"tree_single_A",-.9,0,-.7,1.2)}else if(o.r==="stone"){Q(grp,"resource_stone",0,0,0,1.7);Q(grp,"rock_single_A",-.8,0,-.6,1.4)}else{const rk=Q(grp,"rock_single_C",0,0,0,1.9);const tint=o.r==="gold"?0xffc828:0x6f9fff;if(rk)rk.traverse(m=>{if(m.isMesh){m.material=m.material.clone();m.material.color=lin(tint);m.material.emissive=lin(o.r==="gold"?0x553300:0x0a1f55);m.material.metalness=.4;m.material.roughness=.4}});Q(grp,o.r==="gold"?"crate_A_big":"crate_B_small",.9,0,.8,1.2)}
   Q(grp,"flag_red",-1,0,.9,.8);return true}
  if(o.k==="mon"&&KK[MONM[o.type%5][0]]){const[n,sc]=MONM[o.type%5];Q(grp,n,0,o.type===1||o.type===3?.6:0,0,sc*(.85+o.lvl*.06),0);return true}
  return false}
 function kkWorldDecor(){pineClusters();
- for(let i=0;i<140;i++){const x=rr(-WS+4,WS-4),z=rr(-WS+4,WS-4);if(Math.hypot(x,z)<62)continue;const cl=Math.sin(x*.18)*Math.cos(z*.16);if(cl<.3)continue;if(S.w&&[...S.w.c,...S.w.m,...S.w.r,...S.w.n].some(o=>Math.hypot(o.x-x,o.z-z)<2.4))continue;Q(world,["trees_A_large","trees_B_large","trees_A_medium","trees_B_medium"][ri(4)],x,0,z,rr(1.2,1.8),Math.random()*7)}
+ for(let i=0;i<140;i++){const x=rr(-WS+4,WS-4),z=rr(-WS+4,WS-4);if(Math.hypot(x,z)<62)continue;const cl=Math.sin(x*.18)*Math.cos(z*.16);if(cl<.3)continue;if(S.w&&[...S.w.c,...S.w.m,...S.w.r,...S.w.n].some(o=>Math.hypot(o.x-x,o.z-z)<2.4))continue;if(!ISP(world,["t4","t5","t6","t7"][ri(4)],rr(2.6,3.4),x,z,0,Math.random()<.5))Q(world,["trees_A_large","trees_B_large","trees_A_medium","trees_B_medium"][ri(4)],x,0,z,rr(1.2,1.8),Math.random()*7)}
  for(let i=0;i<10;i++){const c=Q(world,"cloud_big",rr(-WS,WS),rr(42,50),rr(-WS,WS),rr(3,4.5));if(c){c.traverse(o=>{if(o.isMesh)o.castShadow=false});KCLOUDS.push(c)}}}
 // smoke particles
 const smoke=[];function puff(){if(!chim.length)return;const c=chim[ri(chim.length)],s=spr(0xdddddd,false,.5);s.position.set(c.x,c.y,c.z);s.scale.set(.5,.5,1);city.add(s);smoke.push({s,t:0})}
