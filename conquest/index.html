@@ -111,6 +111,53 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:3px 4px;t
 .lg-in{text-align:center;width:min(420px,100%)}.lg-title{font:900 clamp(28px,6vw,52px) var(--disp);color:var(--gold);text-shadow:0 3px 0 #6b4a00;margin-bottom:12px}
 .lg-card{background:linear-gradient(var(--panel),var(--panel2));border:3px solid #4c8fba;border-radius:14px;padding:16px;box-shadow:0 12px 40px #000}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+
+/* ---- Lords-style screen template ---- */
+#gcp,#enp,#vipp,#shp{display:none!important}
+#tl{gap:4px!important}
+.ava{width:78px!important;height:78px!important;border-radius:10px!important}
+.ava b{left:-4px!important;bottom:-6px!important;transform:none!important;font-size:14px!important;padding:1px 9px!important;border-radius:4px 12px 12px 4px!important}
+#tl .stat{gap:4px!important}
+#tl .pill{min-width:150px;font-size:16px;padding:2px 14px 2px 2px;border-width:2px;background:linear-gradient(#4a3a26,#2a1f14 60%,#1c140c);border-color:#d9b25a}
+#pwp{min-width:210px!important;font-size:18px!important}
+#gmp .plus{width:26px;height:22px;font-size:18px;line-height:20px;margin-left:auto}
+#tr{flex-direction:row!important}
+#tr .pill{font-size:16px;min-width:110px;justify-content:flex-end;cursor:pointer}
+#tick{top:calc(env(safe-area-inset-top,0px) + 4px)!important;left:280px!important;transform:none!important;width:calc(100vw - 460px)!important;max-width:720px;cursor:pointer;padding-left:34px!important}
+#tick:before{content:"💬";position:absolute;left:6px;top:6px;font-size:18px}
+#chat{display:none!important}
+#evrow{top:calc(env(safe-area-inset-top,0px) + 46px)!important;left:280px!important;transform:none!important}
+#rcol{right:8px;top:calc(env(safe-area-inset-top,0px) + 60px);display:flex;flex-direction:column;gap:16px;align-items:center}
+#lcol{left:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);display:flex;flex-direction:column;gap:10px}
+#lcol .btn,#home{width:52px;height:52px;padding:0;border-radius:12px;display:grid;place-items:center}
+#home{position:fixed;left:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:82px!important;height:72px!important;z-index:6}
+#home .ic2{width:56px!important;height:56px!important}
+#queue{top:calc(env(safe-area-inset-top,0px) + 120px)!important;left:96px!important}
+.lvh{display:inline-grid;place-items:center;min-width:22px;height:20px;padding:0 4px;background:linear-gradient(#5a5f6a,#2c3038);border:1.5px solid #c9ced8;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);font:900 12px var(--body);color:#fff}
+
+/* ---- fit iPhone screens (Dynamic Island / rounded corners in landscape) ---- */
+:root{--sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
+#tl{left:calc(var(--sl) + 6px)!important}
+#tr{right:calc(var(--sr) + 6px)!important}
+#rcol{right:calc(var(--sr) + 8px)!important}
+#lcol{left:calc(var(--sl) + 10px)!important}
+#home{left:calc(var(--sl) + 8px)!important}
+#queue{left:calc(var(--sl) + 96px)!important}
+#tick{left:calc(var(--sl) + 280px)!important;width:calc(100vw - 470px - var(--sl) - var(--sr))!important}
+#evrow{left:calc(var(--sl) + 280px)!important}
+#bot{padding-right:calc(var(--sr) + 96px)!important;padding-left:calc(var(--sl) + 100px)!important}
+#bMode{right:calc(var(--sr) + 8px)!important}
+#login{padding:calc(var(--st) + 6px) calc(var(--sr) + 12px) calc(var(--sb) + 6px) calc(var(--sl) + 12px)!important;align-items:center}
+.lg-in{width:min(460px,100%)!important}
+.lg-title{font-size:clamp(22px,7vh,46px)!important;margin:0 0 6px!important;line-height:1.05}
+.lg-card{padding:10px 14px!important}
+.lg-card .ic2{width:40px!important;height:40px!important}
+.lg-card .btn.big{padding:8px 14px!important;margin-top:8px!important}
+#lnm{padding:7px!important;font-size:15px!important}
+#load .lt{font-size:clamp(24px,8vh,52px)!important}
+.pan{max-height:calc(100vh - 24px - var(--st) - var(--sb))!important}
+#ov{padding:calc(var(--st) + 8px) calc(var(--sr) + 12px) calc(var(--sb) + 8px) calc(var(--sl) + 12px)!important}
+@media (max-height:460px){.ava{width:66px!important;height:66px!important}#tl .pill{font-size:14px!important;min-width:130px}#pwp{min-width:180px!important;font-size:16px!important}.round{width:48px!important;height:48px!important}.round .ic2{width:30px!important;height:30px!important}#bMode{width:70px!important;height:70px!important}#home{width:72px!important;height:64px!important}#rcol{gap:12px!important}#rcol .ev{width:40px;height:40px}#evrow .ev{width:40px;height:40px}#queue{top:calc(var(--st) + 106px)!important;left:calc(var(--sl) + 84px)!important}}
 </style>
 <div id="app"><canvas id="c"></canvas>
 <div id="labels"></div>
@@ -123,6 +170,9 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:3px 4px;t
 <div class="hud" id="tr"></div>
 <div class="hud" id="queue"></div>
 <div class="hud" id="evrow"></div>
+<div class="hud" id="rcol"></div>
+<div class="hud" id="lcol" hidden></div>
+<button class="btn" id="home" hidden></button>
 <div class="hud" id="coord" hidden></div>
 <div class="hud" id="qbar"><b>Quest</b><span id="qtxt"></span></div>
 <div id="radial"></div>
@@ -264,7 +314,7 @@ const feed=[];function news(t){feed.unshift(t);feed.length=2;$("t1").innerHTML=f
 // ================= RENDERER =================
 const cv=$("c"),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:"high-performance"});
 R.setPixelRatio(Math.min(2,devicePixelRatio));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
-R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.92;
+R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.85;
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
 function tex(w,h,draw,rx,ry){const c=document.createElement("canvas");c.width=w;c.height=h;draw(c.getContext("2d"),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rx||1,ry||1);t.encoding=THREE.sRGBEncoding;t.anisotropy=R.capabilities.getMaxAnisotropy();return t}
 const noise=(g,w,h,n,a)=>{for(let i=0;i<n;i++){g.fillStyle=`rgba(${Math.random()<.5?0:255},${Math.random()<.5?0:255},${Math.random()<.5?0:255},${a*Math.random()})`;g.fillRect(Math.random()*w,Math.random()*h,2,2)}};
@@ -279,7 +329,7 @@ const ENV=(()=>{const pm=new THREE.PMREMGenerator(R),es=new THREE.Scene();sky(es
 let COMP=null,RP=null,FX=null;
 function makeComposer(){if(!THREE.EffectComposer||!THREE.UnrealBloomPass)return;try{COMP=new THREE.EffectComposer(R);RP=new THREE.RenderPass(new THREE.Scene(),cam);COMP.addPass(RP);
  COMP.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(512,512),.42,.55,.82));
- const G=new THREE.ShaderPass({uniforms:{tDiffuse:{value:null},sat:{value:1.32},con:{value:1.07},vig:{value:.38}},vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
+ const G=new THREE.ShaderPass({uniforms:{tDiffuse:{value:null},sat:{value:1.02},con:{value:1.12},vig:{value:.45}},vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
  fragmentShader:"uniform sampler2D tDiffuse;uniform float sat,con,vig;varying vec2 vUv;void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;c=pow(max(c,0.),vec3(1./2.2));float l=dot(c,vec3(.299,.587,.114));c=mix(vec3(l),c,sat);c=(c-.5)*con+.5;c*=mix(1.,smoothstep(.95,.3,length(vUv-.5)),vig);c*=vec3(1.04,1.,.95);gl_FragColor=vec4(c,1.);}"});COMP.addPass(G);
  FX=new THREE.ShaderPass(THREE.FXAAShader);COMP.addPass(FX)}catch(e){COMP=null}}
 function draw(sc){if(COMP){RP.scene=sc;COMP.render()}else R.render(sc,cam)}
@@ -298,7 +348,7 @@ const city=new THREE.Scene();city.environment=ENV;city.fog=new THREE.Fog(0xa9d4e
 const cWater=wavyWater(city,260,70,0x2f86c0,-.7);
 {const isl=M(new THREE.CylinderGeometry(31,34,1.6,40),mat(0x6aa843),0,-.35,0,1,1,1,city);
  const rim=M(new THREE.CylinderGeometry(34.2,35.5,.9,40),mat(0xd8c58a),0,-.75,0,1,1,1,city);
- const gT=tex(512,512,(g,w,h)=>{g.fillStyle="#4fa832";g.fillRect(0,0,w,h);for(let i=0;i<14000;i++){const v=ri(50);g.fillStyle=`rgba(${50+v},${130+v},${25+v/3},.55)`;g.fillRect(Math.random()*w,Math.random()*h,3,3)}},4,4);
+ const gT=tex(512,512,(g,w,h)=>{g.fillStyle="#4a7d2c";g.fillRect(0,0,w,h);for(let i=0;i<22000;i++){const v=ri(45);g.fillStyle=`rgba(${55+v},${95+v},${30+v/3},.5)`;g.fillRect(Math.random()*w,Math.random()*h,3,3)}},4,4);
  isl.material=mat(0xffffff,gT);
  const pl=M(BX,mat(0xffffff,T.plaza),0,.48,0,34.4,.18,34.4,city);T.plaza.repeat.set(10,10);
  const road=M(BX,mat(0xffffff,T.plaza),0,.52,13,3,.1,12,city);}
@@ -501,6 +551,11 @@ function kkCity(){const H=16.8,WS2=2.4,seg=4.8;
  for(let i=0;i<18;i++){const a=Math.random()*7,r=rr(19.5,23),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.max(Math.abs(x),Math.abs(z))<19||(Math.abs(x)<4&&z>15))continue;Q(city,["tree_single_A","tree_single_B"][ri(2)],x,.4,z,rr(2,2.6),Math.random()*7)}
  for(let i=0;i<8;i++){const c=Q(city,Math.random()<.5?"cloud_big":"cloud_small",rr(-70,70),rr(30,36),rr(-70,-10),rr(2.5,4));if(c){c.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=false}});KCLOUDS.push(c)}}
 }
+
+// tiny pine clusters like the classic kingdom map
+function pineClusters(){const g1=new THREE.ConeGeometry(.28,.9,6);g1.translate(0,.45,0);const im=new THREE.InstancedMesh(g1,mat(0x2c6a34),5200),d=new THREE.Object3D();let n=0;
+ for(let c=0;c<520&&n<5200;c++){const cx=rr(-WS+3,WS-3),cz=rr(-WS+3,WS-3);if(Math.hypot(cx,cz)<62)continue;const k=4+ri(9);for(let i=0;i<k&&n<5200;i++){d.position.set(cx+rr(-1.6,1.6),0,cz+rr(-1.2,1.2));d.scale.setScalar(rr(.6,1.2));d.updateMatrix();im.setMatrixAt(n++,d.matrix)}}
+ im.count=n;im.castShadow=true;world.add(im)}
 // world: castles by guild colour
 const KGC={K77:["red","purple"],EC:["blue",null],DRK:["red",null],WLF:["yellow",null],SKY:["green",null],ORC:["blue","purple"],"":["blue","grey"]};
 function kkWorld(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k==="me"?"EC":(o.tag||""),[col,tex]=KGC[tag]||KGC[""];
@@ -514,8 +569,8 @@ function kkWorld(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k==="me
   Q(grp,"flag_red",-1,0,.9,.8);return true}
  if(o.k==="mon"&&KK[MONM[o.type%5][0]]){const[n,sc]=MONM[o.type%5];Q(grp,n,0,o.type===1||o.type===3?.6:0,0,sc*(.85+o.lvl*.06),0);return true}
  return false}
-function kkWorldDecor(){
- for(let i=0;i<900;i++){const x=rr(-WS+4,WS-4),z=rr(-WS+4,WS-4);if(Math.hypot(x,z)<62)continue;const cl=Math.sin(x*.18)*Math.cos(z*.16);if(cl<.3)continue;if(S.w&&[...S.w.c,...S.w.m,...S.w.r,...S.w.n].some(o=>Math.hypot(o.x-x,o.z-z)<2.4))continue;Q(world,["trees_A_large","trees_B_large","trees_A_medium","trees_B_medium"][ri(4)],x,0,z,rr(1.2,1.8),Math.random()*7)}
+function kkWorldDecor(){pineClusters();
+ for(let i=0;i<140;i++){const x=rr(-WS+4,WS-4),z=rr(-WS+4,WS-4);if(Math.hypot(x,z)<62)continue;const cl=Math.sin(x*.18)*Math.cos(z*.16);if(cl<.3)continue;if(S.w&&[...S.w.c,...S.w.m,...S.w.r,...S.w.n].some(o=>Math.hypot(o.x-x,o.z-z)<2.4))continue;Q(world,["trees_A_large","trees_B_large","trees_A_medium","trees_B_medium"][ri(4)],x,0,z,rr(1.2,1.8),Math.random()*7)}
  for(let i=0;i<10;i++){const c=Q(world,"cloud_big",rr(-WS,WS),rr(42,50),rr(-WS,WS),rr(3,4.5));if(c){c.traverse(o=>{if(o.isMesh)o.castShadow=false});KCLOUDS.push(c)}}}
 // smoke particles
 const smoke=[];function puff(){if(!chim.length)return;const c=chim[ri(chim.length)],s=spr(0xdddddd,false,.5);s.position.set(c.x,c.y,c.z);s.scale.set(.5,.5,1);city.add(s);smoke.push({s,t:0})}
@@ -555,10 +610,10 @@ function resGeo(r){const key="res"+r;if(GC[key])return GC[key];const P=[],p=(g,c
  return GC[key]=merge(P)}
 function nestGeo(){if(GC.nest)return GC.nest;const P=[];P.push({g:CY,c:0x2a2633,p:[0,.1,0],s:[1.6,.2,1.6]});for(let i=0;i<9;i++){const a=i*.7,r=i?rr(.4,1.1):0;P.push({g:CO,c:i%2?0x5b2a8a:0x2f8a5a,p:[Math.cos(a)*r,.9,Math.sin(a)*r],s:[.3,i?rr(1,2):2.8,.3],rz:rr(-.25,.25)})}return GC.nest=merge(P)}
 // ground texture
-{const G=tex(4096,4096,(g,w,h)=>{g.fillStyle="#52a836";g.fillRect(0,0,w,h);for(let i=0;i<60000;i++){const v=ri(50);g.fillStyle=`rgba(${50+v},${130+v},${28+v/3},.5)`;g.fillRect(Math.random()*w,Math.random()*h,4,4)}
+{const G=tex(4096,4096,(g,w,h)=>{g.fillStyle="#4f8a31";g.fillRect(0,0,w,h);for(let i=0;i<90000;i++){const v=ri(45);g.fillStyle=`rgba(${60+v},${105+v},${32+v/3},.45)`;g.fillRect(Math.random()*w,Math.random()*h,4,4)}
   const cx=w/2,u=w/(WS*2);g.save();g.beginPath();g.arc(cx,cx,60*u,0,7);g.clip();g.fillStyle="#7d7b86";g.fillRect(0,0,w,h);for(let y=0;y<w;y+=u)for(let x=0;x<w;x+=u){const v=110+ri(30);g.fillStyle=`rgb(${v},${v-2},${v+10})`;g.fillRect(x+1,y+1,u-2,u-2)}g.restore();
-  g.strokeStyle="rgba(0,0,0,.07)";g.lineWidth=1;for(let i=0;i<=WS*2;i++){g.beginPath();g.moveTo(i*u,0);g.lineTo(i*u,h);g.stroke();g.beginPath();g.moveTo(0,i*u);g.lineTo(w,i*u);g.stroke()}
-  g.strokeStyle="rgba(255,215,90,.6)";g.lineWidth=6;g.beginPath();g.arc(cx,cx,60*u,0,7);g.stroke()});
+  for(let k=0;k<26;k++){const bx=Math.random()*w,by=Math.random()*h;if(Math.hypot(bx-cx,by-cx)<75*u)continue;const R0=rr(6,16)*u;for(let j=0;j<40;j++){const a=Math.random()*7,d=Math.random()*R0,x=bx+Math.cos(a)*d*1.6,y=by+Math.sin(a)*d;g.fillStyle=j%5?"#e9eef2":"#cfd8de";g.beginPath();g.arc(x,y,rr(1.5,4)*u,0,7);g.fill()}}for(let k=0;k<1500;k++){g.fillStyle=`rgba(${120+ri(40)},${150+ri(30)},${50},.35)`;g.fillRect(Math.random()*w,Math.random()*h,rr(6,20),2)}
+  });
  const gm=new THREE.Mesh(new THREE.PlaneGeometry(WS*2,WS*2),new THREE.MeshStandardMaterial({map:G,roughness:.95}));gm.rotation.x=-Math.PI/2;gm.receiveShadow=true;world.add(gm);
  const sand=new THREE.Mesh(new THREE.PlaneGeometry(WS*2+8,WS*2+8),mat(0xd8c58a));sand.rotation.x=-Math.PI/2;sand.position.y=-.3;world.add(sand)}
 const wWater=wavyWater(world,420,60,0x2f86c0,-.5);
@@ -597,7 +652,7 @@ function objModel(o){let g=null;const grp=new THREE.Group();
  if(o.k==="wonder"){const gl=spr(0xffd25e,true,.8);gl.position.y=8;gl.scale.set(6,6,1);grp.add(gl)}
  grp.position.set(o.x,0,o.z);world.add(grp);WM.set(o,grp);return grp}
 function allObjs(){const w=S.w;const me={k:"me",x:w.me.x,z:w.me.z};if(!allObjs.me||allObjs.me.x!==me.x)allObjs.me=me;return[allObjs.me,...w.c,...w.m,...w.r,...w.f,...w.n]}
-let roadsDone=false;function worldRoads(){if(roadsDone||!S.w)return;roadsDone=true;const rm=mat(0xc9b48a,T.plaza);const seg=(x1,z1,x2,z2)=>{const len=Math.hypot(x2-x1,z2-z1),m=new THREE.Mesh(BX,rm);m.position.set((x1+x2)/2,.03,(z1+z2)/2);m.scale.set(1.1,.04,len);m.rotation.y=Math.atan2(x2-x1,z2-z1);m.receiveShadow=true;world.add(m)};
+let roadsDone=false;function worldRoads(){if(roadsDone||!S.w)return;roadsDone=true;return;const rm=mat(0xc9b48a,T.plaza);const seg=(x1,z1,x2,z2)=>{const len=Math.hypot(x2-x1,z2-z1),m=new THREE.Mesh(BX,rm);m.position.set((x1+x2)/2,.03,(z1+z2)/2);m.scale.set(1.1,.04,len);m.rotation.y=Math.atan2(x2-x1,z2-z1);m.receiveShadow=true;world.add(m)};
  ["DRK","WLF","SKY","ORC"].forEach((t,gi)=>{const a=(gi+1)*Math.PI*2/4+.4,x=Math.cos(a)*85,z=Math.sin(a)*85;seg(x,z,Math.cos(a)*44,Math.sin(a)*44)});for(let i=0;i<6;i++){const a=i*Math.PI/3,b=a+Math.PI/3;seg(Math.cos(a)*40,Math.sin(a)*40,Math.cos(b)*40,Math.sin(b)*40);seg(Math.cos(a)*40,Math.sin(a)*40,Math.cos(a)*7,Math.sin(a)*7)}}
 function syncWorld(){worldRoads();const live=new Set(allObjs());for(const o of live)if(!WM.has(o))objModel(o);for(const[o,g]of WM)if(!live.has(o)){world.remove(g);g.traverse(x=>{const i=wpick.indexOf(x);if(i>=0)wpick.splice(i,1)});WM.delete(o)}
  for(const o of S.w.c){const g=WM.get(o);if(g&&g.userData.sh)g.userData.sh.visible=!!o.sh}const me=WM.get(allObjs.me);if(me)me.userData.sh.visible=shieldOn()}
@@ -782,7 +837,7 @@ function gstate(){if(!S.g)S.g={xp:0,tech:{},chests:[],chat:[],rallies:[],fest:0,
 const glv=()=>1+Math.floor(Math.sqrt(gstate().xp/400));
 const gt=k=>(gstate().tech[k]||{lv:0,p:0});
 function gRanks(){const g=gstate();if(!g.ranks){const m=S.w.c.filter(c=>c.tag==="EC").sort((a,b)=>b.lvl-a.lvl);g.ranks={};m.forEach((c,i)=>g.ranks[c.name]=i<2?"R4":i<5?"R3":i<9?"R2":"R1")}return g.ranks}
-function chatPush(ch,who,txt,col){const g=gstate();g.chat.push({ch,who,txt,col:col||"",t:Date.now()});if(g.chat.length>60)g.chat.shift();renderMiniChat()}
+function chatPush(ch,who,txt,col){const g=gstate();g.chat.push({ch,who,txt,col:col||"",t:Date.now()});if(g.chat.length>60)g.chat.shift();news(`<b style="color:${ch==="G"?"#7fe0ff":"#ffd25e"}">[${ch==="G"?"Guild":"Kingdom"}]</b> <span style="color:#ffb43a">${who}</span>: ${txt}`);renderMiniChat()}
 function renderMiniChat(){const el=$("chat");if(!el)return;const g=gstate(),last=g.chat.slice(-2);el.innerHTML=last.map(m=>`<div><b style="color:${m.ch==="G"?"#7fe0ff":"#ffd25e"}">[${m.ch==="G"?"Guild":"Kingdom"}]</b> <b style="color:${m.col||"#fff"}">${m.who}:</b> ${m.txt}</div>`).join("")||'<div class="muted">Tap to chat</div>'}
 let gT=0;
 function guildTick2(dt,now){const g=gstate();gT+=dt;if(gT<6)return;gT=0;const mates=S.w.c.filter(c=>c.tag==="EC");if(!mates.length)return;const mate=()=>mates[ri(mates.length)];
@@ -972,7 +1027,7 @@ function tick(dt){const now=Date.now();for(const k in B)if(B[k].prod)S.res[B[k].
  npcT+=dt;if(npcT>9){npcT=0;npcWar(now);if(Math.random()<.25){const mates=S.w.c.filter(c=>c.tag==="EC");const m2=mates[ri(mates.length)];if(m2){S.gifts++;news(`🎁 <span style="color:#5fd6ff">[EC]${m2.name}</span> bought a <span style="color:#ffd25e">Royal Pack</span> and shared a gift!`)}}if(Math.random()<.3)for(const c of S.w.c){c.tr=c.tr.map(v=>Math.round(v*1.01));if(c.sh&&Math.random()<.05)c.sh=0}}
  for(const m of npcMs.slice())if(now>=m.t1){npcArrive(m);dropMarch(m.id);npcMs.splice(npcMs.indexOf(m),1)}}
 // ================= CAMERA / INPUT =================
-let mode="city";const CAM={city:{tgt:new THREE.Vector3(0,0,2),dist:44,yaw:Math.PI/4,pitch:.92,lim:38,mn:12,mx:85},world:{tgt:new THREE.Vector3(),dist:36,yaw:Math.PI/4,pitch:1.0,lim:WS-4,mn:12,mx:95}};
+let mode="city";const CAM={city:{tgt:new THREE.Vector3(0,0,2),dist:34,yaw:Math.PI/4,pitch:.92,lim:38,mn:12,mx:85},world:{tgt:new THREE.Vector3(),dist:36,yaw:Math.PI/4,pitch:1.0,lim:WS-4,mn:12,mx:95}};
 const cam=new THREE.PerspectiveCamera(40,1,.5,700);makeComposer();
 function placeCam(){const c=CAM[mode];cam.position.set(c.tgt.x+Math.sin(c.yaw)*Math.cos(c.pitch)*c.dist,c.tgt.y+Math.sin(c.pitch)*c.dist,c.tgt.z+Math.cos(c.yaw)*Math.cos(c.pitch)*c.dist);cam.lookAt(c.tgt);
  const s=mode==="city"?csun:wsun;s.position.set(c.tgt.x+30,48,c.tgt.z+18);s.target.position.copy(c.tgt)}
@@ -1010,8 +1065,9 @@ function radialWorld(o){const _rs=radialShow;const radialShow2=(t,p,a)=>_rs(t,p,
 // ---- top event row, quest bar, coordinates ----
 const toLM=v=>Math.round((v+WS)/(2*WS)*511);
 function evRow(now){if(!S.evt)S.evt={i:0,p:0};if(!S.evt.end)S.evt.end=now+3600e3;if(now>S.evt.end){S.evt={i:S.evt.i+1,p:0,end:now+3600e3};news("🔥 A new Hell event has started!")}
- const e=EVT[S.evt.i%EVT.length];const h=`<div class="ev" id="evR">${ico("fire",42)}<small>Hell ${ft((S.evt.end-now)/1000)}</small></div><div class="ev" id="evS">${ico("shop",40)}<small>Shop</small></div><div class="ev" id="evG">${ico("gift",40)}<small>Gifts</small>${S.gifts?`<span class="dot">${S.gifts}</span>`:""}</div><div class="ev" id="evH">${ico("hero",40)}<small>Stages</small></div><div class="ev" id="evC">${ico("pow",40)}<small>Colosseum</small></div><div class="ev" id="evF">${ico("help",40)}<small>Familiars</small></div><div class="ev" id="evK">${ico("kingdom",40)}<small>Kingdom</small></div><div class="ev" id="evV">${ico("pow",40)}<small>${kvk().phase==="idle"?"KvK "+ft((kvk().next-now)/1000):kvk().phase==="prep"?"Prep "+ft((kvk().end-now)/1000):"KvK "+ft((kvk().end-now)/1000)}</small>${kvk().phase==="battle"?'<span class="dot">!</span>':""}</div>`;
- const el=$("evrow");el.hidden=mode!=="city";if(el.dataset.h!==h){el.innerHTML=h;el.dataset.h=h;$("evR").onclick=()=>$("bQuest").click();$("evS").onclick=openShop;$("evG").onclick=openBag;$("evH").onclick=openStages;$("evC").onclick=openColosseum;$("evF").onclick=openFamiliars;$("evK").onclick=()=>$("bKing").click();$("evV").onclick=openKvK}
+ const e=EVT[S.evt.i%EVT.length];const rc=`<div class="ev" id="evS">${ico("shop",44)}<small>Suggested</small></div><div class="ev" id="evH">${ico("hero",42)}<small>Stages</small></div><div class="ev" id="evC">${ico("pow",42)}<small>Colosseum</small></div><div class="ev" id="evF">${ico("help",42)}<small>Familiars</small></div><div class="ev" id="evQ">${ico("quest",42)}<small>Quests</small></div>`;const rce=$("rcol");if(rce.dataset.h!==rc){rce.innerHTML=rc;rce.dataset.h=rc;$("evS").onclick=openShop;$("evH").onclick=openStages;$("evC").onclick=openColosseum;$("evF").onclick=openFamiliars;$("evQ").onclick=()=>$("bQuest").click()}
+ const h=`<div class="ev" id="evR">${ico("fire",42)}<small>Hell ${ft((S.evt.end-now)/1000)}</small></div><div class="ev" id="evG">${ico("gift",40)}<small>Gifts</small>${S.gifts?`<span class="dot">${S.gifts}</span>`:""}</div><div class="ev" id="evK">${ico("kingdom",40)}<small>Kingdom</small></div><div class="ev" id="evV">${ico("pow",40)}<small>${kvk().phase==="idle"?"KvK "+ft((kvk().next-now)/1000):kvk().phase==="prep"?"Prep "+ft((kvk().end-now)/1000):"KvK "+ft((kvk().end-now)/1000)}</small>${kvk().phase==="battle"?'<span class="dot">!</span>':""}</div>`;
+ const el=$("evrow");el.hidden=false;$("lcol").hidden=mode!=="world";$("home").hidden=mode!=="world";if(el.dataset.h!==h){el.innerHTML=h;el.dataset.h=h;$("evR").onclick=()=>$("bQuest").click();$("evG").onclick=openBag;$("evK").onclick=()=>$("bKing").click();$("evV").onclick=openKvK}
  $("qbar").hidden=mode!=="city";const q=QUESTS[S.q%QUESTS.length],done=q[1]();$("qtxt").textContent=(done?"✔ Claim: ":"")+q[0];$("qbar").classList.toggle("done",done);
  const co=$("coord");co.hidden=mode!=="world";if(mode==="world"){const c=CAM.world.tgt,t=`🔍 X:${toLM(c.x)} Y:${toLM(c.z)} ★`;if(co.textContent!==t)co.textContent=t}}
 function openGoto(){panel("Go to coordinates",`<div class="row"><label>X <input class="inp" id="gx" type="number" min="0" max="511" value="${toLM(CAM.world.tgt.x)}"></label><label>Y <input class="inp" id="gy" type="number" min="0" max="511" value="${toLM(CAM.world.tgt.z)}"></label></div><div class="row"><button class="btn gold" id="ggo2">Go</button><button class="btn" id="gme">My castle</button></div>`);
@@ -1063,7 +1119,7 @@ function openObj(o){const busy=S.ms.length>=2+Math.floor(S.bl.castle/8);const li
  if(o.k==="res"){panel(`Lv${o.lvl} ${RN[o.r]} Field`,`<div>${ic(o.r)} ${fmt(o.amt)} ${RN[o.r]}</div><div class="muted">Gathering takes about ${ft(Math.max(20,o.amt/((2000+S.bl.castle*400)*(1+rl("gspd")*.08))))} plus travel.</div>${lim}${btns([["at","⛏ Gather","gold"]])}`);$("at").onclick=()=>openMarch(o,"gather",false);return}
  if(o.k==="nest"){panel(`Lv${o.lvl} Darknest`,`<div>A nest of dark creatures. Only a guild rally can break it.</div><div class="muted">Reward: 💎${o.lvl*o.lvl*120} and more</div>${lim}${btns([["ra","🚩 Rally (guild)","gold"]])}`);$("ra").onclick=()=>openMarch(o,"attack",true)}}
 
-$("bBar").onclick=openTrain;$("vipp").onclick=openVIP;$("chat").onclick=openChat;$("qbar").onclick=()=>$("bQuest").click();$("coord").onclick=openBookmarks;$("bHero").onclick=openHeroes;$("bGuild").onclick=openGuild;$("bBag").onclick=openBag;$("bShop").onclick=openShop;
+$("bBar").onclick=openTrain;$("lcol").innerHTML=`<button class="btn" id="lcK">${ico("world",34)}</button><button class="btn" id="lcB">${ico("eye",34)}</button><button class="btn" id="lcZ">${ico("kingdom",34)}</button>`;$("lcK").onclick=()=>$("bKing").click();$("lcB").onclick=openBookmarks;$("lcZ").onclick=()=>{const c=CAM.world;c.dist=c.dist>60?36:95};$("home").onclick=()=>{CAM.world.tgt.set(S.w.me.x,0,S.w.me.z);setMode("city")};$("tr").onclick=()=>panel("Resources",RES.map(x=>`<div class="rep row">${ico(x,32)}<b style="flex:1">${RN[x]}</b><b>${fmt(S.res[x])}</b><span class="muted">${(()=>{let h=0;for(const k in B)if(B[k].prod===x)h+=rate(k)*3600;return h?"+"+fmt(h)+"/h":""})()}</span></div>`).join("")+`<div class="rep row">${ico("gc",28)}<b style="flex:1">Guild Coins</b><b>${fmt(S.gc)}</b></div><div class="rep row">${ico("energy",28)}<b style="flex:1">Energy</b><b>${Math.floor(S.en)}/100</b></div><div class="rep row">${ico("honor",28)}<b style="flex:1">Honor</b><b>${fmt(S.honor)}</b></div>`);$("tick").onclick=openChat;$("vipp").onclick=openVIP;$("chat").onclick=openChat;$("qbar").onclick=()=>$("bQuest").click();$("coord").onclick=openBookmarks;$("bHero").onclick=openHeroes;$("bGuild").onclick=openGuild;$("bBag").onclick=openBag;$("bShop").onclick=openShop;
 $("bMode").onclick=()=>setMode(mode==="city"?"world":"city");
 $("bMail").onclick=()=>{S.unread=0;panel("Mail",S.rep.length?S.rep.map(r=>`<div class="rep"><div class="row"><b class="${r.win?"w":"l"}">${r.win?"✔":"✖"}</b><b>${r.title}</b><span class="muted">${new Date(r.t).toLocaleTimeString()}</span></div><div>${r.body}</div></div>`).join(""):'<div class="muted">No reports yet. Attack a castle or hunt a monster on the World map.</div>')};
 const QUESTS=[["Clear Hero Stage 1-3",()=>S.stage&&(S.stage.c>1||S.stage.s>3)],["Upgrade the Barracks to Lv 3",()=>S.bl.barracks>=3],["Finish one research",()=>Object.values(S.rl||{}).some(v=>v>0)],["Slay a monster on the World map",()=>S.st.mon>=1],["Upgrade the Castle to Lv 4",()=>S.bl.castle>=4],["Win an attack",()=>S.st.wins>=1],["Upgrade the Farm to Lv 4",()=>S.bl.farm>=4],["Upgrade the Barracks to Lv 5 (T2)",()=>S.bl.barracks>=5],["Slay 5 monsters",()=>S.st.mon>=5],["Upgrade the Castle to Lv 6",()=>S.bl.castle>=6],["Win 5 attacks",()=>S.st.wins>=5],["Capture a fort",()=>S.w&&S.w.f.some(f=>f.owner==="EC")],["Upgrade the Castle to Lv 10",()=>S.bl.castle>=10],["Upgrade the Barracks to Lv 13 (T3)",()=>S.bl.barracks>=13],["Capture the Royal Wonder",()=>S.w&&S.w.f[6].owner==="EC"]];
@@ -1087,7 +1143,7 @@ function sp(kind){const j=S[kind];if(!j)return;const left=(j.end-Date.now())/100
 let hudH="";
 function hud(){const now=Date.now();evRow(now);$("clv").textContent=S.bl.castle;$("pw").textContent=fmt(power());$("gm").textContent=fmt(S.gems);$("st").textContent=Math.floor(S.stam);$("gcv").textContent=fmt(S.gc);{const vh=`${ico("star",20)}<b style="color:#ffd25e">VIP ${vipLv()}</b>`;if($("vipp").dataset.h!==vh){$("vipp").innerHTML=vh;$("vipp").dataset.h=vh}}$("env").textContent=Math.floor(S.en);$("gdot").hidden=!S.gifts;$("gdot").textContent=S.gifts;{const gn=S.mreq+(S.g?S.g.chests.length+S.g.rallies.length:0);$("hdot").hidden=!gn;$("hdot").textContent=gn}
  $("shp").hidden=!shieldOn();if(shieldOn())$("sh").textContent=ft((S.shield-now)/1000);
- const th=RES.map(r=>`<span class="pill">${ic(r)}${fmt(S.res[r])}</span>`).join("");if($("tr").dataset.h!==th){$("tr").innerHTML=th;$("tr").dataset.h=th}
+ const th=`<span class="pill" id="rfood">${fmt(S.res.food)} ${ic("food")}</span>`;if($("tr").dataset.h!==th){$("tr").innerHTML=th;$("tr").dataset.h=th}
  $("mdot").hidden=!S.unread;$("mdot").textContent=S.unread;
  let q="";for(const kind of["build","train","rsch"]){const j=S[kind];if(!j)continue;const left=(j.end-now)/1000,p=1-left/j.dur,g=gemFor(left);
   q+=`<div class="q">${kind==="build"?ico("up",16)+" "+B[j.k].n:kind==="rsch"?ico("research",16)+" "+RSCH.find(x=>x[0]===j.k)[1]:ico("troops",16)+" "+fmt(j.n)}<div class="bar"><i style="width:${Math.max(0,p*100)}%"></i></div>${ft(left)}${j.ask?"":`<button data-hp="${kind}" style="background:linear-gradient(#ffd08a,#d9822a)">🤝</button>`}<button data-sp="${kind}">${g?"⏩":"Free"}</button></div>`}
@@ -1103,9 +1159,9 @@ function labels(now){const seen=new Set();
   lbl(k,g.position.x,k==="castle"?15:k==="tower"?7:4.6,g.position.z,tm+'<span class="lv"><i>'+S.bl[k]+"</i></span>",k==="castle"?"big":"");seen.add(k)}}
  else{const c=CAM.world,R2=c.dist*.95;for(const o of allObjs()){if(dist2(o.x,o.z,c.tgt.x,c.tgt.z)>R2&&o.k!=="wonder")continue;const key="o"+(o.k+o.x.toFixed(2)+o.z.toFixed(2));let h,y=3;
    if(o.k==="me")h=`<span style="color:#5fd6ff">[EC]${myName()}</span><br><span class="lv"><i>${S.bl.castle}</i></span>`,y=4.2;
-   else if(o.k==="castle")h=`<span style="color:${GU[o.tag].css}">${o.tag?"["+o.tag+"]":""}${o.name}</span><br><span class="lv"><i>${o.lvl}</i></span>`;
+   else if(o.k==="castle")h=`<span style="color:${o.tag==="EC"?"#5fd6ff":o.tag==="K77"?"#ff6a9a":o.tag?"#ffb43a":"#fff"}">${o.tag?"["+o.tag+"]":""}${o.name}</span><br><span class="lv"><i>${o.lvl}</i></span>`;
    else if(o.k==="fort"||o.k==="wonder"){h=`<span style="color:${GU[o.owner].css}">[${o.owner}]</span> ${o.name}`;y=o.k==="wonder"?10:5}
-   else if(o.k==="mon")h=`Lv${o.lvl} ${MON[o.type][0]}`,y=2.4;else if(o.k==="res")h=`${ic(o.r)} Lv${o.lvl}`,y=1.6;else h=`Lv${o.lvl} Darknest`,y=3.6;
+   else if(o.k==="mon")h=`<span class="lvh">${o.lvl}</span>`,y=.4;else if(o.k==="res")h=`<span class="lv"><i>${o.lvl}</i></span>`,y=1.3;else h=`<span class="lvh">${o.lvl}</span>`,y=.6;
    if(c.dist>60&&o.k!=="fort"&&o.k!=="wonder"&&o.k!=="me")continue;lbl(key,o.x,y,o.z,h,o.k==="fort"||o.k==="wonder"?"big":"");seen.add(key)}
   for(const f of FXT){const key="fx"+f.id;lbl(key,f.x,2.5+f.t*2,f.z,`<span style="font-size:${18-f.t*3}px;color:${f.col};opacity:${1-f.t/1.8}">${f.txt}</span>`);seen.add(key)}
   for(const m of[...S.ms,...(S.inc?[S.inc]:[])]){const v=MV.get(m.id);if(!v||!v.g.visible)continue;const key="m"+m.id;lbl(key,v.g.position.x,2.2,v.g.position.z,`<span class="tm">${m.enemy?"⚠ ":""}${ft((m.t1-now)/1000)}</span>`);seen.add(key)}}
@@ -1127,7 +1183,7 @@ function loop(nowp){const dt=Math.min(.1,(nowp-last)/1000);last=nowp;const now=D
 setInterval(()=>S&&save(),8000);
 async function start(d){S=d&&d.v>=1?migrate(d):(load()?migrate(load()):fresh());if(!S.w||S.w.ws!==WS||S.w.lm!==2){S.w=genWorld();S.ms=[];S.inc=null;if(S.kvk)S.kvk.phase="idle"}$("load").textContent="Loading 3D models…";await loadKK();if(KKOK){kitDistrict();kkCity();for(const o of world.userData.oldDecor||[])world.remove(o);kkWorldDecor()}else{await loadKit();if(KITOK){kitWalls();kitDistrict()}else oldWalls()}
  const off=Math.min(8*3600,(Date.now()-S.t)/1000);if(off>5){for(const k in B)if(B[k].prod)S.res[B[k].prod]+=rate(k)*off;S.stam=Math.min(120,S.stam+off/8);if(off>60)setTimeout(()=>toast("Your kingdom kept producing while you were away"),900)}
- S.nextAtk=Math.max(S.nextAtk,Date.now()+90e3);for(const k in B)build(k);addWalkers();resize();$("pwp").insertAdjacentHTML("afterbegin",ico("pow",22));$("gmp").insertAdjacentHTML("afterbegin",ico("gem",22));$("stp").insertAdjacentHTML("afterbegin",ico("sta",22));$("gcp").insertAdjacentHTML("afterbegin",ico("gc",22));$("shp").insertAdjacentHTML("afterbegin",ico("shd",22));{const bt=$("bot");for(const id of["bGuild","bMail","bQuest","bSet","bBag","bHero"])bt.appendChild($(id));for(const id of["bBar","bShop","bKing"])$(id).hidden=true}setMode(mode);$("bBar").insertAdjacentHTML("afterbegin",ico("troops")+"<small>Troops</small>");$("bHero").insertAdjacentHTML("afterbegin",ico("hero")+"<small>Heroes</small>");$("bGuild").insertAdjacentHTML("afterbegin",ico("guild")+"<small>Guild</small>");$("enp").insertAdjacentHTML("afterbegin",ico("energy",22));$("bBag").insertAdjacentHTML("afterbegin",ico("bag")+"<small>Bag</small>");$("bShop").insertAdjacentHTML("afterbegin",ico("shop")+"<small>Shop</small>");$("bMail").insertAdjacentHTML("afterbegin",ico("mail")+"<small>Mail</small>");$("bQuest").insertAdjacentHTML("afterbegin",ico("quest")+"<small>Quest</small>");$("bKing").insertAdjacentHTML("afterbegin",ico("kingdom")+"<small>Kingdom</small>");$("bSet").insertAdjacentHTML("afterbegin",ico("gear")+"<small>Settings</small>");$("bSet").onclick=()=>$("ava").click();renderMiniChat();news("🌍 Tap World to see enemy castles, monsters and forts.");$("load").hidden=true;requestAnimationFrame(loop);showLogin(()=>{news(`👑 Welcome, Lord ${myName()}. The kingdom awaits.`);dailyLogin();music(!S.musOff);refreshAva()})}
+ S.nextAtk=Math.max(S.nextAtk,Date.now()+90e3);for(const k in B)build(k);addWalkers();resize();$("pwp").insertAdjacentHTML("afterbegin",ico("pow",22));$("gmp").insertAdjacentHTML("afterbegin",ico("gem",22));$("stp").insertAdjacentHTML("afterbegin",ico("sta",22));$("gcp").insertAdjacentHTML("afterbegin",ico("gc",22));$("shp").insertAdjacentHTML("afterbegin",ico("shd",22));{const bt=$("bot");for(const id of["bGuild","bMail","bQuest","bSet","bBag","bHero"])bt.appendChild($(id));for(const id of["bBar","bShop","bKing"])$(id).hidden=true}setMode(mode);$("bBar").insertAdjacentHTML("afterbegin",ico("troops")+"<small>Troops</small>");$("bHero").insertAdjacentHTML("afterbegin",ico("hero")+"<small>Heroes</small>");$("bGuild").insertAdjacentHTML("afterbegin",ico("guild")+"<small>Guild</small>");$("enp").insertAdjacentHTML("afterbegin",ico("energy",22));$("bBag").insertAdjacentHTML("afterbegin",ico("bag")+"<small>Bag</small>");$("home").innerHTML=ico("city");$("bShop").insertAdjacentHTML("afterbegin",ico("shop")+"<small>Shop</small>");$("bMail").insertAdjacentHTML("afterbegin",ico("mail")+"<small>Mail</small>");$("bQuest").insertAdjacentHTML("afterbegin",ico("quest")+"<small>Quest</small>");$("bKing").insertAdjacentHTML("afterbegin",ico("kingdom")+"<small>Kingdom</small>");$("bSet").insertAdjacentHTML("afterbegin",ico("gear")+"<small>Settings</small>");$("bSet").onclick=()=>$("ava").click();renderMiniChat();news("🌍 Tap World to see enemy castles, monsters and forts.");$("load").hidden=true;requestAnimationFrame(loop);showLogin(()=>{news(`👑 Welcome, Lord ${myName()}. The kingdom awaits.`);dailyLogin();music(!S.musOff);refreshAva()})}
 function refreshAva(){const a=$("ava");if(!S.acct)return;a.innerHTML=avaHTML()+`<b id="clv">${S.bl.castle}</b>`;a.style.padding="0";a.style.overflow="visible"}
 window.claude?.hot?.snapshot?.(()=>S);
 window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??null);
