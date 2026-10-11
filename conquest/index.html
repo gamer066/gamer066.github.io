@@ -513,10 +513,17 @@ function kitWorldModel(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k
 // ================= KAYKIT MODELS (KayKit Medieval Hexagon Pack, CC0) =================
 const KK={};let KKOK=false;const KKT={};
 const KKL=["building_castle_blue","building_castle_red","building_castle_yellow","building_castle_green","building_barracks_blue","building_church_blue","building_tavern_blue","building_windmill_blue","building_lumbermill_blue","building_mine_blue","building_market_blue","building_blacksmith_blue","building_tower_A_blue","building_tower_B_blue","building_tower_catapult_blue","building_tower_catapult_red","building_tower_catapult_yellow","building_tower_catapult_green","building_home_A_blue","building_home_B_blue","building_home_A_red","building_home_B_yellow","building_well_blue","building_archeryrange_blue","building_watermill_blue","building_grain","building_stage_A","wall_straight","wall_straight_gate","fence_wood_straight","fence_stone_straight","barrel","crate_A_big","crate_B_small","sack","tent","weaponrack","target","wheelbarrow","resource_lumber","resource_stone","flag_blue","flag_red","bucket_water","trees_A_large","trees_A_medium","trees_B_large","trees_B_medium","tree_single_A","tree_single_B","hills_A_trees","hills_B_trees","mountain_A_grass_trees","mountain_B_grass_trees","mountain_C_grass","rock_single_A","rock_single_C","cloud_big","cloud_small"];
+// painted isometric art (CC0, OpenGameArt) drawn as flat pictures that always face the camera
+const ISO={},ISOM={},ISOL=["castle","ha0","ha1","ha2","ha3","hb0","hb1","hb3","hc0","hc1","hc2","hc3","hd0","hd1","hd2","hd3","he0","he1","he2","he3"];
+const HITM=new THREE.MeshBasicMaterial({visible:false});
+function loadISO(){const L=new THREE.TextureLoader();return Promise.all(ISOL.map(n=>new Promise(res=>L.load("iso/"+n+".png",t=>{t.encoding=THREE.sRGBEncoding;t.anisotropy=4;ISO[n]=t;res()},undefined,()=>res()))))}
+function ISP(par,n,w,x,z){const t=ISO[n];if(!t||!t.image)return null;const a=t.image.height/t.image.width,h=w*a;
+ const m=ISOM[n]||(ISOM[n]=new THREE.SpriteMaterial({map:t,transparent:true,alphaTest:.12,toneMapped:false,color:new THREE.Color(n==="castle"?1.12:1.3,n==="castle"?1.12:1.24,n==="castle"?1.1:1.15)}));const s=new THREE.Sprite(m);s.center.set(.5,.16);s.scale.set(w,h,1);s.position.set(x||0,h*.11+.15,z||0);par.add(s);
+ const hb=new THREE.Mesh(BX,HITM);hb.scale.set(w*.6,h*.55,w*.6);hb.position.set(x||0,h*.28,z||0);par.add(hb);return s}
 function loadKK(){if(!THREE.GLTFLoader)return Promise.resolve(false);const L=new THREE.GLTFLoader();
  const mm=MONM.map(m=>new Promise(res=>L.load("mm/"+m[0]+".glb",g=>{g.scene.traverse(o=>{if(o.isMesh){o.castShadow=true;o.material.envMapIntensity=.5}});KK[m[0]]=g.scene;res()},undefined,()=>res())));
  let done=0;const tot=KKL.length+MONM.length;const tick1=()=>{done++;const b=document.getElementById("lbar");if(b)b.style.width=(done/tot*100)+"%"};mm.forEach(p=>p.then(tick1));
- return Promise.all([...mm,...KKL.map(n=>new Promise(res=>L.load("kk/"+n+".glb",g=>{g.scene.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;o.material.envMapIntensity=.45}});KK[n]=g.scene;tick1();res()},undefined,()=>{tick1();res()})))]).then(()=>{KKOK=Object.keys(KK).length>45;if(KKOK)kkVariants();return KKOK})}
+ return Promise.all([loadISO(),...mm,...KKL.map(n=>new Promise(res=>L.load("kk/"+n+".glb",g=>{g.scene.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;o.material.envMapIntensity=.45}});KK[n]=g.scene;tick1();res()},undefined,()=>{tick1();res()})))]).then(()=>{KKOK=Object.keys(KK).length>45;if(KKOK)kkVariants();return KKOK})}
 // purple + grey team colours made from the blue atlas
 function kkVariants(){let img=null;KK.building_castle_blue.traverse(o=>{if(o.isMesh&&o.material.map&&!img)img=o.material.map.image});if(!img)return;
  const mk=f=>{const c=document.createElement("canvas");c.width=img.width;c.height=img.height;const g=c.getContext("2d");g.drawImage(img,0,0);const d=g.getImageData(0,0,c.width,c.height),p=d.data;for(let i=0;i<p.length;i+=4){const r=p[i],gg=p[i+1],b=p[i+2];if(b>r+30&&b>gg+15){const o=f(r,gg,b);p[i]=o[0];p[i+1]=o[1];p[i+2]=o[2]}}g.putImageData(d,0,0);const t=new THREE.CanvasTexture(c);t.flipY=false;t.encoding=THREE.sRGBEncoding;return t};
@@ -525,6 +532,10 @@ const KMC2={};function Q(par,n,x,y,z,s,ry,tex){const t=KK[n];if(!t)return null;c
 const KKB={castle:["building_castle_blue",3.3],barracks:["building_barracks_blue",2.7],academy:["building_church_blue",2.6],infirmary:["building_tavern_blue",2.6],farm:["building_windmill_blue",2.6],quarry:["building_stage_A",2.4],mill:["building_lumbermill_blue",2.6],mine:["building_mine_blue",2.6],manor:["building_home_B_blue",3],vault:["building_blacksmith_blue",2.6],wall:["wall_straight_gate",2.4],battle:["building_archeryrange_blue",2.6],trade:["building_market_blue",2.6],prison:["building_tower_catapult_blue",2.3],embassy:["building_tower_B_blue",2.6],tower:["building_tower_A_blue",2.6]};
 function buildKK(k){const g=new THREE.Group(),l=S.bl[k],[px,pz]=B[k].p;g.position.set(k==="castle"?0:px*1.6,.55,k==="castle"?0:pz*1.6);const[n,s]=KKB[k];
  if(k==="wall"){g.position.set(0,.55,16.8);Q(g,n,0,0,0,s,0);g.userData.k=k;city.add(g);bg[k]=g;g.traverse(o=>{if(o.isMesh){o.userData.k=k;pick.push(o)}});return}
+ const ISB={castle:["castle",16],barracks:["hd2",8],academy:["hc0",7],infirmary:["ha0",6.2],farm:["he0",6],quarry:["he2",5.8],mill:["he1",6],mine:["he3",5.8],manor:["hd0",7.6],vault:["hc2",6.6],battle:["hd3",7.4],trade:["hb0",6.8],prison:["hc3",6.4],embassy:["hb1",6.8],tower:["hc1",6.2]};
+ if(ISB[k]&&ISO[ISB[k][0]]){ISP(g,ISB[k][0],ISB[k][1]);
+  if(k==="castle"){for(const sx of[-1,1]){const f=spr(0xff9a30,true,.95);f.position.set(sx*2.2,1.4,6);f.scale.set(1.3,1.3,1);g.add(f);(city.userData.fires=city.userData.fires||[]).push(f)}}
+  g.scale.setScalar(k==="castle"?1+Math.min(l,25)*.008:1+Math.min(l,25)*.01);g.userData.k=k;city.add(g);bg[k]=g;g.traverse(o=>{if(o.isMesh){o.userData.k=k;pick.push(o)}});return}
  Q(g,n,0,0,0,s,k==="castle"?0:Math.PI/6);if(k==="trade"){Q(g,"crate_A_big",1.9,0,1.4,2);Q(g,"sack",-1.8,0,1.5,2)}if(k==="battle"){Q(g,"flag_blue",1.9,0,1.6,2.2);Q(g,"weaponrack",-1.9,0,1.4,2,.3)}
  if(k==="barracks"){Q(g,"weaponrack",1.9,0,1.2,2.2,.4);Q(g,"target",-1.9,0,1.4,2.2,.3);Q(g,"flag_blue",1.9,0,-1.6,2.2)}
  if(k==="farm"){Q(g,"building_grain",2.3,0,1.3,2.2);Q(g,"sack",-1.6,0,1.6,2.2);Q(g,"wheelbarrow",-1.9,0,-.4,2,.8)}
@@ -546,7 +557,8 @@ function kkCity(){const H=16.8,WS2=2.4,seg=4.8;
  Q(city,"building_well_blue",0,.55,9,2.2);Q(city,"tent",-7,.55,14,2.2,.3);Q(city,"tent",7,.55,14,2.2,-.3);
  // outside: village, fields, forests, mountains
  const vh=[["building_home_A_blue",27,5],["building_home_B_blue",31,11],["building_home_A_red",27,-27],["building_home_B_yellow",-6,-28],["building_home_A_blue",4,-29],["building_home_B_blue",14,-28],["building_home_A_red",-27,27],["building_watermill_blue",33,-4],["building_market_blue",27,27],["building_tavern_blue",-14,-29],["building_home_B_yellow",31,-17]];
- for(const[n,x,z]of vh)Q(city,n,x,.4,z,2.4,ri(6)*Math.PI/3);
+ const VHI=["ha1","ha2","ha3","hb3","hd1","hb0","ha0","hc2","he1","hd0","ha2"];
+ vh.forEach(([n,x,z],i)=>{if(!ISP(city,VHI[i%VHI.length],rr(5.5,6.8),x,z))Q(city,n,x,.4,z,2.4,ri(6)*Math.PI/3)});
  for(let i=0;i<110;i++){const a=Math.random()*7,r=rr(30,43),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<4&&z>16)continue;Q(city,["trees_A_large","trees_A_medium","trees_B_large","trees_B_medium","tree_single_A","tree_single_B"][ri(6)],x,.4,z,rr(2,2.8),Math.random()*7)}
  for(let i=0;i<18;i++){const a=Math.random()*7,r=rr(19.5,23),x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.max(Math.abs(x),Math.abs(z))<19||(Math.abs(x)<4&&z>15))continue;Q(city,["tree_single_A","tree_single_B"][ri(2)],x,.4,z,rr(2,2.6),Math.random()*7)}
  for(let i=0;i<8;i++){const c=Q(city,Math.random()<.5?"cloud_big":"cloud_small",rr(-70,70),rr(30,36),rr(-70,-10),rr(2.5,4));if(c){c.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=false}});KCLOUDS.push(c)}}
@@ -560,9 +572,13 @@ function pineClusters(){const g1=new THREE.ConeGeometry(.28,.9,6);g1.translate(0
 const KGC={K77:["red","purple"],EC:["blue",null],DRK:["red",null],WLF:["yellow",null],SKY:["green",null],ORC:["blue","purple"],"":["blue","grey"]};
 function kkWorld(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k==="me"?"EC":(o.tag||""),[col,tex]=KGC[tag]||KGC[""];
  if(o.k==="castle"||o.k==="me"){const lv=o.k==="me"?S.bl.castle:o.lvl;const plate=new THREE.Mesh(BX,mat(0xffffff,T.plaza));plate.scale.set(3.6,.16,3.6);plate.position.y=.08;plate.receiveShadow=true;grp.add(plate);
-  for(const[a,b]of[[-1.7,-1.7],[1.7,-1.7],[-1.7,1.7],[1.7,1.7]]){const t=new THREE.Mesh(CY,mat(0x8f8a80,T.brick));t.scale.set(.22,.7,.22);t.position.set(a,.45,b);t.castShadow=true;grp.add(t)}
+  if(!ISO.castle)for(const[a,b]of[[-1.7,-1.7],[1.7,-1.7],[-1.7,1.7],[1.7,1.7]]){const t=new THREE.Mesh(CY,mat(0x8f8a80,T.brick));t.scale.set(.22,.7,.22);t.position.set(a,.45,b);t.castShadow=true;grp.add(t)}
+  if(ISO.castle){if(o.k==="me"||lv>=17)ISP(grp,"castle",o.k==="me"?4.6:3.6+lv*.02);else if(lv>=9)ISP(grp,"hd0",3.2);else ISP(grp,["ha0","ha1","hb1","hc0"][o.lvl%4],2.7);
+   Q(grp,o.k==="me"?"flag_blue":"flag_red",1.7,.16,1.4,.9);return true}
   if(o.k==="me"||lv>=17)Q(grp,"building_castle_"+col,0,.16,0,o.k==="me"?1.15:.95,Math.PI/6,tex);else if(lv>=9)Q(grp,"building_barracks_blue",0,.16,0,1.5,Math.PI/6,col==="blue"?tex:(col==="red"?"red2":col==="green"?"green2":col==="yellow"?"yellow2":tex));else Q(grp,"building_tower_B_blue",0,.16,0,1.4,0,col==="blue"?tex:(col==="red"?"red2":col==="green"?"green2":col==="yellow"?"yellow2":tex));
   Q(grp,o.k==="me"?"flag_blue":"flag_red",1.6,.16,1.6,1);return true}
+ if(o.k==="fort"&&ISO.castle){ISP(grp,"castle",4.4);Q(grp,"flag_red",2,0,1.6,1);return true}
+ if(o.k==="wonder"&&ISO.castle){ISP(grp,"castle",8.5);ISP(grp,"hc0",3.2,4,2.6);ISP(grp,"hc3",3.2,-4,-2.6);return true}
  if(o.k==="fort"){const c=col==="blue"&&tex?"blue":col;Q(grp,"building_tower_catapult_"+c,0,0,0,1.6,0,tex);for(const[a,b]of[[-1.8,0],[1.8,0]])Q(grp,"wall_straight",a,0,b+1.6,1,0,null);Q(grp,"building_tower_A_blue",-2.2,0,-1.2,.9,0,tex||(col!=="blue"?null:null));return true}
  if(o.k==="wonder"){Q(grp,"building_castle_yellow",0,.5,0,2.4);Q(grp,"building_church_blue",3.4,0,2,1.2);Q(grp,"building_church_blue",-3.4,0,-2,1.2);return true}
  if(o.k==="res"){if(o.r==="food"){Q(grp,"building_grain",0,0,0,1.25);Q(grp,"sack",.9,0,.8,1.3)}else if(o.r==="wood"){Q(grp,"resource_lumber",0,0,0,1.7);Q(grp,"tree_single_A",-.9,0,-.7,1.2)}else if(o.r==="stone"){Q(grp,"resource_stone",0,0,0,1.7);Q(grp,"rock_single_A",-.8,0,-.6,1.4)}else{const rk=Q(grp,"rock_single_C",0,0,0,1.9);const tint=o.r==="gold"?0xffc828:0x6f9fff;if(rk)rk.traverse(m=>{if(m.isMesh){m.material=m.material.clone();m.material.color=lin(tint);m.material.emissive=lin(o.r==="gold"?0x553300:0x0a1f55);m.material.metalness=.4;m.material.roughness=.4}});Q(grp,o.r==="gold"?"crate_A_big":"crate_B_small",.9,0,.8,1.2)}
@@ -1027,7 +1043,7 @@ function tick(dt){const now=Date.now();for(const k in B)if(B[k].prod)S.res[B[k].
  npcT+=dt;if(npcT>9){npcT=0;npcWar(now);if(Math.random()<.25){const mates=S.w.c.filter(c=>c.tag==="EC");const m2=mates[ri(mates.length)];if(m2){S.gifts++;news(`🎁 <span style="color:#5fd6ff">[EC]${m2.name}</span> bought a <span style="color:#ffd25e">Royal Pack</span> and shared a gift!`)}}if(Math.random()<.3)for(const c of S.w.c){c.tr=c.tr.map(v=>Math.round(v*1.01));if(c.sh&&Math.random()<.05)c.sh=0}}
  for(const m of npcMs.slice())if(now>=m.t1){npcArrive(m);dropMarch(m.id);npcMs.splice(npcMs.indexOf(m),1)}}
 // ================= CAMERA / INPUT =================
-let mode="city";const CAM={city:{tgt:new THREE.Vector3(0,0,2),dist:34,yaw:Math.PI/4,pitch:.92,lim:38,mn:12,mx:85},world:{tgt:new THREE.Vector3(),dist:36,yaw:Math.PI/4,pitch:1.0,lim:WS-4,mn:12,mx:95}};
+let mode="city";const CAM={city:{tgt:new THREE.Vector3(0,0,2),dist:34,yaw:Math.PI/4,pitch:.8,lim:38,mn:12,mx:85},world:{tgt:new THREE.Vector3(),dist:36,yaw:Math.PI/4,pitch:.86,lim:WS-4,mn:12,mx:95}};
 const cam=new THREE.PerspectiveCamera(40,1,.5,700);makeComposer();
 function placeCam(){const c=CAM[mode];cam.position.set(c.tgt.x+Math.sin(c.yaw)*Math.cos(c.pitch)*c.dist,c.tgt.y+Math.sin(c.pitch)*c.dist,c.tgt.z+Math.cos(c.yaw)*Math.cos(c.pitch)*c.dist);cam.lookAt(c.tgt);
  const s=mode==="city"?csun:wsun;s.position.set(c.tgt.x+30,48,c.tgt.z+18);s.target.position.copy(c.tgt)}
