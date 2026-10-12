@@ -193,6 +193,14 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:3px 4px;t
 .flyi{position:fixed;z-index:50;pointer-events:none;width:40px;height:40px;transition:transform .75s cubic-bezier(.5,-.3,.7,.4),opacity .75s}
 #toast{transition:opacity .25s,transform .25s}
 @media (prefers-reduced-motion:reduce){.ev .dot,.round .dot,.ev:has(.dot) .ic2,#bMode,.round.pic .ic2::after,#bMode .ic2::after,#brc .ic2::after,#gmp .ic2::after,#ov:not([hidden]) .pan{animation:none!important}}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;justify-items:center}
+.hcard{position:relative;cursor:pointer;transition:transform .12s}.hcard:active{transform:scale(.93)}
+.hcard .hfr{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.hcard .hpt{position:absolute;left:9%;top:7%;width:82%;height:72%;object-fit:cover;object-position:50% 20%;z-index:1;border-radius:6px}
+.hcard .hlv{position:absolute;left:4px;top:4px;z-index:3;background:linear-gradient(#2f5e8e,#173556);border:1px solid #9fc8ea;border-radius:3px;font:900 11px var(--body);padding:0 4px}
+.hcard .hst{position:absolute;left:0;right:0;bottom:19%;z-index:3;text-align:center;color:#ffd25e;font-size:12px;text-shadow:0 1px 2px #000;letter-spacing:-1px}
+.hcard .hnm{position:absolute;left:4%;right:4%;bottom:5%;z-index:3;text-align:center;font:900 10px var(--body);background:rgba(0,0,0,.6);border-radius:4px;padding:1px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcard.lock .hpt{filter:grayscale(1) brightness(.7)}
 #gmp .ic2{width:46px!important;height:24px!important}
 #radial .rb.pic{background:none;border:none;border-radius:12px;box-shadow:none}
 #radial .rb.pic .ic2{width:56px!important;height:56px!important}
@@ -937,16 +945,32 @@ const xpNeed=lv=>40*lv*lv,heroPow=h=>Math.round((150+h.lv*90)*(1+(h.st-1)*.6));
 const teamPow=()=>Object.values(S.h).map(heroPow).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0);
 const stars=n=>"★".repeat(n)+"<span style='opacity:.3'>"+"★".repeat(5-n)+"</span>";
 function heroXP(id,x){const h=S.h[id];h.xp+=x;while(h.lv<60&&h.xp>=xpNeed(h.lv)){h.xp-=xpNeed(h.lv);h.lv++}}
+// ---- Heroes: card grid like the classic game; tap a card for the hero screen ----
+const SKN=[["sk0","Flame Strike","Deals fire damage to the enemy front line."],["sk1","Frost Nova","Freezes enemies, slowing their attack."],["sk2","Holy Shield","Shields your troops from damage."],["sk3","Stun Slam","Stuns the strongest enemy unit."],["sk4","Healing Wave","Heals your wounded troops."]];
+const heroSkills=id=>{const h=HER.find(x=>x[0]===id),r=h?h[2]:"";const b=r==="Ranged"?[0,1,3]:r==="Cavalry"?[3,0,2]:r==="Support"?[4,2,1]:r==="Siege"?[0,3,1]:r==="Assassin"?[3,1,0]:[2,3,4];return b.map(i=>SKN[i])};
+const hcard=(id,sz,lock)=>{const h=S.h[id],st=h?h.st:1,hh=HER.find(x=>x[0]===id);return`<div class="hcard${lock?" lock":""}" data-hc="${id}" style="width:${sz}px;height:${sz*1.3|0}px"><img class="hfr" src="iso/fr${Math.min(4,st-1)}.png" alt=""><img class="hpt" src="iso/${HPIC[id]}.png" alt="">${h?`<b class="hlv">${h.lv}</b>`:""}<div class="hst">${"★".repeat(st)}</div><div class="hnm">${hh[1]}</div></div>`};
 function openHeroes(){const own=HER.filter(([id])=>S.h[id]),lock=HER.filter(([id])=>!S.h[id]);
  panel("Heroes",`<div class="row">${ico("pow",20)}<b>Team power ${fmt(teamPow())}</b><span class="muted">· heroes add ${((heroBonus()-1)*100).toFixed(1)}% to every march</span></div>
- ${own.map(([id,n,role])=>{const h=S.h[id],med=S.med[id]||0,need=10*h.st;return`<div class="rep row">${portrait(id,54)}<div style="flex:1;min-width:0"><b>${n}</b> <span class="muted">${role}</span><div style="color:#ffd25e">${stars(h.st)}</div><div class="muted">Lv ${h.lv} · Power ${fmt(heroPow(h))} · Medals ${med}/${need}</div><div class="hp" style="height:7px;background:#06223a;border-color:#4c8fba"><i style="width:${h.xp/xpNeed(h.lv)*100}%;background:linear-gradient(#9fe3ff,#2a8fd6)"></i></div></div>
-  <div style="display:flex;flex-direction:column;gap:5px"><button class="btn" data-tr="${id}">Train ${ico("gold",14)}${fmt(1500*h.lv)}</button><button class="btn gold" data-st="${id}" ${med>=need&&h.st<5?"":"disabled"}>★ Star up</button></div></div>`}).join("")}
- ${lock.map(([id,n,role])=>`<div class="rep row" style="opacity:.75">${portrait(id,54)}<div style="flex:1;min-width:0"><b>${n}</b> <span class="muted">${role}</span><div class="muted">Locked · Medals ${S.med[id]||0}/10 (drop in Hero Stages)</div></div><button class="btn gold" data-un="${id}" ${(S.med[id]||0)>=10?"":"disabled"}>Recruit</button></div>`).join("")}
- <button class="btn big gold" id="hst">⚔ Hero Stages</button>`);
- document.querySelectorAll("[data-tr]").forEach(b=>b.onclick=()=>{const id=b.dataset.tr,c=1500*S.h[id].lv;if(S.res.gold<c)return toast("Not enough gold");S.res.gold-=c;heroXP(id,Math.ceil(xpNeed(S.h[id].lv)*.5));save();openHeroes()});
- document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{const id=b.dataset.st,h=S.h[id];S.med[id]-=10*h.st;h.st++;toast("★ "+HER.find(x=>x[0]===id)[1]+" is now "+h.st+" stars");save();openHeroes()});
- document.querySelectorAll("[data-un]").forEach(b=>b.onclick=()=>{const id=b.dataset.un;S.med[id]-=10;S.h[id]={lv:1,st:1,xp:0};toast("New hero recruited!");save();openHeroes()});
- $("hst").onclick=openStages}
+ <div class="hgrid">${own.map(([id])=>hcard(id,92)).join("")}</div>
+ <div class="muted" style="margin:8px 0 4px">Not recruited yet · collect medals in Hero Stages</div>
+ <div class="hgrid">${lock.map(([id])=>`<div>${hcard(id,92,true)}<div class="hp" style="height:7px;margin-top:3px"><i style="width:${Math.min(100,(S.med[id]||0)*10)}%"></i></div></div>`).join("")}</div>
+ <button class="btn big gold" id="hst" style="margin-top:8px">⚔ Hero Stages</button>`);
+ document.querySelectorAll("[data-hc]").forEach(b=>b.onclick=()=>openHero(b.dataset.hc));$("hst").onclick=openStages}
+function openHero(id){const hh=HER.find(x=>x[0]===id),h=S.h[id],med=S.med[id]||0;
+ if(!h){panel(hh[1],`<div class="row" style="align-items:flex-start;gap:14px">${hcard(id,130,true)}<div style="flex:1"><b style="font-size:18px">${hh[1]}</b><div class="muted">${hh[2]}</div><div style="margin:8px 0">Medals ${med}/10</div><div class="hp" style="height:9px"><i style="width:${Math.min(100,med*10)}%"></i></div>
+  <div class="row" style="margin-top:8px">${heroSkills(id).map(([k,n])=>`<img src="iso/${k}.png" alt="${n}" title="${n}" style="width:44px;height:44px;border-radius:8px;filter:grayscale(1)">`).join("")}</div>
+  <div class="row" style="margin-top:10px"><button class="btn gold" id="hrc" ${med>=10?"":"disabled"}>Recruit</button><button class="btn" id="hbk">Back</button></div></div></div>`);
+  $("hbk").onclick=openHeroes;$("hrc").onclick=()=>{S.med[id]-=10;S.h[id]={lv:1,st:1,xp:0};sfx("coin");toast("New hero recruited!");save();openHero(id)};return}
+ const need=10*h.st,cost=1500*h.lv;
+ panel(hh[1],`<div class="row" style="align-items:flex-start;gap:14px">${hcard(id,130)}<div style="flex:1;min-width:0"><b style="font-size:18px">${hh[1]}</b> <span class="muted">${hh[2]}</span>
+  <div style="color:#ffd25e;font-size:18px">${stars(h.st)}</div><div>Level <b>${h.lv}</b> · Power <b>${fmt(heroPow(h))}</b></div>
+  <div class="hp" style="height:9px;margin:4px 0;background:#06223a;border-color:#4c8fba"><i style="width:${h.xp/xpNeed(h.lv)*100}%;background:linear-gradient(#9fe3ff,#2a8fd6)"></i></div>
+  <div class="muted">Medals ${med}/${need} for the next star</div>
+  <div style="margin-top:8px;font-weight:900">Skills</div><div class="row" style="gap:8px">${heroSkills(id).map(([k,n,d],i)=>`<div style="text-align:center;width:64px"><img src="iso/${k}.png" alt="" style="width:48px;height:48px;border-radius:8px;${h.st>i?"":"filter:grayscale(1);opacity:.6"}"><div style="font-size:10px;font-weight:800">${n}</div></div>`).join("")}</div>
+  <div class="row" style="margin-top:10px"><button class="btn" id="htr">Train ${ico("gold",14)}${fmt(cost)}</button><button class="btn gold" id="hsu" ${med>=need&&h.st<5?"":"disabled"}>★ Star up</button><button class="btn" id="hbk">Back</button></div></div></div>`);
+ $("hbk").onclick=openHeroes;
+ $("htr").onclick=()=>{if(S.res.gold<cost)return toast("Not enough gold");S.res.gold-=cost;heroXP(id,Math.ceil(xpNeed(h.lv)*.5));sfx("coin");save();openHero(id)};
+ $("hsu").onclick=()=>{S.med[id]-=need;h.st++;sfx("coin");toast("★ "+hh[1]+" is now "+h.st+" stars");save();openHero(id)}}
 const stagePow=(c,s)=>Math.round(300+120*Math.pow((c-1)*6+s,1.35));
 function openStages(){const{c,s}=S.stage,ep=stagePow(c,s),tp=teamPow();
  panel(`Hero Stages · ${c}-${s}`,`<div class="row">${ico("sta",22)}<b>Stamina ${Math.floor(S.stam)}/120</b><span class="muted">· each battle costs 6</span></div>
