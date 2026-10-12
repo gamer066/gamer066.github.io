@@ -218,6 +218,12 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:3px 4px;t
 #lav{flex-wrap:wrap;max-width:380px;margin-left:auto!important;margin-right:auto!important;gap:4px}
 #lav .ic2{width:40px!important;height:40px!important}
 @media (prefers-reduced-motion:reduce){#login::before{animation:none}}
+.upw{display:flex;gap:12px;align-items:flex-start}.upl{width:34%;min-width:130px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.upl img{width:100%;max-height:150px;object-fit:contain;filter:drop-shadow(0 6px 8px #0008)}.uplv{font:900 15px var(--body)}
+.upr{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ush{background:linear-gradient(90deg,#c9a24a,#7a5a1a);color:#fff;font:900 12px var(--body);padding:2px 8px;border-radius:4px;margin-top:4px}
+.urow{display:flex;align-items:center;gap:8px;background:#0f2a42;border-radius:5px;padding:3px 8px;font-size:13px}.urow span{flex:1}
+.urow.ok b{color:#7dff8a}.urow.no{background:#3a1414}.urow.no b{color:#ff7a6a}
 #gmp .ic2{width:46px!important;height:24px!important}
 #radial .rb.pic{background:none;border:none;border-radius:12px;box-shadow:none}
 #radial .rb.pic .ic2{width:56px!important;height:56px!important}
@@ -1314,9 +1320,16 @@ function reqMiss(k,l){return(REQ[k]||[]).filter(([b,o])=>l+o>=1&&(S.bl[b]||0)<l+
 function openB(k){const l=S.bl[k],c=upCost(k,l),t=Math.round(upTime(k,l)/(1+rl("bspd")*.05)),max=k==="castle"?25:Math.min(25,S.bl.castle),rq=reqMiss(k,l),busy=S.build,ig=gemFor(t)+Math.ceil(Object.values(c).reduce((a,b)=>a+b,0)/2000);
  let extra=B[k].prod?`<div>Producing <b>${fmt(rate(k)*3600)}</b> ${RN[B[k].prod]} per hour</div>`:"";
  if(k==="infirmary"){const w=tsum(S.wd);extra+=`<div>Wounded: <b>${fmt(w)}</b> / ${fmt(S.bl.infirmary*3000)}</div>${w?`<div class="row"><button class="btn gold" id="heal">Heal all</button><span class="muted">${fmt(w*20)} food + ${fmt(w*10)} ore</span></div>`:""}`}
- panel(B[k].n+" · Lv "+l,`<div class="muted">${B[k].d}</div>${extra}
- ${l>=max?`<div><b>${k==="castle"?"Max level!":"Upgrade the Castle first."}</b></div>`:`<div><b>Upgrade to Lv ${l+1}</b> · ⏱ ${ft(t)}</div>${cost(c)}
- ${rq.length?`<div class="rep"><b style="color:#ff8a7a">Requires:</b> ${rq.map(([b,lv])=>`${B[b].n} Lv ${lv}`).join(", ")}</div>`:""}<div class="row"><button class="btn gold" id="bu" ${busy||!afford(c)||rq.length?"disabled":""}>Upgrade</button><button class="btn" id="bi" ${busy||rq.length?"disabled":""}>Instant ${ico("gem",16)}${fmt(ig)}</button></div>${busy?'<div class="muted">Your builder is busy. Speed up the current job first.</div>':""}`}
+ const pic=k==="castle"?myCastleKey():(typeof ISB0!=="undefined"&&{barracks:"g_barracks",academy:"g_academy",infirmary:"g_infirmary",farm:"g_farm",mill:"g_mill",quarry:"g_quarry",mine:"g_mine",manor:"g_manor",vault:"g_vault",battle:"g_battle",trade:"g_trade",prison:"g_prison",embassy:"g_embassy",tower:"g_tower",wall:"wl_gate"}[k]);
+ const gain=B[k].prod?[["Production / hour",fmt(rate(k)*3600),fmt(rate(k)*3600*(1+.18))]]:k==="castle"?[["Max level of other buildings",l,l+1],["March slots",2+Math.floor(l/8),2+Math.floor((l+1)/8)]]:k==="infirmary"?[["Wounded capacity",fmt(l*3000),fmt((l+1)*3000)]]:k==="vault"?[["Protected resources",fmt(l*25000),fmt((l+1)*25000)]]:k==="wall"?[["Defense bonus",l*3+"%",(l+1)*3+"%"]]:k==="battle"?[["Rally strength",l*4+"%",(l+1)*4+"%"]]:k==="academy"?[["Troop attack",l*2+"%",(l+1)*2+"%"]]:[["Level",l,l+1]];
+ const reqAll=(REQ[k]||[]).filter(([b,o])=>l+1+o-1>=1).map(([b,o])=>[b,l+o]).filter(([b,lv])=>lv>=1);
+ const resRows=RES.filter(r=>c[r]).map(r=>`<div class="urow ${S.res[r]>=c[r]?"ok":"no"}">${ico(r,24)}<span>${fmt(S.res[r])} / ${fmt(c[r])}</span><b>${S.res[r]>=c[r]?"✔":"✖"}</b></div>`).join("");
+ panel(B[k].n+" · Lv "+l,`<div class="upw"><div class="upl">${pic?`<img src="iso/${pic}.png" alt="">`:""}<div class="uplv">Lv ${l}${l<max?` <span style="color:#7dff8a">➜ Lv ${l+1}</span>`:""}</div><div class="muted" style="font-size:11px;text-align:center">${B[k].d}</div></div>
+ <div class="upr">${extra}${l>=max?`<div class="rep"><b>${k==="castle"?"Max level!":"Upgrade the Castle first."}</b></div>`:`
+ <div class="ush">Upgrade Results</div>${gain.map(([n,a,b2])=>`<div class="urow"><span style="flex:1">${n}</span><b>${a}</b><b style="color:#7dff8a">➜ ${b2}</b></div>`).join("")}
+ <div class="ush">Requirements</div>${reqAll.map(([b,lv])=>`<div class="urow ${S.bl[b]>=lv?"ok":"no"}">${ico("b_city",24)}<span>${B[b].n} Lv ${lv}</span><b>${S.bl[b]>=lv?"✔":"✖"}</b></div>`).join("")}${resRows}
+ <div class="row" style="margin-top:8px"><button class="btn" id="bi" ${busy||rq.length?"disabled":""}>Instant ${ico("gem",16)}${fmt(ig)}</button><button class="btn gold" id="bu" ${busy||!afford(c)||rq.length?"disabled":""}>Upgrade ⏱ ${ft(t)}</button></div>${busy?'<div class="muted">Your builder is busy. Speed up the current job first.</div>':""}`}</div></div>
+ ${""}
  ${k==="barracks"?'<button class="btn big" id="bt">⚔ Train troops</button>':""}${k==="academy"?'<button class="btn big" id="bres">🔬 Research</button>':""}${k==="embassy"?'<button class="btn big" id="bgld">🤝 Guild</button>':""}${k==="trade"?'<button class="btn big" id="btrd">📦 Send resources</button>':""}${k==="prison"?'<button class="btn big" id="bprs">🔒 Prisoners</button>':""}`);if($("btrd"))$("btrd").onclick=openTrade;if($("bprs"))$("bprs").onclick=openPrison;if($("bres"))$("bres").onclick=openResearch;if($("bgld"))$("bgld").onclick=openGuild;
  const bu=$("bu"),bi=$("bi"),bt=$("bt"),he=$("heal");
  if(bu)bu.onclick=()=>{pay(c);S.build={k,end:Date.now()+t*1000,dur:t};closeP();save();toast("Upgrade started 🔨")};
