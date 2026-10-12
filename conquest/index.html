@@ -50,7 +50,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--
 .q{background:rgba(8,20,30,.88);border:1.5px solid var(--edge);border-radius:9px;padding:4px 7px;font-size:12px;font-weight:900;display:flex;gap:7px;align-items:center;min-width:180px}
 .q .bar{flex:1;height:8px;background:#061018;border-radius:4px;overflow:hidden;border:1px solid #2c5470}.q .bar i{display:block;height:100%;background:linear-gradient(#7af2a8,#25a457)}
 .q button{font:900 11px var(--body);padding:2px 7px;border-radius:7px;border:1px solid #fff0b8;background:linear-gradient(#ffe08a,#c98b12);color:#3b2200}
-#warn{left:50%;top:calc(env(safe-area-inset-top,0px) + 46px);transform:translateX(-50%);background:linear-gradient(#b3261b,#6d120b);border:2px solid #ff9a8a;border-radius:10px;padding:6px 12px;font-weight:900;font-size:13px;display:flex;gap:8px;align-items:center;animation:pulse 1s infinite alternate;box-shadow:0 0 18px #ff2a1a}
+#warn{max-width:300px;font-size:11px!important;padding:3px 8px!important;left:50%;top:calc(env(safe-area-inset-top,0px) + 46px);transform:translateX(-50%);background:linear-gradient(#b3261b,#6d120b);border:2px solid #ff9a8a;border-radius:10px;padding:6px 12px;font-weight:900;font-size:13px;display:flex;gap:8px;align-items:center;animation:pulse 1s infinite alternate;box-shadow:0 0 18px #ff2a1a}
 @keyframes pulse{to{box-shadow:0 0 4px #ff2a1a}}
 #labels{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
 .lb{position:absolute;transform:translate(-50%,-100%);font:900 11px var(--body);text-align:center;white-space:nowrap;text-shadow:0 1px 2px #000,0 0 3px #000}
@@ -358,7 +358,7 @@ function report(title,win,body){S.rep.unshift({t:Date.now(),title,win,body});S.r
 const feed=[];function news(t){feed.unshift(t);feed.length=2;$("t1").innerHTML=feed[0]||"";$("t2").innerHTML=feed[1]||""}
 // ================= RENDERER =================
 const cv=$("c"),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:"high-performance"});
-R.setPixelRatio(Math.min(2,devicePixelRatio));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.setPixelRatio(Math.min(3,devicePixelRatio));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.85;
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
 function tex(w,h,draw,rx,ry){const c=document.createElement("canvas");c.width=w;c.height=h;draw(c.getContext("2d"),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rx||1,ry||1);t.encoding=THREE.sRGBEncoding;t.anisotropy=R.capabilities.getMaxAnisotropy();return t}
@@ -559,6 +559,7 @@ const KKL=["building_castle_blue","building_castle_red","building_castle_yellow"
 // painted isometric art (CC0, OpenGameArt) drawn as flat pictures that always face the camera
 const ISO={},ISOM={},ISOL=["k1", "k2", "k3", "k4", "k5", "sk_dragon", "sk_bone", "sk_marble", "sk_steam", "g_barracks", "g_academy", "g_infirmary", "g_farm", "g_mill", "g_quarry", "g_mine", "g_manor", "g_vault", "g_battle", "g_trade", "g_prison", "g_embassy", "g_tower", "g_gate", "g_fort", "g_nest", "g_wonder", "r_food", "r_wood", "r_stone", "r_ore", "r_gold", "r_pines", "w_food", "w_wood", "w_gold", "w_ore", "w_citadel", "w_fort", "w_dark", "wl_tower", "wl_gate", "de_fountain", "de_statue", "de_flowers", "de_pond", "de_bench", "de_cart", "de_fire", "de_banner", "de_lamp", "m0", "m1", "m2", "m3", "m4", "m5", "mo_reaper", "mo_icedragon", "mo_gryphon", "mo_golem", "mo_darkdragon", "mo_scorpion", "mo_serpent", "mo_mech", "mo_wolf", "mo_tree", "mo_yeti", "sq_stone","sq_grass","tr_river","tr_bridge","tr_coast","tr_sea","tr_road","o_flag","o_tele","o_stone","o_army","o_wagon","o_scout","o_flag","tr_mountain","tr_snowmt","tr_forest","tr_lake","tr_volcano","tr_dunes","tr_inf1","tr_inf2","tr_rng1","tr_cav1","t0", "t2", "t8", "t9"];
 const HITM=new THREE.MeshBasicMaterial({visible:false});
+const CSHG=new THREE.PlaneGeometry(1,1);CSHG.rotateX(-Math.PI/2);let CSHM=null;
 function loadISO(){const L=new THREE.TextureLoader();return Promise.all(ISOL.map(n=>new Promise(res=>L.load("iso/"+n+".png",t=>{t.encoding=THREE.sRGBEncoding;t.anisotropy=4;ISO[n]=t;res()},undefined,()=>res())))).then(()=>{
  // painted stone floor for the city square
  if(ISO.sq_stone){T.plaza.image=ISO.sq_stone.image;T.plaza.encoding=THREE.sRGBEncoding;T.plaza.needsUpdate=true}
@@ -572,7 +573,9 @@ const myCastleKey=()=>S.skin&&ISO[S.skin]?S.skin:ckey(S.bl.castle);
 const MONS=["mo_reaper","mo_darkdragon","m0","m2","m1","mo_icedragon","mo_gryphon","mo_golem","m3","m4","m5","mo_scorpion","mo_serpent","mo_mech","mo_wolf","mo_tree","mo_yeti"];
 function ISP(par,n,w,x,z,y0,flip){const t=ISO[n];if(!t||!t.image)return null;const a=t.image.height/t.image.width,h=w*a;
  const m=ISOM[n]||(ISOM[n]=new THREE.SpriteMaterial({map:t,transparent:true,alphaTest:.12,toneMapped:false,color:new THREE.Color(1.06,1.06,1.06)}));const s=new THREE.Sprite(m);s.center.set(.5,.16);s.scale.set(flip?-w:w,h,1);s.position.set(x||0,(y0||0)+h*.11+.15,z||0);par.add(s);
- const hb=new THREE.Mesh(BX,HITM);hb.scale.set(w*.6,h*.55,w*.6);hb.position.set(x||0,(y0||0)+h*.28,z||0);if(w>2.5)par.add(hb);return s}
+ const hb=new THREE.Mesh(BX,HITM);hb.scale.set(w*.6,h*.55,w*.6);hb.position.set(x||0,(y0||0)+h*.28,z||0);if(w>2.5)par.add(hb);
+ if(w>=2.2&&typeof shadowT!=="undefined"){CSHM=CSHM||new THREE.MeshBasicMaterial({map:shadowT,transparent:true,depthWrite:false,opacity:.75,toneMapped:false});const sh=new THREE.Mesh(CSHG,CSHM);sh.scale.set(w*.95,1,w*.55);sh.position.set((x||0)+w*.06,(y0||0)+.12,(z||0)+w*.04);sh.renderOrder=1;par.add(sh)}
+ return s}
 function loadKK(){if(!THREE.GLTFLoader)return Promise.resolve(false);const L=new THREE.GLTFLoader();
  const mm=MONM.map(m=>new Promise(res=>L.load("mm/"+m[0]+".glb",g=>{g.scene.traverse(o=>{if(o.isMesh){o.castShadow=true;o.material.envMapIntensity=.5}});KK[m[0]]=g.scene;res()},undefined,()=>res())));
  let done=0;const tot=KKL.length+MONM.length;const tick1=()=>{done++;const b=document.getElementById("lbar");if(b)b.style.width=(done/tot*100)+"%"};mm.forEach(p=>p.then(tick1));
