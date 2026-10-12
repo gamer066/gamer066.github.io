@@ -614,7 +614,7 @@ function isoCity(){
  {const c=gt.image,g=c.getContext("2d"),t=document.createElement("canvas");t.width=c.width/2;t.height=c.height/2;const tg=t.getContext("2d");tg.imageSmoothingQuality="high";tg.drawImage(c,0,0,t.width,t.height);g.imageSmoothingQuality="high";g.drawImage(t,0,0,c.width,c.height)}
  gt.wrapS=gt.wrapT=THREE.ClampToEdgeWrapping;gt.repeat.set(1,1);gt.encoding=THREE.sRGBEncoding;gt.anisotropy=16;
  const top=new THREE.Mesh(new THREE.CircleGeometry(R,96),new THREE.MeshStandardMaterial({map:gt,roughness:.95}));top.rotation.x=-Math.PI/2;top.position.y=.45;top.receiveShadow=true;city.add(top);
- M(new THREE.CylinderGeometry(R,R+2,1.4,96),mat(0x6a5a3a),0,-.3,0,1,1,1,city);M(new THREE.CylinderGeometry(R+2,R+5,.6,96),mat(0xd8c58a),0,-.8,0,1,1,1,city);
+ M(new THREE.CylinderGeometry(R-.2,R+2,1.4,96),mat(0x6a5a3a),0,-.75,0,1,1,1,city);M(new THREE.CylinderGeometry(R+2,R+5,.6,96),mat(0xd8c58a),0,-1.3,0,1,1,1,city);
  // walls: stone segments with towers at corners and between
  const WM=mat(0xb4ab9c,T.brick),n=Math.round(2*H2/4.8);
  for(let i=0;i<n;i++){const t=-H2+2.4+i*4.8;for(const[x,z,ry]of[[t,-H2,0],[-H2,t,Math.PI/2],[H2,t,Math.PI/2],[t,H2,0]]){if(z===H2&&Math.abs(t)<5)continue;const o=Q(city,"wall_straight",x,.55,z,2.4,ry);if(o)o.traverse(m=>{if(m.isMesh)m.material=WM})}}
@@ -691,7 +691,7 @@ function kkWorld(o,grp){const tag=o.k==="fort"||o.k==="wonder"?o.owner:o.k==="me
 function kkWorldDecor(){pineClusters();
  // paved royal zone round the Wonder: stone blocks with grass growing in the joints
  if(ISO.sq_stone){const st=tex(1024,1024,(g,w,h)=>{const p=g.createPattern(ISO.sq_stone.image,"repeat");g.fillStyle=p;g.fillRect(0,0,w,h);g.fillStyle="rgba(80,150,50,.6)";for(let i=0;i<=4;i++){g.fillRect(i*256-4,0,8,h);g.fillRect(0,i*256-4,w,8)}for(let i=0;i<400;i++){g.fillStyle=`rgba(${60+ri(40)},${130+ri(40)},40,.5)`;g.fillRect(Math.random()*w,Math.random()*h,rr(4,14),rr(2,5))}});
-  st.wrapS=st.wrapT=THREE.RepeatWrapping;st.repeat.set(3,3);st.encoding=THREE.sRGBEncoding;st.anisotropy=16;const pv=new THREE.Mesh(new THREE.PlaneGeometry(44,44),new THREE.MeshStandardMaterial({map:st,roughness:.9}));pv.rotation.x=-Math.PI/2;pv.position.y=.03;pv.receiveShadow=true;world.add(pv)}
+  st.wrapS=st.wrapT=THREE.RepeatWrapping;st.repeat.set(3,3);st.encoding=THREE.sRGBEncoding;st.anisotropy=16;const pv=new THREE.Mesh(new THREE.PlaneGeometry(44,44),new THREE.MeshStandardMaterial({map:st,roughness:.9}));pv.rotation.x=-Math.PI/2;pv.position.y=.12;pv.receiveShadow=true;world.add(pv)}
  if(ISO.tr_mountain)for(let i=0;i<150;i++){const x=rr(-WS+5,WS-5),z=rr(-WS+5,WS-5),r=Math.hypot(x,z);if(r<55)continue;if(S.w&&[...S.w.c,...S.w.m,...S.w.r,...S.w.n,...S.w.f].some(o=>Math.hypot(o.x-x,o.z-z)<5))continue;
   const k=r>WS*.85?["tr_mountain","tr_snowmt","tr_mountain"][ri(3)]:["tr_mountain","tr_forest","tr_lake","tr_forest","tr_snowmt","tr_dunes"][ri(6)];ISP(world,Math.random()<.03?"tr_volcano":k,rr(6,9),x,z,0,Math.random()<.5)}
  for(let i=0;i<140;i++){const x=rr(-WS+4,WS-4),z=rr(-WS+4,WS-4);if(Math.hypot(x,z)<62)continue;const cl=Math.sin(x*.18)*Math.cos(z*.16);if(cl<.3)continue;if(S.w&&[...S.w.c,...S.w.m,...S.w.r,...S.w.n].some(o=>Math.hypot(o.x-x,o.z-z)<2.4))continue;if(!ISP(world,"r_pines",rr(3.6,4.6),x,z,0,Math.random()<.5))Q(world,["trees_A_large","trees_B_large","trees_A_medium","trees_B_medium"][ri(4)],x,0,z,rr(1.2,1.8),Math.random()*7)}
@@ -1164,7 +1164,7 @@ function tick(dt){const now=Date.now();for(const k in B)if(B[k].prod)S.res[B[k].
  for(const m of npcMs.slice())if(now>=m.t1){npcArrive(m);dropMarch(m.id);npcMs.splice(npcMs.indexOf(m),1)}}
 // ================= CAMERA / INPUT =================
 let mode="city";const CAM={city:{tgt:new THREE.Vector3(0,0,2),dist:34,yaw:Math.PI/4,pitch:.8,lim:38,mn:12,mx:85},world:{tgt:new THREE.Vector3(),dist:36,yaw:Math.PI/4,pitch:.86,lim:WS-4,mn:12,mx:95}};
-const cam=new THREE.PerspectiveCamera(40,1,.5,700);makeComposer();
+const cam=new THREE.PerspectiveCamera(40,1,2,700);makeComposer();
 function placeCam(){const c=CAM[mode];cam.position.set(c.tgt.x+Math.sin(c.yaw)*Math.cos(c.pitch)*c.dist,c.tgt.y+Math.sin(c.pitch)*c.dist,c.tgt.z+Math.cos(c.yaw)*Math.cos(c.pitch)*c.dist);cam.lookAt(c.tgt);
  const s=mode==="city"?csun:wsun;s.position.set(c.tgt.x+30,48,c.tgt.z+18);s.target.position.copy(c.tgt)}
 const pts=new Map();let moved=0,pinch0=0,ang0=0;const VEL={x:0,z:0,t:0};let INER=null;
